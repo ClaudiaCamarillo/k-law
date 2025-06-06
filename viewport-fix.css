@@ -1,0 +1,34 @@
+/* Arreglo para problemas de renderizado */
+* {
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  font-size: 16px !important;
+}
+
+body {
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Forzar GPU para mejor renderizado */
+.container, .main, div {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Arreglo específico para iOS */
+@supports (-webkit-touch-callout: none) {
+  body {
+    -webkit-transform: translate3d(0, 0, 0);
+  }
+}
