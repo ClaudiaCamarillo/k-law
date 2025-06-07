@@ -168,7 +168,7 @@ function obtenerDiasInhabilesConNotas(inicio: Date, fin: Date, diasAdicionales: 
         diasYaIncluidos.add(diaFijo.dia);
       }
       
-// Verificar días móviles
+      // Verificar días móviles
       const diasMoviles = calcularDiasMoviles(año);
       const diaMovil = diasMoviles.find(d => d.fecha === fechaStr);
       if (diaMovil) {
@@ -185,6 +185,7 @@ function obtenerDiasInhabilesConNotas(inicio: Date, fin: Date, diasAdicionales: 
           diasYaIncluidos.add(fechaATexto(fechaStr));
         }
       }
+      
       // Días adicionales del usuario
       if (diasAdicionales.includes(fechaStr) && !diasYaIncluidos.has(fechaATexto(fechaStr))) {
         const fundamento = fundamentoAdicional || 'el acuerdo correspondiente';
@@ -261,7 +262,7 @@ function Calendario({
     mesActual.setMonth(mesActual.getMonth() + 1);
   }
   
- const obtenerClaseDia = (fecha: Date) => {
+  const obtenerClaseDia = (fecha: Date) => {
     const fechaStr = fecha.toISOString().split('T')[0];
     const fechaNotifStr = fechaNotificacion.toISOString().split('T')[0];
     const fechaSurteStr = fechaSurte.toISOString().split('T')[0];
@@ -295,52 +296,33 @@ function Calendario({
     }
     
     return 'hover:bg-gray-50';
-  };    
-    // Día que surte efectos (si es diferente)
-    if (fechaStr === fechaSurteStr && fechaNotifStr !== fechaSurteStr) {
-      return 'bg-green-500 text-white font-bold';
-    }
-    
-    // Días del cómputo
-    if (fecha >= fechaInicio && fecha <= fechaFin) {
-      if (esDiaInhabil(fecha, diasAdicionales, tipoUsuario)) {
-        return 'bg-red-500 text-white'; // Días inhábiles
-      }
-      return 'bg-yellow-300 text-black font-semibold'; // Días hábiles del cómputo
-    }
-    
-    // Días inhábiles fuera del cómputo
-    if (esDiaInhabil(fecha, diasAdicionales, tipoUsuario)) {
-      return 'bg-gray-200 text-gray-500';
-    }
-    
-    return 'hover:bg-gray-50';
   };
   
   return (
     <div className="mt-6">
       <div className="mb-4">
         <h3 className="font-semibold mb-2">Calendario del Cómputo</h3>
-          <div className="flex flex-wrap gap-2 text-xs">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-yellow-400"></div>
-              <span>Notificación</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-500"></div>
-              <span>Surte efectos</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-yellow-300"></div>
-              <span>Días hábiles del cómputo</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-red-500"></div>
-              <span>Días inhábiles del cómputo</span>
-            </div>
+        <div className="flex flex-wrap gap-2 text-xs">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-yellow-400"></div>
+            <span>Notificación</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-500"></div>
+            <span>Surte efectos</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-yellow-300"></div>
+            <span>Días hábiles del cómputo</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-red-500"></div>
+            <span>Días inhábiles del cómputo</span>
           </div>
         </div>
-  <div className="grid grid-cols-3 gap-2 max-w-2xl mx-auto scale-75 origin-top">
+      </div>
+      
+      <div className="grid grid-cols-3 gap-2 max-w-2xl mx-auto scale-75 origin-top">
         {mesesAMostrar.map((mes, idx) => {
           const primerDia = new Date(mes.getFullYear(), mes.getMonth(), 1);
           const ultimoDia = new Date(mes.getFullYear(), mes.getMonth() + 1, 0);
@@ -458,7 +440,7 @@ export default function Calculadora() {
       // El plazo inicia al día siguiente del que surte efectos
       const fechaInicio = siguienteDiaHabil(fechaSurte, diasAdicionales, tipoUsuario);
       const fechaFin = calcularPlazoReal(fechaInicio, plazo, diasAdicionales, tipoUsuario);
-     const fechaPres = tipoUsuario === 'servidor' ? new Date(formData.fechaPresentacion + 'T12:00:00') : null;
+      const fechaPres = tipoUsuario === 'servidor' ? new Date(formData.fechaPresentacion + 'T12:00:00') : null;
       const esOportuno = tipoUsuario === 'servidor' ? (fechaPres && fechaPres <= fechaFin) : null;
       
       const diasInhabilesInfo = obtenerDiasInhabilesConNotas(fechaInicio, fechaFin, diasAdicionales, fundamentoAdicional, tipoUsuario);
@@ -645,7 +627,8 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                     <option value="electronica">En forma electrónica</option>
                   </select>
                 </div>
-               <div>
+                
+                <div>
                   <label className="block text-sm font-medium mb-2">Fecha de Notificación</label>
                   <input type="date" name="fechaNotificacion" value={formData.fechaNotificacion} onChange={handleChange} className="w-full p-2 border rounded-lg" required />
                 </div>
@@ -657,10 +640,10 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                   </div>
                 )}
                 
-{tipoUsuario === 'servidor' && (
+                {tipoUsuario === 'servidor' && (
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium mb-2">Forma de Presentación</label>
-                    <select name="formaPresentacion" value={formData.formaPresentacion} onChange={handleChange} className="w-full p-2 border rounded-lg" required>
+                    <select name="formaPresentacion" value={formData.formaPresentacion} onChange={handleChange} className="w-full p-2 border rounded-lg" required={tipoUsuario === 'servidor'}>
                       <option value="">Seleccione...</option>
                       <option value="escrito">Por escrito</option>
                       <option value="correo">Por correo</option>
@@ -712,8 +695,7 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                   </div>
                 )}
               </div>
-              
-                         </div>
+            </div>
           </div>
         </div>
         
