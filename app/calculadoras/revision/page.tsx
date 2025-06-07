@@ -618,17 +618,17 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                     <option value="electronica">En forma electrónica</option>
                   </select>
                 </div>
+               <div>
+                  <label className="block text-sm font-medium mb-2">Fecha de Notificación</label>
+                  <input type="date" name="fechaNotificacion" value={formData.fechaNotificacion} onChange={handleChange} className="w-full p-2 border rounded-lg" required />
+                </div>
                 
                 {tipoUsuario === 'servidor' && (
-  <div>
-  <div>
-  <label className="block text-sm font-medium mb-2">Fecha de Notificación</label>
-  <input type="date" name="fechaNotificacion" value={formData.fechaNotificacion} onChange={handleChange} className="w-full p-2 border rounded-lg" required />
-</div>)}
-
-<label className="block text-sm font-medium mb-2">Fecha de Presentación</label>
-  <input type="date" name="fechaPresentacion" value={formData.fechaPresentacion} onChange={handleChange} className="w-full p-2 border rounded-lg" required={tipoUsuario === 'servidor'} />
-</div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Fecha de Presentación</label>
+                    <input type="date" name="fechaPresentacion" value={formData.fechaPresentacion} onChange={handleChange} className="w-full p-2 border rounded-lg" required={tipoUsuario === 'servidor'} />
+                  </div>
+                )}
                 
 {tipoUsuario === 'servidor' && (
                   <div className="md:col-span-2">
