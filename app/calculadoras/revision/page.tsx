@@ -431,8 +431,8 @@ export default function Calculadora() {
       // El plazo inicia al día siguiente del que surte efectos
       const fechaInicio = siguienteDiaHabil(fechaSurte, diasAdicionales, tipoUsuario);
       const fechaFin = calcularPlazoReal(fechaInicio, plazo, diasAdicionales, tipoUsuario);
-      const fechaPres = new Date(formData.fechaPresentacion + 'T12:00:00');
-      const esOportuno = fechaPres <= fechaFin;
+     const fechaPres = tipoUsuario === 'servidor' ? new Date(formData.fechaPresentacion + 'T12:00:00') : null;
+      const esOportuno = tipoUsuario === 'servidor' ? (fechaPres && fechaPres <= fechaFin) : null;
       
       const diasInhabilesInfo = obtenerDiasInhabilesConNotas(fechaInicio, fechaFin, diasAdicionales, fundamentoAdicional, tipoUsuario);
       
@@ -619,26 +619,30 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                   </select>
                 </div>
                 
-                <div>
-                  <label className="block text-sm font-medium mb-2">Fecha de Notificación</label>
-                  <input type="date" name="fechaNotificacion" value={formData.fechaNotificacion} onChange={handleChange} className="w-full p-2 border rounded-lg" required />
-                </div>
+                {tipoUsuario === 'servidor' && (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Fecha de Presentación</label>
+                    <input type="date" name="fechaPresentacion" value={formData.fechaPresentacion} onChange={handleChange} className="w-full p-2 border rounded-lg" required={tipoUsuario === 'servidor'} />
+                  </div>
+                )}
                 
                 <div>
                   <label className="block text-sm font-medium mb-2">Fecha de Presentación</label>
-                  <input type="date" name="fechaPresentacion" value={formData.fechaPresentacion} onChange={handleChange} className="w-full p-2 border rounded-lg" required />
+                  <input type="date" name="fechaPresentacion" value={formData.fechaPresentacion} onChange={handleChange} className="w-full p-2 border rounded-lg" required={tipoUsuario === 'servidor'} />
                 </div>
                 
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium mb-2">Forma de Presentación</label>
-                  <select name="formaPresentacion" value={formData.formaPresentacion} onChange={handleChange} className="w-full p-2 border rounded-lg" required>
-                    <option value="">Seleccione...</option>
-                    <option value="escrito">Por escrito</option>
-                    <option value="correo">Por correo</option>
-                    <option value="momento">Al momento de ser notificado</option>
-                    <option value="electronica">En forma electrónica</option>
-                  </select>
-                </div>
+{tipoUsuario === 'servidor' && (
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-2">Forma de Presentación</label>
+                    <select name="formaPresentacion" value={formData.formaPresentacion} onChange={handleChange} className="w-full p-2 border rounded-lg" required>
+                      <option value="">Seleccione...</option>
+                      <option value="escrito">Por escrito</option>
+                      <option value="correo">Por correo</option>
+                      <option value="momento">Al momento de ser notificado</option>
+                      <option value="electronica">En forma electrónica</option>
+                    </select>
+                  </div>
+                )}
               </div>
               
               <button type="submit" disabled={calculando} className="mt-6 w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400">
@@ -689,65 +693,122 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
         
         {resultado && (
           <>
-            <div className="mt-6 bg-white rounded-lg shadow p-6">
-              <h2 className="text-2xl font-bold mb-4">Resultado del Cálculo</h2>
-              
-              <div className={`p-4 rounded-lg mb-4 ${resultado.esOportuno ? 'bg-green-100 border border-green-500' : 'bg-red-100 border border-red-500'}`}>
-                <p className="text-lg font-semibold">
-                  El recurso se presentó de forma: {' '}
-                  <span className={resultado.esOportuno ? 'text-green-700' : 'text-red-700'}>
-                    {resultado.esOportuno ? 'OPORTUNA' : 'EXTEMPORÁNEA'}
-                  </span>
-                </p>
-                {resultado.esOportuno && resultado.diasRestantes > 0 && (
-                  <p className="mt-2 text-sm">
-                    Quedan <strong>{resultado.diasRestantes}</strong> días hábiles para el vencimiento
+            {tipoUsuario === 'litigante' ? (
+              // Vista simplificada para litigantes
+              <div className="mt-6 bg-white rounded-lg shadow p-6">
+                <h2 className="text-2xl font-bold mb-4">Resultado del Cálculo</h2>
+                
+                <div className="p-4 border-2 border-red-500 rounded-lg bg-red-50">
+                  <p className="text-lg mb-2">
+                    <strong>Plazo legal:</strong> {resultado.plazo} días
                   </p>
+                  <p className="text-lg mb-2">
+                    <strong>Fundamento:</strong> {resultado.fundamento}
+                  </p>
+                  <p className="text-lg mb-2">
+                    <strong>Fecha de notificación:</strong> {new Date(formData.fechaNotificacion + 'T12:00:00').getDate()} de {['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'][new Date(formData.fechaNotificacion + 'T12:00:00').getMonth()]} de {new Date(formData.fechaNotificacion + 'T12:00:00').getFullYear()}
+                  </p>
+                  <p className="text-lg mb-2">
+                    <strong>Surte efectos:</strong> {resultado.fechaSurte.getDate()} de {['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'][resultado.fechaSurte.getMonth()]} de {resultado.fechaSurte.getFullYear()}
+                  </p>
+                  <p className="text-lg mb-2">
+                    <strong>Período del cómputo:</strong> Del {resultado.fechaInicio.getDate()} de {['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'][resultado.fechaInicio.getMonth()]} de {resultado.fechaInicio.getFullYear()} al {resultado.fechaFin.getDate()} de {['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'][resultado.fechaFin.getMonth()]} de {resultado.fechaFin.getFullYear()}
+                  </p>
+                  <p className="text-lg font-bold text-blue-700">
+                    Quedan {resultado.diasRestantes} días hábiles para el vencimiento
+                  </p>
+                  <p className="text-lg mt-3">
+                    <strong>Días inhábiles excluidos:</strong> {resultado.diasInhabiles}
+                  </p>
+                </div>
+                
+                {resultado.notasAlPie && resultado.notasAlPie.length > 0 && (
+                  <div className="mt-4 pt-4 border-t text-sm">
+                    {resultado.notasAlPie.map((nota, idx) => (
+                      <p key={idx} className="text-gray-600">{nota}</p>
+                    ))}
+                  </div>
                 )}
-              </div>
-              
-              <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                <h3 className="font-semibold mb-2">Detalles del Cómputo:</h3>
-                <div className="space-y-1 text-sm">
-                  <p><strong>Plazo legal:</strong> {resultado.plazo} días</p>
-                  <p><strong>Fundamento:</strong> {resultado.fundamento}</p>
-                  <p><strong>Fecha de notificación:</strong> {resultado.fechaNotificacionTexto}</p>
-                  <p><strong>Surte efectos:</strong> {resultado.fechaSurteEfectosTexto}</p>
-                  <p><strong>Período del cómputo:</strong> Del {resultado.fechaInicioTexto} al {resultado.fechaFinTexto}</p>
-                  <p><strong>Fecha de presentación:</strong> {resultado.fechaPresentacionTexto}</p>
-                  <p><strong>Días inhábiles excluidos:</strong> {resultado.diasInhabiles}</p>
-                </div>
-              </div>
-              
-              {/* Calendario visual */}
-              <Calendario 
-                fechaNotificacion={resultado.fechaNotificacion}
-                fechaSurte={resultado.fechaSurte}
-                fechaInicio={resultado.fechaInicio}
-                fechaFin={resultado.fechaFin}
-                diasAdicionales={diasAdicionales}
-                tipoUsuario={tipoUsuario}
-              />
-              
-              <div className="bg-blue-50 p-4 rounded-lg mt-6">
-                <h3 className="font-semibold mb-2">Texto para Resolución:</h3>
-                <div className="text-sm font-['Arial'] leading-relaxed whitespace-pre-wrap">
-                  {generarTexto()}
-                </div>
-              </div>
-              
-              <div className="mt-6 flex gap-4">
-                <button onClick={() => { navigator.clipboard.writeText(generarTexto()); alert('Texto copiado al portapapeles'); }} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
-                  Copiar Texto
-                </button>
-                <button onClick={() => { setResultado(null); setFormData({ tipoRecurso: 'principal', resolucionImpugnada: '', parteRecurrente: '', fechaNotificacion: '', formaNotificacion: '', fechaPresentacion: '', formaPresentacion: '' }); }} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                
+                <button 
+                  onClick={() => { 
+                    setResultado(null); 
+                    setFormData({ 
+                      tipoRecurso: 'principal', 
+                      resolucionImpugnada: '', 
+                      parteRecurrente: '', 
+                      fechaNotificacion: '', 
+                      formaNotificacion: '', 
+                      fechaPresentacion: '', 
+                      formaPresentacion: '' 
+                    }); 
+                  }} 
+                  className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                >
                   Nuevo Cálculo
                 </button>
               </div>
-            </div>
+            ) : (
+              // Vista completa para servidores públicos
+              <div className="mt-6 bg-white rounded-lg shadow p-6">
+                <h2 className="text-2xl font-bold mb-4">Resultado del Cálculo</h2>
+                
+                <div className={`p-4 rounded-lg mb-4 ${resultado.esOportuno ? 'bg-green-100 border border-green-500' : 'bg-red-100 border border-red-500'}`}>
+                  <p className="text-lg font-semibold">
+                    El recurso se presentó de forma: {' '}
+                    <span className={resultado.esOportuno ? 'text-green-700' : 'text-red-700'}>
+                      {resultado.esOportuno ? 'OPORTUNA' : 'EXTEMPORÁNEA'}
+                    </span>
+                  </p>
+                  {resultado.esOportuno && resultado.diasRestantes > 0 && (
+                    <p className="mt-2 text-sm">
+                      Quedan <strong>{resultado.diasRestantes}</strong> días hábiles para el vencimiento
+                    </p>
+                  )}
+                </div>
+                
+                <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                  <h3 className="font-semibold mb-2">Detalles del Cómputo:</h3>
+                  <div className="space-y-1 text-sm">
+                    <p><strong>Plazo legal:</strong> {resultado.plazo} días</p>
+                    <p><strong>Fundamento:</strong> {resultado.fundamento}</p>
+                    <p><strong>Fecha de notificación:</strong> {resultado.fechaNotificacionTexto}</p>
+                    <p><strong>Surte efectos:</strong> {resultado.fechaSurteEfectosTexto}</p>
+                    <p><strong>Período del cómputo:</strong> Del {resultado.fechaInicioTexto} al {resultado.fechaFinTexto}</p>
+                    <p><strong>Fecha de presentación:</strong> {resultado.fechaPresentacionTexto}</p>
+                    <p><strong>Días inhábiles excluidos:</strong> {resultado.diasInhabiles}</p>
+                  </div>
+                </div>
+                
+                <Calendario 
+                  fechaNotificacion={resultado.fechaNotificacion}
+                  fechaSurte={resultado.fechaSurte}
+                  fechaInicio={resultado.fechaInicio}
+                  fechaFin={resultado.fechaFin}
+                  diasAdicionales={diasAdicionales}
+                  tipoUsuario={tipoUsuario}
+                />
+                
+                <div className="bg-blue-50 p-4 rounded-lg mt-6">
+                  <h3 className="font-semibold mb-2">Texto para Resolución:</h3>
+                  <div className="text-sm font-['Arial'] leading-relaxed whitespace-pre-wrap">
+                    {generarTexto()}
+                  </div>
+                </div>
+                
+                <div className="mt-6 flex gap-4">
+                  <button onClick={() => { navigator.clipboard.writeText(generarTexto()); alert('Texto copiado al portapapeles'); }} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                    Copiar Texto
+                  </button>
+                  <button onClick={() => { setResultado(null); setFormData({ tipoRecurso: 'principal', resolucionImpugnada: '', parteRecurrente: '', fechaNotificacion: '', formaNotificacion: '', fechaPresentacion: '', formaPresentacion: '' }); }} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                    Nuevo Cálculo
+                  </button>
+                </div>
+              </div>
+            )}
             
             {/* Sección para litigantes */}
-            {tipoUsuario === 'litigante' && resultado.esOportuno && (
+            {tipoUsuario === 'litigante' && (
               <div className="mt-6 bg-white rounded-lg shadow p-6">
                 <h3 className="text-xl font-bold mb-4">Guardar Cálculo y Notificaciones</h3>
                 
