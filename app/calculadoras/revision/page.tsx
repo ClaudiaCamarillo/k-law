@@ -168,20 +168,23 @@ function obtenerDiasInhabilesConNotas(inicio: Date, fin: Date, diasAdicionales: 
         diasYaIncluidos.add(diaFijo.dia);
       }
       
-      // Verificar días móviles
+// Verificar días móviles
       const diasMoviles = calcularDiasMoviles(año);
       const diaMovil = diasMoviles.find(d => d.fecha === fechaStr);
       if (diaMovil) {
         const diaMovilInfo = diasAplicables.find(d => d.tipo === 'movil' && d.dia === diaMovil.tipo);
-        if (diaMovilInfo && !diasYaIncluidos.has(fechaATexto(fechaStr))) {
-          if (!diasPorFundamento[diaMovilInfo.fundamento]) {
-            diasPorFundamento[diaMovilInfo.fundamento] = [];
+        if (!diasYaIncluidos.has(fechaATexto(fechaStr))) {
+          let fundamentoMovil = 'artículo 74 de la Ley Federal del Trabajo';
+          if (diaMovilInfo && diaMovilInfo.fundamento) {
+            fundamentoMovil = diaMovilInfo.fundamento;
           }
-          diasPorFundamento[diaMovilInfo.fundamento].push(fechaATexto(fechaStr));
+          if (!diasPorFundamento[fundamentoMovil]) {
+            diasPorFundamento[fundamentoMovil] = [];
+          }
+          diasPorFundamento[fundamentoMovil].push(fechaATexto(fechaStr));
           diasYaIncluidos.add(fechaATexto(fechaStr));
         }
       }
-      
       // Días adicionales del usuario
       if (diasAdicionales.includes(fechaStr) && !diasYaIncluidos.has(fechaATexto(fechaStr))) {
         const fundamento = fundamentoAdicional || 'el acuerdo correspondiente';
