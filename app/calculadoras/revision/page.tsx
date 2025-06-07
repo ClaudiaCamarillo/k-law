@@ -321,39 +321,26 @@ function Calendario({
     <div className="mt-6">
       <div className="mb-4">
         <h3 className="font-semibold mb-2">Calendario del Cómputo</h3>
-        
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-yellow-400"></div>
-            <span>Notificación</span>
+          <div className="flex flex-wrap gap-2 text-xs">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-yellow-400"></div>
+              <span>Notificación</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-green-500"></div>
+              <span>Surte efectos</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-yellow-300"></div>
+              <span>Días hábiles del cómputo</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-red-500"></div>
+              <span>Días inhábiles del cómputo</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-500"></div>
-            <span>Surte efectos</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-yellow-300"></div>
-            <span>Días hábiles del cómputo</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-500"></div>
-            <span>Días inhábiles del cómputo</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-500"></div>
-            <span>Surte efectos</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-yellow-300"></div>
-            <span>Días hábiles del cómputo</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-500"></div>
-            <span>Días inhábiles del cómputo</span>
-          </div><div className="flex flex-wrap gap-2 text-xs">
         </div>
-      </div>
-      
-      <div className="grid grid-cols-3 gap-2 max-w-2xl mx-auto scale-75 origin-top">
+  <div className="grid grid-cols-3 gap-2 max-w-2xl mx-auto scale-75 origin-top">
         {mesesAMostrar.map((mes, idx) => {
           const primerDia = new Date(mes.getFullYear(), mes.getMonth(), 1);
           const ultimoDia = new Date(mes.getFullYear(), mes.getMonth() + 1, 0);
