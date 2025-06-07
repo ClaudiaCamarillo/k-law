@@ -724,7 +724,7 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                 
                 {resultado.notasAlPie && resultado.notasAlPie.length > 0 && (
                   <div className="mt-4 pt-4 border-t text-sm">
-                    {resultado.notasAlPie.map((nota, idx) => (
+                    {resultado.notasAlPie.map((nota: string, idx: number) => (
                       <p key={idx} className="text-gray-600">{nota}</p>
                     ))}
                   </div>
