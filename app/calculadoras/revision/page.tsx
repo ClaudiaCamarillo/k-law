@@ -322,7 +322,7 @@ function Calendario({
         </div>
       </div>
       
-      <div className="grid grid-cols-3 gap-2 max-w-2xl mx-auto scale-75 origin-top">
+     <div className="grid grid-cols-3 gap-1 text-xs" style={{maxWidth: '400px', transform: 'scale(0.6)', transformOrigin: 'top center'}}>
         {mesesAMostrar.map((mes, idx) => {
           const primerDia = new Date(mes.getFullYear(), mes.getMonth(), 1);
           const ultimoDia = new Date(mes.getFullYear(), mes.getMonth() + 1, 0);
