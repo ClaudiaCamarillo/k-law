@@ -261,16 +261,41 @@ function Calendario({
     mesActual.setMonth(mesActual.getMonth() + 1);
   }
   
-  const obtenerClaseDia = (fecha: Date) => {
+ const obtenerClaseDia = (fecha: Date) => {
     const fechaStr = fecha.toISOString().split('T')[0];
     const fechaNotifStr = fechaNotificacion.toISOString().split('T')[0];
     const fechaSurteStr = fechaSurte.toISOString().split('T')[0];
     
-    // Día de notificación
-    if (fechaStr === fechaNotifStr) {
-      return 'bg-blue-500 text-white font-bold';
+    // Si coinciden notificación y surte efectos
+    if (fechaStr === fechaNotifStr && fechaStr === fechaSurteStr) {
+      return 'bg-gradient-to-br from-yellow-400 to-green-500 text-white font-bold';
     }
     
+    // Día de notificación (amarillo)
+    if (fechaStr === fechaNotifStr) {
+      return 'bg-yellow-400 text-black font-bold';
+    }
+    
+    // Día que surte efectos (verde)
+    if (fechaStr === fechaSurteStr) {
+      return 'bg-green-500 text-white font-bold';
+    }
+    
+    // Días del cómputo
+    if (fecha >= fechaInicio && fecha <= fechaFin) {
+      if (esDiaInhabil(fecha, diasAdicionales, tipoUsuario)) {
+        return 'bg-red-500 text-white'; // Días inhábiles (rojo)
+      }
+      return 'bg-yellow-300 text-black font-semibold'; // Días hábiles del cómputo (amarillo)
+    }
+    
+    // Días inhábiles fuera del cómputo
+    if (esDiaInhabil(fecha, diasAdicionales, tipoUsuario)) {
+      return 'bg-gray-200 text-gray-500';
+    }
+    
+    return 'hover:bg-gray-50';
+  };    
     // Día que surte efectos (si es diferente)
     if (fechaStr === fechaSurteStr && fechaNotifStr !== fechaSurteStr) {
       return 'bg-green-500 text-white font-bold';
@@ -296,27 +321,39 @@ function Calendario({
     <div className="mt-6">
       <div className="mb-4">
         <h3 className="font-semibold mb-2">Calendario del Cómputo</h3>
-        <div className="flex flex-wrap gap-4 text-sm">
+        
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-blue-500"></div>
+            <div className="w-4 h-4 bg-yellow-400"></div>
             <span>Notificación</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-green-500"></div>
+            <div className="w-4 h-4 bg-green-500"></div>
             <span>Surte efectos</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-yellow-300"></div>
+            <div className="w-4 h-4 bg-yellow-300"></div>
             <span>Días hábiles del cómputo</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-red-500"></div>
+            <div className="w-4 h-4 bg-red-500"></div>
             <span>Días inhábiles del cómputo</span>
           </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-green-500"></div>
+            <span>Surte efectos</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-yellow-300"></div>
+            <span>Días hábiles del cómputo</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 bg-red-500"></div>
+            <span>Días inhábiles del cómputo</span>
+          </div><div className="flex flex-wrap gap-2 text-xs">
         </div>
       </div>
       
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2 max-w-2xl mx-auto scale-75 origin-top">
         {mesesAMostrar.map((mes, idx) => {
           const primerDia = new Date(mes.getFullYear(), mes.getMonth(), 1);
           const ultimoDia = new Date(mes.getFullYear(), mes.getMonth() + 1, 0);
