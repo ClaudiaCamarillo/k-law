@@ -274,7 +274,7 @@ function Calendario({
     
     // Día de notificación (amarillo)
     if (fechaStr === fechaNotifStr) {
-      return 'bg-yellow-400 text-black font-bold';
+      return 'bg-yellow-400 text-gray-900 font-bold';
     }
     
     // Día que surte efectos (verde)
@@ -287,7 +287,7 @@ function Calendario({
       if (esDiaInhabil(fecha, diasAdicionales, tipoUsuario)) {
         return 'bg-red-500 text-white'; // Días inhábiles (rojo)
       }
-      return 'bg-yellow-300 text-black font-semibold'; // Días hábiles del cómputo (amarillo)
+      return 'bg-yellow-300 text-gray-800 font-semibold'; // Días hábiles del cómputo (amarillo)
     }
     
     // Días inhábiles fuera del cómputo
