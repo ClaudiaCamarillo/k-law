@@ -1,116 +1,58 @@
-<<<<<<< HEAD
-'use client'
+﻿import Link from 'next/link'
 
-import { useRouter } from 'next/navigation'
-
-export default function SeleccionUsuario() {
-  const router = useRouter()
-
-  const handleSelectUser = (tipo: 'litigante' | 'servidor') => {
-    // Guardar en localStorage
-    localStorage.setItem('userType', tipo)
-    // Navegar a selección de recursos
-    router.push('/recursos')
-  }
-
+export default function Usuario() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center p-4">
-      <div className="max-w-4xl w-full">
-        <h1 className="text-4xl font-bold text-center mb-8 text-blue-900">
-          LegalCompute Pro
-        </h1>
-        <p className="text-center text-gray-600 mb-12 text-lg">
-          Selecciona tu perfil para continuar
-        </p>
-        
-        <div className="grid md:grid-cols-2 gap-8">
-          <button
-            onClick={() => handleSelectUser('litigante')}
-            className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border-2 border-transparent hover:border-blue-400"
-          >
-            <div className="text-blue-600 text-5xl mb-4">⚖️</div>
-            <h2 className="text-2xl font-bold mb-2">Soy Litigante</h2>
-            <p className="text-gray-600">
-              Cálculo rápido de plazos con fechas en formato numérico
-            </p>
-          </button>
-          
-          <button
-            onClick={() => handleSelectUser('servidor')}
-            className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border-2 border-transparent hover:border-green-400"
-          >
-            <div className="text-green-600 text-5xl mb-4">🏛️</div>
-            <h2 className="text-2xl font-bold mb-2">Soy Servidor Público</h2>
-            <p className="text-gray-600">
-              Texto completo para resoluciones con calendario visual
-            </p>
-          </button>
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-white shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <Link href="/" className="text-2xl font-bold text-blue-900">
+              LegalCompute Pro
+            </Link>
+            <Link href="/calculadoras" className="text-gray-600 hover:text-gray-900">
+              Volver a calculadoras
+            </Link>
+          </div>
         </div>
+      </nav>
+
+      <div className="max-w-4xl mx-auto px-4 py-16">
+        <h1 className="text-4xl font-bold text-center mb-16">Mi Cuenta</h1>
         
-        <div className="text-center mt-12">
-          <a href="/pricing" className="text-blue-600 hover:underline">
-            Ver planes de suscripción →
-          </a>
+        <div className="bg-white rounded-lg shadow p-8">
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-4">Información del Usuario</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <p className="mt-1 text-lg">usuario@ejemplo.com</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Plan</label>
+                <p className="mt-1 text-lg">Plan Gratuito</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Cálculos este mes</label>
+                <p className="mt-1 text-lg">3 de 5</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t pt-8">
+            <h3 className="text-xl font-bold mb-4">Historial de Cálculos</h3>
+            <p className="text-gray-600">El historial estará disponible próximamente.</p>
+          </div>
+
+          <div className="mt-8 flex gap-4">
+            <Link href="/pricing" className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+              Actualizar Plan
+            </Link>
+            <button className="bg-gray-200 text-gray-700 px-6 py-2 rounded hover:bg-gray-300">
+              Cerrar Sesión
+            </button>
+          </div>
         </div>
       </div>
     </div>
   )
-=======
-'use client'
-
-import { useRouter } from 'next/navigation'
-
-export default function SeleccionUsuario() {
-  const router = useRouter()
-
-  const handleSelectUser = (tipo: 'litigante' | 'servidor') => {
-    // Guardar en localStorage
-    localStorage.setItem('userType', tipo)
-    // Navegar a selección de recursos
-    router.push('/recursos')
-  }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center p-4">
-      <div className="max-w-4xl w-full">
-        <h1 className="text-4xl font-bold text-center mb-8 text-blue-900">
-          LegalCompute Pro
-        </h1>
-        <p className="text-center text-gray-600 mb-12 text-lg">
-          Selecciona tu perfil para continuar
-        </p>
-        
-        <div className="grid md:grid-cols-2 gap-8">
-          <button
-            onClick={() => handleSelectUser('litigante')}
-            className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border-2 border-transparent hover:border-blue-400"
-          >
-            <div className="text-blue-600 text-5xl mb-4">⚖️</div>
-            <h2 className="text-2xl font-bold mb-2">Soy Litigante</h2>
-            <p className="text-gray-600">
-              Cálculo rápido de plazos con fechas en formato numérico
-            </p>
-          </button>
-          
-          <button
-            onClick={() => handleSelectUser('servidor')}
-            className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow border-2 border-transparent hover:border-green-400"
-          >
-            <div className="text-green-600 text-5xl mb-4">🏛️</div>
-            <h2 className="text-2xl font-bold mb-2">Soy Servidor Público</h2>
-            <p className="text-gray-600">
-              Texto completo para resoluciones con calendario visual
-            </p>
-          </button>
-        </div>
-        
-        <div className="text-center mt-12">
-          <a href="/pricing" className="text-blue-600 hover:underline">
-            Ver planes de suscripción →
-          </a>
-        </div>
-      </div>
-    </div>
-  )
->>>>>>> 0283ad6bcae620c9560b4d33cff9103f20122a5a
 }
