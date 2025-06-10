@@ -71,7 +71,7 @@ function calcularDiasMoviles(año: number) {
   // Tercer lunes de noviembre
   const nov = new Date(año, 10, 1);
   while (nov.getDay() !== 1) nov.setDate(nov.getDate() + 1);
-  nov.setDate(nov.setDate() + 14);
+  nov.setDate(nov.setDate(nov.getDate() + 14);
   dias.push({ fecha: nov.toISOString().split('T')[0], tipo: 'tercer lunes de noviembre' });
   
   return dias;
