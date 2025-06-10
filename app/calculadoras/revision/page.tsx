@@ -298,6 +298,53 @@ function Calendario({
     
     return 'hover:bg-gray-50 text-gray-700';
   };
+
+  // NUEVA FUNCIÓN CON ESTILOS INLINE
+  const obtenerEstiloDia = (fecha: Date) => {
+    const fechaStr = fecha.toISOString().split('T')[0];
+    const fechaNotifStr = fechaNotificacion.toISOString().split('T')[0];
+    const fechaSurteStr = fechaSurte.toISOString().split('T')[0];
+    
+    const baseStyle = {
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: '4px',
+      fontWeight: 'bold'
+    };
+    
+    // Si coinciden notificación y surte efectos
+    if (fechaStr === fechaNotifStr && fechaStr === fechaSurteStr) {
+      return { ...baseStyle, background: 'linear-gradient(135deg, #fbbf24, #10b981)', color: '#fff' };
+    }
+    
+    // Día de notificación (amarillo)
+    if (fechaStr === fechaNotifStr) {
+      return { ...baseStyle, backgroundColor: '#fbbf24', color: '#000' };
+    }
+    
+    // Día que surte efectos (verde)
+    if (fechaStr === fechaSurteStr) {
+      return { ...baseStyle, backgroundColor: '#10b981', color: '#fff' };
+    }
+    
+    // Días del cómputo
+    if (fecha >= fechaInicio && fecha <= fechaFin) {
+      if (esDiaInhabil(fecha, diasAdicionales, tipoUsuario)) {
+        return { ...baseStyle, backgroundColor: '#ef4444', color: '#fff' }; // Rojo
+      }
+      return { ...baseStyle, backgroundColor: '#60a5fa', color: '#fff' }; // Azul
+    }
+    
+    // Días inhábiles fuera del cómputo
+    if (esDiaInhabil(fecha, diasAdicionales, tipoUsuario)) {
+      return { ...baseStyle, backgroundColor: '#e5e7eb', color: '#6b7280' };
+    }
+    
+    return { ...baseStyle, color: '#374151' };
+  };
  
   return (
     <div className="mt-6">
@@ -354,9 +401,7 @@ function Calendario({
                 {dias.map((dia, i) => (
                   <div key={i} className="aspect-square flex items-center justify-center">
                     {dia && (
-                      <div className={`w-full h-full flex items-center justify-center rounded ${
-                        obtenerClaseDia(new Date(mes.getFullYear(), mes.getMonth(), dia))
-                      }`}>
+                      <div style={obtenerEstiloDia(new Date(mes.getFullYear(), mes.getMonth(), dia))}>
                         {dia}
                       </div>
                     )}
