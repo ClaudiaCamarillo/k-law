@@ -71,7 +71,7 @@ function calcularDiasMoviles(año: number) {
   // Tercer lunes de noviembre
   const nov = new Date(año, 10, 1);
   while (nov.getDay() !== 1) nov.setDate(nov.getDate() + 1);
-  nov.setDate(nov.getDate() + 14);
+  nov.setDate(nov.setDate() + 14);
   dias.push({ fecha: nov.toISOString().split('T')[0], tipo: 'tercer lunes de noviembre' });
   
   return dias;
@@ -262,9 +262,42 @@ function Calendario({
     mesActual.setMonth(mesActual.getMonth() + 1);
   }
   
+  // FUNCIÓN CORREGIDA CON COLORES
   const obtenerClaseDia = (fecha: Date) => {
-  return '';
-};
+    const fechaStr = fecha.toISOString().split('T')[0];
+    const fechaNotifStr = fechaNotificacion.toISOString().split('T')[0];
+    const fechaSurteStr = fechaSurte.toISOString().split('T')[0];
+    
+    // Si coinciden notificación y surte efectos
+    if (fechaStr === fechaNotifStr && fechaStr === fechaSurteStr) {
+      return 'bg-gradient-to-br from-yellow-400 to-green-500 text-white font-bold';
+    }
+    
+    // Día de notificación (amarillo)
+    if (fechaStr === fechaNotifStr) {
+      return 'bg-yellow-400 text-black font-bold';
+    }
+    
+    // Día que surte efectos (verde)
+    if (fechaStr === fechaSurteStr) {
+      return 'bg-green-500 text-white font-bold';
+    }
+    
+    // Días del cómputo
+    if (fecha >= fechaInicio && fecha <= fechaFin) {
+      if (esDiaInhabil(fecha, diasAdicionales, tipoUsuario)) {
+        return 'bg-red-500 text-white'; // Días inhábiles (rojo)
+      }
+      return 'bg-blue-400 text-white font-semibold'; // Días hábiles del cómputo (azul)
+    }
+    
+    // Días inhábiles fuera del cómputo
+    if (esDiaInhabil(fecha, diasAdicionales, tipoUsuario)) {
+      return 'bg-gray-200 text-gray-500';
+    }
+    
+    return 'hover:bg-gray-50 text-gray-700';
+  };
  
   return (
     <div className="mt-6">
@@ -280,9 +313,9 @@ function Calendario({
             <span>Surte efectos</span>
           </div>
           <div className="flex items-center gap-2">
-  <div className="w-4 h-4 bg-blue-400"></div>
-  <span>Días hábiles del cómputo</span>
-</div>
+            <div className="w-4 h-4 bg-blue-400"></div>
+            <span>Días hábiles del cómputo</span>
+          </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-red-500"></div>
             <span>Días inhábiles del cómputo</span>
@@ -290,7 +323,7 @@ function Calendario({
         </div>
       </div>
       
-     <div className="grid grid-cols-3 gap-1 text-xs" style={{maxWidth: '350px', transform: 'scale(0.5)', transformOrigin: 'top center'}}>
+      <div className="grid grid-cols-3 gap-1 text-xs" style={{maxWidth: '350px', transform: 'scale(0.5)', transformOrigin: 'top center'}}>
         {mesesAMostrar.map((mes, idx) => {
           const primerDia = new Date(mes.getFullYear(), mes.getMonth(), 1);
           const ultimoDia = new Date(mes.getFullYear(), mes.getMonth() + 1, 0);
@@ -321,9 +354,11 @@ function Calendario({
                 {dias.map((dia, i) => (
                   <div key={i} className="aspect-square flex items-center justify-center">
                     {dia && (
-                     <div style={{backgroundColor: 'red', color: 'white', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px'}}>
-  {dia}
-</div>
+                      <div className={`w-full h-full flex items-center justify-center rounded ${
+                        obtenerClaseDia(new Date(mes.getFullYear(), mes.getMonth(), dia))
+                      }`}>
+                        {dia}
+                      </div>
                     )}
                   </div>
                 ))}
@@ -620,7 +655,7 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                 )}
               </div>
               
-              <button type="submit" disabled={calculando} className="mt-6 w-full bg-red-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400">
+              <button type="submit" disabled={calculando} className="mt-6 w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400">
                 {calculando ? 'Calculando...' : 'Calcular Plazo'}
               </button>
             </form>
@@ -717,7 +752,7 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                       formaPresentacion: '' 
                     }); 
                   }} 
-                  className="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                  className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
                 >
                   Nuevo Cálculo
                 </button>
@@ -774,7 +809,7 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                   <button onClick={() => { navigator.clipboard.writeText(generarTexto()); alert('Texto copiado al portapapeles'); }} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
                     Copiar Texto
                   </button>
-                  <button onClick={() => { setResultado(null); setFormData({ tipoRecurso: 'principal', resolucionImpugnada: '', parteRecurrente: '', fechaNotificacion: '', formaNotificacion: '', fechaPresentacion: '', formaPresentacion: '' }); }} className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                  <button onClick={() => { setResultado(null); setFormData({ tipoRecurso: 'principal', resolucionImpugnada: '', parteRecurrente: '', fechaNotificacion: '', formaNotificacion: '', fechaPresentacion: '', formaPresentacion: '' }); }} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
                     Nuevo Cálculo
                   </button>
                 </div>
