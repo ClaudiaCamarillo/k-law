@@ -263,8 +263,8 @@ function Calendario({
   }
   
   const obtenerClaseDia = (fecha: Date) => {
-  return 'bg-red-500 text-white font-bold';
-}; 
+  return '';
+};
  
   return (
     <div className="mt-6">
@@ -321,11 +321,9 @@ function Calendario({
                 {dias.map((dia, i) => (
                   <div key={i} className="aspect-square flex items-center justify-center">
                     {dia && (
-                      <div className={`w-full h-full flex items-center justify-center rounded ${
-                        obtenerClaseDia(new Date(mes.getFullYear(), mes.getMonth(), dia))
-                      }`}>
-                        {dia}
-                      </div>
+                     <div style={{backgroundColor: 'red', color: 'white', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px'}}>
+  {dia}
+</div>
                     )}
                   </div>
                 ))}
