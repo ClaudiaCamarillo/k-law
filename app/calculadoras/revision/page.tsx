@@ -622,7 +622,7 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                 )}
               </div>
               
-              <button type="submit" disabled={calculando} className="mt-6 w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400">
+              <button type="submit" disabled={calculando} className="mt-6 w-full bg-red-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400">
                 {calculando ? 'Calculando...' : 'Calcular Plazo'}
               </button>
             </form>
@@ -719,7 +719,7 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                       formaPresentacion: '' 
                     }); 
                   }} 
-                  className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                  className="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
                 >
                   Nuevo Cálculo
                 </button>
@@ -776,7 +776,7 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                   <button onClick={() => { navigator.clipboard.writeText(generarTexto()); alert('Texto copiado al portapapeles'); }} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
                     Copiar Texto
                   </button>
-                  <button onClick={() => { setResultado(null); setFormData({ tipoRecurso: 'principal', resolucionImpugnada: '', parteRecurrente: '', fechaNotificacion: '', formaNotificacion: '', fechaPresentacion: '', formaPresentacion: '' }); }} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                  <button onClick={() => { setResultado(null); setFormData({ tipoRecurso: 'principal', resolucionImpugnada: '', parteRecurrente: '', fechaNotificacion: '', formaNotificacion: '', fechaPresentacion: '', formaPresentacion: '' }); }} className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
                     Nuevo Cálculo
                   </button>
                 </div>
