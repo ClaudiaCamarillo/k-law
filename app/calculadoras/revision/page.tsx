@@ -263,41 +263,9 @@ function Calendario({
   }
   
   const obtenerClaseDia = (fecha: Date) => {
-    const fechaStr = fecha.toISOString().split('T')[0];
-    const fechaNotifStr = fechaNotificacion.toISOString().split('T')[0];
-    const fechaSurteStr = fechaSurte.toISOString().split('T')[0];
-    
-    // Si coinciden notificación y surte efectos
-    if (fechaStr === fechaNotifStr && fechaStr === fechaSurteStr) {
-      return 'bg-gradient-to-br from-yellow-400 to-green-500 text-white font-bold';
-    }
-    
-    // Día de notificación (amarillo)
-    if (fechaStr === fechaNotifStr) {
-      return 'bg-yellow-400 text-gray-900 font-bold';
-    }
-    
-    // Día que surte efectos (verde)
-    if (fechaStr === fechaSurteStr) {
-      return 'bg-green-500 text-white font-bold';
-    }
-    
-    // Días del cómputo
-    if (fecha >= fechaInicio && fecha <= fechaFin) {
-      if (esDiaInhabil(fecha, diasAdicionales, tipoUsuario)) {
-        return 'bg-red-500 text-white'; // Días inhábiles (rojo)
-      }
-      return 'bg-yellow-300 text-gray-800 font-semibold'; // Días hábiles del cómputo (amarillo)
-    }
-    
-    // Días inhábiles fuera del cómputo
-    if (esDiaInhabil(fecha, diasAdicionales, tipoUsuario)) {
-      return 'bg-gray-200 text-gray-500';
-    }
-    
-    return 'hover:bg-gray-50';
-  };
-  
+  return 'bg-red-500 text-white font-bold';
+}; 
+ 
   return (
     <div className="mt-6">
       <div className="mb-4">
@@ -312,9 +280,9 @@ function Calendario({
             <span>Surte efectos</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-yellow-300"></div>
-            <span>Días hábiles del cómputo</span>
-          </div>
+  <div className="w-4 h-4 bg-blue-400"></div>
+  <span>Días hábiles del cómputo</span>
+</div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-red-500"></div>
             <span>Días inhábiles del cómputo</span>
@@ -322,7 +290,7 @@ function Calendario({
         </div>
       </div>
       
-     <div className="grid grid-cols-3 gap-1 text-xs" style={{maxWidth: '400px', transform: 'scale(0.6)', transformOrigin: 'top center'}}>
+     <div className="grid grid-cols-3 gap-1 text-xs" style={{maxWidth: '350px', transform: 'scale(0.5)', transformOrigin: 'top center'}}>
         {mesesAMostrar.map((mes, idx) => {
           const primerDia = new Date(mes.getFullYear(), mes.getMonth(), 1);
           const ultimoDia = new Date(mes.getFullYear(), mes.getMonth() + 1, 0);
