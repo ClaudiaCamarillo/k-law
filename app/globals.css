@@ -1,15 +1,133 @@
-﻿@tailwind base;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  * {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(180deg, #1e3a5f 0%, #0f1f33 100%);
+    min-height: 100vh;
+  }
+}
+
+/* K-LAW Design System */
+@layer components {
+  /* Navigation */
+  .k-law-nav {
+    @apply bg-black/20 backdrop-blur-md border-b border-white/10;
   }
   
-  body {
-    text-rendering: optimizeLegibility;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  /* Typography */
+  .k-law-title {
+    @apply text-4xl font-bold mb-8 text-center;
+    color: #808080;
+  }
+  
+  .k-law-subtitle {
+    @apply text-2xl font-semibold mb-4;
+    color: #808080;
+  }
+  
+  .k-law-text {
+    @apply text-base;
+    color: #808080;
+  }
+  
+  .k-law-label {
+    @apply text-sm font-medium mb-2;
+    color: #808080;
+    opacity: 0.9;
+  }
+  
+  /* Cards */
+  .k-law-card {
+    @apply bg-white/10 backdrop-blur-md rounded-3xl p-8 mb-6;
+  }
+  
+  /* Inputs */
+  .k-law-input {
+    @apply w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #1e3a5f;
+  }
+  
+  .k-law-select {
+    @apply w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #1e3a5f;
+  }
+  
+  /* Buttons */
+  .k-law-button {
+    @apply px-8 py-6 text-xl font-semibold rounded-full hover:opacity-90 transition-opacity;
+    background-color: #D3D3D3;
+    color: #000000;
+  }
+  
+  .k-law-button-secondary {
+    @apply px-6 py-3 font-medium rounded-full hover:opacity-90 transition-all border;
+    background-color: transparent;
+    color: #808080;
+    border-color: #808080;
+  }
+  
+  .k-law-button-small {
+    @apply px-4 py-2 text-sm font-medium rounded-full hover:opacity-90 transition-opacity;
+    background-color: #D3D3D3;
+    color: #000000;
+  }
+  
+  /* Badges */
+  .k-law-badge {
+    @apply px-4 py-2 rounded-full text-sm font-medium;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #808080;
+  }
+  
+  /* Alerts */
+  .k-law-alert {
+    @apply p-4 rounded-lg mb-4;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #808080;
+  }
+  
+  .k-law-alert-warning {
+    @apply p-4 rounded-lg mb-4;
+    background-color: rgba(251, 191, 36, 0.2);
+    color: #FBBF24;
+  }
+  
+  .k-law-alert-success {
+    @apply p-4 rounded-lg mb-4;
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #22C55E;
+  }
+  
+  /* Results Box */
+  .k-law-result-box {
+    @apply p-6 rounded-lg mb-4;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Custom scrollbar */
+  .k-law-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #808080 transparent;
+  }
+  
+  .k-law-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .k-law-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .k-law-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #808080;
+    border-radius: 4px;
   }
 }

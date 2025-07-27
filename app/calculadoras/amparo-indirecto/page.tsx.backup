@@ -1,0 +1,1577 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { diasInhabilesData } from '../../diasInhabiles.js'
+
+// Función para convertir fecha a texto en español
+function fechaATexto(fecha: string): string {
+  if (!fecha) return '';
+  
+  const meses = [
+    'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+  ];
+  
+  const dias = [
+    '', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve',
+    'diez', 'once', 'doce', 'trece', 'catorce', 'quince', 'dieciséis', 'diecisiete',
+    'dieciocho', 'diecinueve', 'veinte', 'veintiuno', 'veintidós', 'veintitrés',
+    'veinticuatro', 'veinticinco', 'veintiséis', 'veintisiete', 'veintiocho',
+    'veintinueve', 'treinta', 'treinta y uno'
+  ];
+  
+  const fechaObj = new Date(fecha + 'T12:00:00');
+  const dia = fechaObj.getDate();
+  const mes = fechaObj.getMonth();
+  const año = fechaObj.getFullYear();
+  
+  const añoEnTexto = (año: number): string => {
+    const unidades = ['', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve'];
+    const decenas = ['', '', 'veinte', 'treinta', 'cuarenta', 'cincuenta', 'sesenta', 'setenta', 'ochenta', 'noventa'];
+    const especiales = ['diez', 'once', 'doce', 'trece', 'catorce', 'quince', 'dieciséis', 'diecisiete', 'dieciocho', 'diecinueve'];
+    
+    if (año === 2000) return 'dos mil';
+    if (año > 2000 && año < 2100) {
+      const resto = año - 2000;
+      if (resto < 10) return `dos mil ${unidades[resto]}`;
+      if (resto < 20) return `dos mil ${especiales[resto - 10]}`;
+      const decena = Math.floor(resto / 10);
+      const unidad = resto % 10;
+      if (unidad === 0) return `dos mil ${decenas[decena]}`;
+      return `dos mil ${decenas[decena] === 'veinte' ? 'veinti' + unidades[unidad] : decenas[decena] + ' y ' + unidades[unidad]}`;
+    }
+    return año.toString();
+  };
+  
+  return `${dias[dia]} de ${meses[mes]} de ${añoEnTexto(año)}`;
+}
+
+// Función para formato de fecha para litigantes (día y año en número, mes en letra)
+function fechaParaLitigante(fecha: string): string {
+  if (!fecha) return '';
+  
+  const meses = [
+    'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+  ];
+  
+  const fechaObj = new Date(fecha + 'T12:00:00');
+  const dia = fechaObj.getDate();
+  const mes = fechaObj.getMonth();
+  const año = fechaObj.getFullYear();
+  
+  return `${dia} de ${meses[mes]} de ${año}`;
+}
+
+// Función para convertir número a texto
+function numeroATexto(num: number): string {
+  const numeros = ['', 'un', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez'];
+  return numeros[num] || num.toString();
+}
+
+// Función para calcular días móviles
+function calcularDiasMoviles(año: number) {
+  const dias = [];
+  
+  // Primer lunes de febrero
+  const feb = new Date(año, 1, 1);
+  while (feb.getDay() !== 1) feb.setDate(feb.getDate() + 1);
+  dias.push({ fecha: feb.toISOString().split('T')[0], tipo: 'primer lunes de febrero' });
+  
+  // Tercer lunes de marzo
+  const mar = new Date(año, 2, 1);
+  while (mar.getDay() !== 1) mar.setDate(mar.getDate() + 1);
+  mar.setDate(mar.getDate() + 14);
+  dias.push({ fecha: mar.toISOString().split('T')[0], tipo: 'tercer lunes de marzo' });
+  
+  // Tercer lunes de noviembre
+  const nov = new Date(año, 10, 1);
+  while (nov.getDay() !== 1) nov.setDate(nov.getDate() + 1);
+  nov.setDate(nov.getDate() + 14);
+  dias.push({ fecha: nov.toISOString().split('T')[0], tipo: 'tercer lunes de noviembre' });
+  
+  return dias;
+}
+
+// Función para verificar si es día inhábil según tipo de usuario
+function esDiaInhabil(fecha: Date, diasAdicionales: string[] = [], tipoUsuario: string = 'litigante'): boolean {
+  // Verificar si la fecha es válida
+  if (!fecha || isNaN(fecha.getTime())) return false;
+  
+  // Sábados y domingos siempre son inhábiles
+  if (fecha.getDay() === 0 || fecha.getDay() === 6) return true;
+  
+  const mesdia = `${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
+  const fechaStr = fecha.toISOString().split('T')[0];
+  const año = fecha.getFullYear();
+  
+  // Filtrar días según tipo de usuario
+  const diasAplicables = diasInhabilesData.filter(d => 
+    d.aplicaPara === 'todos' || d.aplicaPara === tipoUsuario
+  );
+  
+  // Días fijos
+  if (diasAplicables.some(d => d.fecha === mesdia || d.fecha === fechaStr)) return true;
+  
+  // Días móviles
+  const diasMoviles = calcularDiasMoviles(año);
+  if (diasMoviles.some(d => d.fecha === fechaStr)) return true;
+  
+  // Días adicionales del usuario
+  return diasAdicionales.includes(fechaStr);
+}
+
+// Función para el siguiente día hábil
+function siguienteDiaHabil(fecha: Date, diasAdicionales: string[] = [], tipoUsuario: string = 'litigante'): Date {
+  if (!fecha || isNaN(fecha.getTime())) {
+    throw new Error('Fecha inválida proporcionada a siguienteDiaHabil');
+  }
+  
+  const siguiente = new Date(fecha);
+  siguiente.setDate(siguiente.getDate() + 1);
+  while (esDiaInhabil(siguiente, diasAdicionales, tipoUsuario)) {
+    siguiente.setDate(siguiente.getDate() + 1);
+  }
+  return siguiente;
+}
+
+// Función para calcular el plazo
+function calcularPlazoReal(fechaInicio: Date, dias: number, diasAdicionales: string[] = [], tipoUsuario: string = 'litigante'): Date {
+  let fecha = new Date(fechaInicio);
+  let diasHabiles = 1; // Empezamos en 1 porque fechaInicio ya es el primer día
+  
+  while (diasHabiles < dias) {
+    fecha.setDate(fecha.getDate() + 1);
+    if (!esDiaInhabil(fecha, diasAdicionales, tipoUsuario)) {
+      diasHabiles++;
+    }
+  }
+  
+  return fecha;
+}
+
+// Función para obtener días inhábiles con notas al pie (formato numérico para detalles)
+function obtenerDiasInhabilesConNotas(inicio: Date, fin: Date, diasAdicionales: string[] = [], fundamentoAdicional: string = '', tipoUsuario: string = 'litigante') {
+  const diasPorFundamento: {[key: string]: string[]} = {};
+  const diasYaIncluidos = new Set<string>();
+  let hayFinDeSemana = false;
+  
+  // Orden de prioridad de fundamentos
+  const ordenFundamentos = [
+    'artículo 19 de la Ley de Amparo',
+    'artículo 74 de la Ley Federal del Trabajo',
+    'Ley Orgánica',
+    'Circular',
+    'Acuerdo',
+    'usuario'
+  ];
+  
+  const fecha = new Date(inicio);
+  while (fecha <= fin) {
+    const mesdia = `${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
+    const fechaStr = fecha.toISOString().split('T')[0];
+    const año = fecha.getFullYear();
+    
+    if (fecha.getDay() === 0 || fecha.getDay() === 6) {
+      hayFinDeSemana = true;
+    } else {
+      // Filtrar días según tipo de usuario
+      const diasAplicables = diasInhabilesData.filter(d => 
+        d.aplicaPara === 'todos' || d.aplicaPara === tipoUsuario
+      );
+      
+      // Verificar días fijos
+      const diaFijo = diasAplicables.find(d => d.fecha === mesdia || d.fecha === fechaStr);
+      if (diaFijo && !diasYaIncluidos.has(fechaParaLitigante(fechaStr))) {
+        if (!diasPorFundamento[diaFijo.fundamento]) {
+          diasPorFundamento[diaFijo.fundamento] = [];
+        }
+        const diaTexto = fechaParaLitigante(fechaStr);
+        diasPorFundamento[diaFijo.fundamento].push(diaTexto);
+        diasYaIncluidos.add(fechaParaLitigante(fechaStr));
+      }
+      
+      // Verificar días móviles
+      const diasMoviles = calcularDiasMoviles(año);
+      const diaMovil = diasMoviles.find(d => d.fecha === fechaStr);
+      if (diaMovil) {
+        // Buscar primero por tipo móvil genérico
+        let diaMovilInfo = diasAplicables.find(d => d.tipo === 'movil' && d.dia === diaMovil.tipo);
+        
+        // Si no se encuentra genérico, buscar fecha específica que coincida con día móvil
+        if (!diaMovilInfo) {
+          diaMovilInfo = diasAplicables.find(d => d.fecha === fechaStr && 
+            d.fundamento === 'artículo 74 de la Ley Federal del Trabajo');
+        }
+        
+        if (diaMovilInfo && !diasYaIncluidos.has(fechaParaLitigante(fechaStr))) {
+          if (!diasPorFundamento[diaMovilInfo.fundamento]) {
+            diasPorFundamento[diaMovilInfo.fundamento] = [];
+          }
+          diasPorFundamento[diaMovilInfo.fundamento].push(fechaParaLitigante(fechaStr));
+          diasYaIncluidos.add(fechaParaLitigante(fechaStr));
+        }
+      }
+      
+      // Días adicionales del usuario
+      if (diasAdicionales.includes(fechaStr) && !diasYaIncluidos.has(fechaParaLitigante(fechaStr))) {
+        const fundamento = fundamentoAdicional || 'el acuerdo correspondiente';
+        if (!diasPorFundamento[fundamento]) {
+          diasPorFundamento[fundamento] = [];
+        }
+        diasPorFundamento[fundamento].push(fechaParaLitigante(fechaStr));
+        diasYaIncluidos.add(fechaParaLitigante(fechaStr));
+      }
+    }
+    
+    fecha.setDate(fecha.getDate() + 1);
+  }
+  
+  // Construir el texto con notas al pie
+  let diasTexto: string[] = [];
+  let notasAlPie: string[] = [];
+  let numeroNota = 1;
+  const superindices = ['¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
+  
+  // Agregar sábados y domingos si hay
+  if (hayFinDeSemana) {
+    diasTexto.push('sábados y domingos');
+  }
+  
+  // Agregar días por orden de fundamento
+  ordenFundamentos.forEach(fundamentoBuscado => {
+    Object.keys(diasPorFundamento).forEach(fundamento => {
+      if (fundamento.includes(fundamentoBuscado) || (fundamentoBuscado === 'usuario' && fundamento === fundamentoAdicional)) {
+        const dias = diasPorFundamento[fundamento];
+        if (dias && dias.length > 0) {
+          // Agrupar días del mismo mes (solo en función de texto)
+          let diasFinales = dias;
+          // Agrupar días del mismo mes
+          diasFinales = dias;
+          
+          // Para litigantes no mostramos superíndices
+          if (tipoUsuario === 'litigante') {
+            diasTexto = diasTexto.concat(diasFinales);
+          } else {
+            const superindice = numeroNota <= 9 ? superindices[numeroNota - 1] : `(${numeroNota})`;
+            diasTexto = diasTexto.concat(diasFinales.map(dia => dia + superindice));
+            notasAlPie.push(`${superindice} ${fundamento}`);
+            numeroNota++;
+          }
+        }
+      }
+    });
+  });
+  
+  return {
+    texto: diasTexto.join(', '),
+    notas: notasAlPie
+  };
+}
+
+// Función para obtener días inhábiles para texto de resolución (formato texto)
+function obtenerDiasInhabilesParaTexto(inicio: Date, fin: Date, diasAdicionales: string[] = [], fundamentoAdicional: string = '', tipoUsuario: string = 'litigante') {
+  const diasPorFundamento: {[key: string]: string[]} = {};
+  const diasYaIncluidos = new Set<string>();
+  let hayFinDeSemana = false;
+  
+  // Función para agrupar días del mismo mes y año
+  const agruparDiasPorMesAno = (listaDias: string[]) => {
+    const diasPorMesAno: {[key: string]: string[]} = {};
+    
+    listaDias.forEach(dia => {
+      // Extraer el mes y año del día
+      const match = dia.match(/(.+) de (\w+) de (.+)$/);
+      if (match) {
+        const diaNum = match[1];
+        const mes = match[2];
+        const ano = match[3];
+        const claveMesAno = `${mes} de ${ano}`;
+        
+        if (!diasPorMesAno[claveMesAno]) {
+          diasPorMesAno[claveMesAno] = [];
+        }
+        diasPorMesAno[claveMesAno].push(diaNum);
+      } else {
+        // Si no coincide con el patrón, agregar tal como está
+        const clave = 'otros';
+        if (!diasPorMesAno[clave]) {
+          diasPorMesAno[clave] = [];
+        }
+        diasPorMesAno[clave].push(dia);
+      }
+    });
+    
+    const resultado: string[] = [];
+    Object.keys(diasPorMesAno).forEach(mesAno => {
+      if (mesAno === 'otros') {
+        resultado.push(...diasPorMesAno[mesAno]);
+      } else {
+        const dias = diasPorMesAno[mesAno];
+        if (dias.length === 1) {
+          resultado.push(`${dias[0]} de ${mesAno}`);
+        } else {
+          // Agrupar múltiples días del mismo mes
+          const ultimoDia = dias.pop();
+          const otrosDias = dias.join(', ');
+          resultado.push(`${otrosDias} y ${ultimoDia}, todos de ${mesAno}`);
+        }
+      }
+    });
+    
+    return resultado;
+  };
+  
+  // Orden de prioridad de fundamentos
+  const ordenFundamentos = [
+    'artículo 19 de la Ley de Amparo',
+    'artículo 74 de la Ley Federal del Trabajo',
+    'Ley Orgánica',
+    'Circular',
+    'Acuerdo',
+    'usuario'
+  ];
+  
+  const fecha = new Date(inicio);
+  while (fecha <= fin) {
+    const mesdia = `${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`;
+    const fechaStr = fecha.toISOString().split('T')[0];
+    const año = fecha.getFullYear();
+    
+    if (fecha.getDay() === 0 || fecha.getDay() === 6) {
+      hayFinDeSemana = true;
+    } else {
+      // Filtrar días según tipo de usuario
+      const diasAplicables = diasInhabilesData.filter(d => 
+        d.aplicaPara === 'todos' || d.aplicaPara === tipoUsuario
+      );
+      
+      // Verificar días fijos
+      const diaFijo = diasAplicables.find(d => d.fecha === mesdia || d.fecha === fechaStr);
+      const claveConsistente = tipoUsuario === 'litigante' ? fechaParaLitigante(fechaStr) : fechaATexto(fechaStr);
+      if (diaFijo && !diasYaIncluidos.has(claveConsistente)) {
+        if (!diasPorFundamento[diaFijo.fundamento]) {
+          diasPorFundamento[diaFijo.fundamento] = [];
+        }
+        const diaTexto = claveConsistente;
+        diasPorFundamento[diaFijo.fundamento].push(diaTexto);
+        diasYaIncluidos.add(claveConsistente);
+      }
+      
+      // Verificar días móviles
+      const diasMoviles = calcularDiasMoviles(año);
+      const diaMovil = diasMoviles.find(d => d.fecha === fechaStr);
+      if (diaMovil) {
+        const diaMovilInfo = diasAplicables.find(d => d.tipo === 'movil' && d.dia === diaMovil.tipo);
+        const claveMovil = tipoUsuario === 'litigante' ? fechaParaLitigante(fechaStr) : fechaATexto(fechaStr);
+        if (diaMovilInfo && !diasYaIncluidos.has(claveMovil)) {
+          if (!diasPorFundamento[diaMovilInfo.fundamento]) {
+            diasPorFundamento[diaMovilInfo.fundamento] = [];
+          }
+          diasPorFundamento[diaMovilInfo.fundamento].push(claveMovil);
+          diasYaIncluidos.add(claveMovil);
+        }
+      }
+      
+      // Días adicionales del usuario
+      const claveAdicional = tipoUsuario === 'litigante' ? fechaParaLitigante(fechaStr) : fechaATexto(fechaStr);
+      if (diasAdicionales.includes(fechaStr) && !diasYaIncluidos.has(claveAdicional)) {
+        const fundamento = fundamentoAdicional || 'el acuerdo correspondiente';
+        if (!diasPorFundamento[fundamento]) {
+          diasPorFundamento[fundamento] = [];
+        }
+        diasPorFundamento[fundamento].push(claveAdicional);
+        diasYaIncluidos.add(claveAdicional);
+      }
+    }
+    
+    fecha.setDate(fecha.getDate() + 1);
+  }
+  
+  // Construir el texto con notas al pie
+  let diasTexto: string[] = [];
+  let notasAlPie: string[] = [];
+  let numeroNota = 1;
+  const superindices = ['¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
+  
+  // Agregar sábados y domingos si hay
+  if (hayFinDeSemana) {
+    if (tipoUsuario === 'litigante') {
+      diasTexto.push('sábados y domingos');
+    } else {
+      // Para servidor público, los sábados y domingos se manejan automáticamente
+      // a través de diasInhabilesData con su fundamento correspondiente
+      if (!diasPorFundamento['artículo 19 de la Ley de Amparo']) {
+        const superindice = numeroNota <= 9 ? superindices[numeroNota - 1] : `(${numeroNota})`;
+        diasTexto.push(`sábados y domingos${superindice}`);
+        notasAlPie.push(`${superindice} artículo 19 de la Ley de Amparo`);
+        numeroNota++;
+      }
+    }
+  }
+  
+  // Agregar días por orden de fundamento
+  ordenFundamentos.forEach(fundamentoBuscado => {
+    Object.keys(diasPorFundamento).forEach(fundamento => {
+      if (fundamento.includes(fundamentoBuscado) || (fundamentoBuscado === 'usuario' && fundamento === fundamentoAdicional)) {
+        const dias = diasPorFundamento[fundamento];
+        if (dias && dias.length > 0) {
+          // Agrupar días del mismo mes (solo en función de texto)
+          let diasFinales = dias;
+          // Agrupar días del mismo mes
+          diasFinales = dias;
+          
+          // Para litigantes no mostramos superíndices
+          if (tipoUsuario === 'litigante') {
+            diasTexto = diasTexto.concat(diasFinales);
+          } else {
+            const superindice = numeroNota <= 9 ? superindices[numeroNota - 1] : `(${numeroNota})`;
+            diasTexto = diasTexto.concat(diasFinales.map(dia => dia + superindice));
+            notasAlPie.push(`${superindice} ${fundamento}`);
+            numeroNota++;
+          }
+        }
+      }
+    });
+  });
+  
+  return {
+    texto: diasTexto.join(', '),
+    notas: notasAlPie
+  };
+}
+
+// Componente de Calendario
+function Calendario({ 
+  fechaNotificacion, 
+  fechaSurte, 
+  fechaInicio, 
+  fechaFin, 
+  diasAdicionales,
+  tipoUsuario 
+}: {
+  fechaNotificacion: Date,
+  fechaSurte: Date,
+  fechaInicio: Date,
+  fechaFin: Date,
+  diasAdicionales: string[],
+  tipoUsuario: string
+}) {
+  const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  
+  // Calcular rango de meses a mostrar
+  const mesInicio = new Date(fechaNotificacion.getFullYear(), fechaNotificacion.getMonth(), 1);
+  const mesFin = new Date(fechaFin.getFullYear(), fechaFin.getMonth() + 1, 0);
+  
+  const mesesAMostrar = [];
+  const mesActual = new Date(mesInicio);
+  while (mesActual <= mesFin) {
+    mesesAMostrar.push(new Date(mesActual));
+    mesActual.setMonth(mesActual.getMonth() + 1);
+  }
+  
+  const obtenerClaseDia = (fecha: Date) => {
+    const fechaStr = fecha.toISOString().split('T')[0];
+    const fechaNotifStr = fechaNotificacion.toISOString().split('T')[0];
+    const fechaSurteStr = fechaSurte.toISOString().split('T')[0];
+    
+    // Día de notificación
+    if (fechaStr === fechaNotifStr) {
+      return 'bg-blue-500 text-white font-bold relative triangle-container';
+    }
+    
+    // Día que surte efectos (si es diferente)
+    if (fechaStr === fechaSurteStr && fechaNotifStr !== fechaSurteStr) {
+      return 'bg-green-500 text-white font-bold';
+    }
+    
+    // Días del cómputo
+    if (fecha >= fechaInicio && fecha <= fechaFin) {
+      if (esDiaInhabil(fecha, diasAdicionales, tipoUsuario)) {
+        return 'bg-red-500 text-white'; // Días inhábiles
+      }
+      return 'bg-yellow-300 text-black font-semibold'; // Días hábiles del cómputo
+    }
+    
+    // Días inhábiles fuera del cómputo
+    if (esDiaInhabil(fecha, diasAdicionales, tipoUsuario)) {
+      return 'bg-gray-200 text-gray-500';
+    }
+    
+    return 'hover:bg-gray-50';
+  };
+  
+  return (
+    <div className="mt-6">
+      
+      <div style={{
+        display: 'flex', 
+        flexDirection: 'row',
+        flexWrap: 'nowrap',
+        gap: '10px', 
+        justifyContent: 'flex-start',
+        overflowX: 'auto',
+        width: '100%',
+        maxWidth: '300px'
+      }}>
+        {mesesAMostrar.map((mes, idx) => {
+          const primerDia = new Date(mes.getFullYear(), mes.getMonth(), 1);
+          const ultimoDia = new Date(mes.getFullYear(), mes.getMonth() + 1, 0);
+          const diasAntes = primerDia.getDay();
+          const diasEnMes = ultimoDia.getDate();
+          
+          const dias = [];
+          for (let i = 0; i < diasAntes; i++) {
+            dias.push(null);
+          }
+          for (let i = 1; i <= diasEnMes; i++) {
+            dias.push(i);
+          }
+          
+          return (
+            <div key={idx} style={{
+              backgroundColor: 'white',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              padding: '4px',
+              width: '120px',
+              flexShrink: 0
+            }}>
+              <h4 style={{
+                fontWeight: 'bold',
+                textAlign: 'center',
+                marginBottom: '2px',
+                color: 'black',
+                fontSize: '10px'
+              }}>
+                {meses[mes.getMonth()]} {mes.getFullYear()}
+              </h4>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(7, 1fr)',
+                gap: '0px',
+                textAlign: 'center',
+                fontSize: '8px'
+              }}>
+                <div style={{fontWeight: 'bold'}}>D</div>
+                <div style={{fontWeight: 'bold'}}>L</div>
+                <div style={{fontWeight: 'bold'}}>M</div>
+                <div style={{fontWeight: 'bold'}}>M</div>
+                <div style={{fontWeight: 'bold'}}>J</div>
+                <div style={{fontWeight: 'bold'}}>V</div>
+                <div style={{fontWeight: 'bold'}}>S</div>
+                {dias.map((dia, i) => (
+                  <div key={i} style={{height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                    {dia && (
+                      <>
+                        {(() => {
+                          const fechaDiaObj = new Date(mes.getFullYear(), mes.getMonth(), dia);
+                          fechaDiaObj.setHours(12, 0, 0, 0); // Normalizar a mediodía
+                          const fechaDia = fechaDiaObj.toISOString().split('T')[0];
+                          const esNotificacion = fechaDia === fechaNotificacion.toISOString().split('T')[0];
+                          const esSurteEfectos = fechaDia === fechaSurte.toISOString().split('T')[0];
+                          
+                          // Si coinciden notificación y surte efectos
+                          if (esNotificacion && esSurteEfectos) {
+                            return (
+                              <div style={{
+                                width: '12px',
+                                height: '12px',
+                                backgroundColor: '#3b82f6',
+                                border: '2px solid #10b981',
+                                clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'white',
+                                fontSize: '5px',
+                                fontWeight: 'bold'
+                              }}>
+                                {dia}
+                              </div>
+                            );
+                          }
+                          
+                          // Solo día de notificación
+                          if (esNotificacion) {
+                            return (
+                              <div style={{
+                                width: '12px',
+                                height: '12px',
+                                backgroundColor: '#3b82f6',
+                                clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'white',
+                                fontSize: '6px',
+                                fontWeight: 'bold'
+                              }}>
+                                {dia}
+                              </div>
+                            );
+                          }
+                          
+                          // Solo día que surte efectos
+                          if (esSurteEfectos) {
+                            return (
+                              <div style={{
+                                width: '12px',
+                                height: '12px',
+                                backgroundColor: '#10b981',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'white',
+                                fontSize: '6px',
+                                fontWeight: 'bold'
+                              }}>
+                                {dia}
+                              </div>
+                            );
+                          }
+                          
+                          // Otros días del cómputo o inhábiles (usar la misma fecha normalizada)
+                          const esDiaDelComputo = fechaDiaObj >= fechaInicio && fechaDiaObj <= fechaFin;
+                          const esDiaInhabilDelComputo = esDiaDelComputo && esDiaInhabil(fechaDiaObj, diasAdicionales, tipoUsuario);
+                          const esDiaHabilDelComputo = esDiaDelComputo && !esDiaInhabil(fechaDiaObj, diasAdicionales, tipoUsuario);
+                          // Días inhábiles entre notificación e inicio del cómputo
+                          const esDiaInhabilEntreNotifYComputo = fechaDiaObj > fechaNotificacion && fechaDiaObj < fechaInicio && esDiaInhabil(fechaDiaObj, diasAdicionales, tipoUsuario);
+                          
+                          // Día hábil del cómputo (círculo amarillo)
+                          if (esDiaHabilDelComputo) {
+                            return (
+                              <div style={{
+                                width: '12px',
+                                height: '12px',
+                                backgroundColor: '#fcd34d',
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'black',
+                                fontSize: '6px',
+                                fontWeight: 'bold'
+                              }}>
+                                {dia}
+                              </div>
+                            );
+                          }
+                          
+                          // Día inhábil del cómputo (con X)
+                          if (esDiaInhabilDelComputo) {
+                            return (
+                              <div style={{
+                                width: '12px',
+                                height: '12px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                position: 'relative'
+                              }}>
+                                <div style={{
+                                  position: 'absolute',
+                                  color: '#ef4444',
+                                  fontSize: '14px',
+                                  fontWeight: 'bold',
+                                  lineHeight: '1'
+                                }}>
+                                  ×
+                                </div>
+                                <div style={{fontSize: '6px', color: '#666'}}>
+                                  {dia}
+                                </div>
+                              </div>
+                            );
+                          }
+                          
+                          // Día inhábil entre notificación e inicio del cómputo (con X)
+                          if (esDiaInhabilEntreNotifYComputo) {
+                            return (
+                              <div style={{
+                                width: '12px',
+                                height: '12px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                position: 'relative'
+                              }}>
+                                <div style={{
+                                  position: 'absolute',
+                                  color: '#ef4444',
+                                  fontSize: '14px',
+                                  fontWeight: 'bold',
+                                  lineHeight: '1'
+                                }}>
+                                  ×
+                                </div>
+                                <div style={{fontSize: '6px', color: '#666'}}>
+                                  {dia}
+                                </div>
+                              </div>
+                            );
+                          }
+                          
+                          // Día normal
+                          return (
+                            <div className={`w-full h-full flex items-center justify-center ${
+                              obtenerClaseDia(new Date(mes.getFullYear(), mes.getMonth(), dia))
+                            }`} style={{fontSize: '8px'}}>
+                              {dia}
+                            </div>
+                          );
+                        })()}
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export default function Page() {
+  const [tipoUsuario, setTipoUsuario] = useState<string>('litigante');
+  const [formData, setFormData] = useState({
+    tipoRecurso: 'principal',
+    resolucionImpugnada: '',
+    parteRecurrente: '',
+    fechaNotificacion: '',
+    tipoFecha: '',
+    formaNotificacion: '',
+    leyDelActo: '',
+    leyDelActoManual: '',
+    fechaPresentacion: '',
+    formaPresentacion: ''
+  });
+  
+  const [diasAdicionales, setDiasAdicionales] = useState<string[]>([]);
+  const [nuevoDiaInhabil, setNuevoDiaInhabil] = useState('');
+  const [fundamentoAdicional, setFundamentoAdicional] = useState('');
+  const [resultado, setResultado] = useState<any>(null);
+  const [calculando, setCalculando] = useState(false);
+  
+  // Para litigantes
+  const [numeroExpediente, setNumeroExpediente] = useState('');
+  const [telefonoWhatsApp, setTelefonoWhatsApp] = useState('');
+  const [calculos, setCalculos] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Obtener tipo de usuario de localStorage
+    const tipo = localStorage.getItem('tipoUsuario') || 'litigante';
+    setTipoUsuario(tipo);
+    
+    // Cargar cálculos guardados (solo para litigantes)
+    if (tipo === 'litigante') {
+      const calculosGuardados = localStorage.getItem('calculosGuardados');
+      if (calculosGuardados) {
+        setCalculos(JSON.parse(calculosGuardados));
+      }
+    }
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCalculando(true);
+    
+    setTimeout(() => {
+      // Manejar caso de "se desconoce el acto reclamado"
+      if (formData.tipoFecha === 'desconoce') {
+        const resultado = {
+          plazo: 'En cualquier tiempo',
+          fundamento: 'Criterio jurisprudencial - acto desconocido',
+          fechaNotificacion: new Date(),
+          fechaSurte: new Date(),
+          fechaInicio: new Date(),
+          fechaFin: new Date(),
+          fechaNotificacionTexto: 'No aplica',
+          fechaSurteEfectosTexto: 'No aplica',
+          fechaInicioTexto: 'No aplica',
+          fechaFinTexto: 'No aplica',
+          diasInhabiles: 'No aplica',
+          diasInhabilesTexto: 'No aplica',
+          plazoTexto: 'No hay plazo específico',
+          esOportuno: true,
+          fundamentoSurte: 'No aplica',
+          notasAlPieTexto: [],
+          formaPresentacion: 'No aplica'
+        };
+        
+        setResultado(resultado);
+        setCalculando(false);
+        return;
+      }
+
+      // Determinar plazo y fundamento según tipo de acto reclamado
+      let plazo: number | string = 15;
+      let fundamento = '';
+      let esEnCualquierTiempo = false;
+      
+      switch (formData.resolucionImpugnada) {
+        case 'ley_entrada_vigor':
+          plazo = 30;
+          fundamento = 'artículo 17, fracción I, de la Ley de Amparo';
+          break;
+        case 'ley_acto_aplicacion':
+          plazo = 15;
+          fundamento = 'artículo 17, fracción I, de la Ley de Amparo';
+          break;
+        case 'acto_restrictivo_libertad':
+        case 'fecha_lejana_audiencia':
+          plazo = 15;
+          fundamento = 'artículo 17 de la Ley de Amparo';
+          break;
+        case 'actos_22_constitucional':
+          plazo = 'En cualquier tiempo';
+          fundamento = 'artículo 17, fracción IV, de la Ley de Amparo';
+          esEnCualquierTiempo = true;
+          break;
+        case 'procedimiento_extradicion':
+          plazo = 30;
+          fundamento = 'artículo 17, fracción I, de la Ley de Amparo';
+          break;
+        case 'dilacion_excesiva':
+          plazo = 'En cualquier tiempo';
+          fundamento = 'criterio jurisprudencial sobre dilación excesiva';
+          esEnCualquierTiempo = true;
+          break;
+        case 'omision_legislativa_absoluta':
+          plazo = 'En cualquier tiempo';
+          fundamento = 'Jurisprudencia 2a./J. 87/2018 - mientras persista la omisión';
+          esEnCualquierTiempo = true;
+          break;
+        case 'omision_legislativa_relativa':
+          plazo = 15;
+          fundamento = 'Jurisprudencia 2a./J. 87/2018 - desde conocimiento de la deficiencia normativa';
+          break;
+        default:
+          plazo = 15;
+          fundamento = 'artículo 17 de la Ley de Amparo';
+      }
+      
+      // Si es "en cualquier tiempo", crear resultado especial
+      if (esEnCualquierTiempo) {
+        const resultado = {
+          plazo: plazo as string,
+          fundamento: fundamento,
+          fechaNotificacion: new Date(formData.fechaNotificacion + 'T12:00:00'),
+          fechaSurte: new Date(formData.fechaNotificacion + 'T12:00:00'),
+          fechaInicio: new Date(formData.fechaNotificacion + 'T12:00:00'),
+          fechaFin: new Date(formData.fechaNotificacion + 'T12:00:00'),
+          fechaNotificacionTexto: fechaParaLitigante(formData.fechaNotificacion),
+          fechaSurteEfectosTexto: 'No aplica - En cualquier tiempo',
+          fechaInicioTexto: 'No aplica - En cualquier tiempo',
+          fechaFinTexto: 'No aplica - En cualquier tiempo',
+          diasInhabiles: 'No aplica',
+          diasInhabilesTexto: 'No aplica',
+          plazoTexto: 'En cualquier tiempo',
+          esOportuno: true,
+          fundamentoSurte: 'No aplica',
+          notasAlPieTexto: [],
+          formaPresentacion: 'No aplica'
+        };
+        
+        setResultado(resultado);
+        setCalculando(false);
+        return;
+      }
+      
+      const fechaNotif = new Date(formData.fechaNotificacion + 'T12:00:00');
+      let fechaSurte = new Date(fechaNotif);
+      let textoSurte = '';
+      let fundamentoSurte = '';
+      
+      const esAutoridad = formData.parteRecurrente === 'autoridad' || 
+                         (formData.parteRecurrente === 'tercero' && formData.formaNotificacion === 'oficio');
+      
+      if (esAutoridad) {
+        textoSurte = 'el mismo día';
+        fundamentoSurte = 'artículo 31, fracción II, de la Ley de Amparo';
+      } else if (formData.formaNotificacion === 'electronica') {
+        textoSurte = 'el mismo día en que se genera el acuse electrónico';
+        fundamentoSurte = 'artículo 31, fracción III, de la Ley de Amparo';
+      } else if (formData.tipoFecha === 'conocimiento') {
+        textoSurte = 'el mismo día del conocimiento completo';
+        fundamentoSurte = 'artículo 31 de la Ley de Amparo';
+      } else {
+        textoSurte = 'al siguiente día hábil';
+        fundamentoSurte = 'artículo 31, fracción I, de la Ley de Amparo';
+        fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+      }
+      
+      // Aplicar artículo 18 de la Ley de Amparo
+      let fechaInicio: Date;
+      if (formData.resolucionImpugnada === 'ley_entrada_vigor') {
+        // Para leyes por entrada en vigor: se computa a partir del día de entrada en vigor
+        fechaInicio = new Date(fechaNotif);
+      } else {
+        // Regla general: se computa a partir del día siguiente al que surte efectos
+        fechaInicio = siguienteDiaHabil(fechaSurte, diasAdicionales, tipoUsuario);
+      }
+      
+      const fechaFin = calcularPlazoReal(fechaInicio, plazo as number, diasAdicionales, tipoUsuario);
+      
+      // Para litigantes, no evaluamos la oportunidad
+      let esOportuno = true;
+      let fechaPres = null;
+      
+      if (tipoUsuario === 'servidor' && formData.fechaPresentacion) {
+        fechaPres = new Date(formData.fechaPresentacion + 'T12:00:00');
+        esOportuno = fechaPres <= fechaFin;
+      }
+      
+      const diasInhabilesInfo = obtenerDiasInhabilesConNotas(fechaNotif, fechaFin, diasAdicionales, fundamentoAdicional, tipoUsuario);
+      const diasInhabilesTextoInfo = obtenerDiasInhabilesParaTexto(fechaNotif, fechaFin, diasAdicionales, fundamentoAdicional, tipoUsuario);
+      
+      // Mapeos para el texto generado
+      const formasPresentacion: {[key: string]: string} = {
+        'escrito': 'del sello del juzgado federal que obra en la primera página del mismo',
+        'correo': 'del sobre que obra en el toca en que se actúa',
+        'momento': 'de la constancia de notificación que obra en el juicio de amparo',
+        'electronica': 'de la evidencia criptográfica del escrito que lo contiene'
+      };
+      
+      const resoluciones: {[key: string]: string} = {
+        'sentencia': 'la sentencia impugnada',
+        'auto': 'el acuerdo impugnado',
+        'interlocutoria': 'la interlocutoria dictada en el incidente de suspensión'
+      };
+      
+      // Calcular días restantes del plazo
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      let diasRestantes = 0;
+      const fechaTemp = new Date(hoy);
+      
+      if (fechaTemp <= fechaFin) {
+        while (fechaTemp <= fechaFin) {
+          if (!esDiaInhabil(fechaTemp, diasAdicionales, tipoUsuario)) {
+            diasRestantes++;
+          }
+          fechaTemp.setDate(fechaTemp.getDate() + 1);
+        }
+      }
+      
+      setResultado({
+        esOportuno,
+        plazo,
+        fundamento,
+        textoSurte,
+        fundamentoSurte,
+        fechaNotificacion: fechaNotif,
+        fechaSurte: fechaSurte,
+        fechaInicio: fechaInicio,
+        fechaFin: fechaFin,
+        fechaNotificacionTexto: fechaATexto(formData.fechaNotificacion),
+        fechaSurteEfectosTexto: fechaATexto(fechaSurte.toISOString().split('T')[0]),
+        fechaInicioTexto: fechaATexto(fechaInicio.toISOString().split('T')[0]),
+        fechaFinTexto: fechaATexto(fechaFin.toISOString().split('T')[0]),
+        fechaPresentacionTexto: formData.fechaPresentacion ? fechaATexto(formData.fechaPresentacion) : '',
+        fechaNotificacionNumerico: fechaParaLitigante(formData.fechaNotificacion),
+        fechaSurteEfectosNumerico: fechaParaLitigante(fechaSurte.toISOString().split('T')[0]),
+        fechaInicioNumerico: fechaParaLitigante(fechaInicio.toISOString().split('T')[0]),
+        fechaFinNumerico: fechaParaLitigante(fechaFin.toISOString().split('T')[0]),
+        fechaPresentacionNumerico: formData.fechaPresentacion ? fechaParaLitigante(formData.fechaPresentacion) : '',
+        diasInhabiles: diasInhabilesInfo.texto,
+        diasInhabilesTexto: diasInhabilesTextoInfo.texto,
+        notasAlPie: diasInhabilesInfo.notas,
+        notasAlPieTexto: diasInhabilesTextoInfo.notas,
+        formaPresentacion: formasPresentacion[formData.formaPresentacion] || formData.formaPresentacion,
+        resolucionImpugnada: resoluciones[formData.resolucionImpugnada] || formData.resolucionImpugnada,
+        diasRestantes: diasRestantes > 0 ? diasRestantes : 0,
+        plazoTexto: typeof plazo === 'number' ? numeroATexto(plazo) : plazo
+      });
+      
+      setCalculando(false);
+    }, 1000);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const newFormData = {
+      ...formData,
+      [e.target.name]: e.target.value
+    };
+    
+    // Si se selecciona "se desconoce el acto reclamado" o "conocimiento", auto-seleccionar "No aplica" en forma de notificación
+    if (e.target.name === 'tipoFecha' && (e.target.value === 'desconoce' || e.target.value === 'conocimiento')) {
+      newFormData.formaNotificacion = 'no_aplica';
+    }
+    
+    // Si se cambia a "fecha", limpiar forma de notificación
+    if (e.target.name === 'tipoFecha' && e.target.value === 'fecha' && (formData.tipoFecha === 'desconoce' || formData.tipoFecha === 'conocimiento')) {
+      newFormData.formaNotificacion = '';
+    }
+    
+    setFormData(newFormData);
+  };
+  
+  const agregarDiaInhabil = () => {
+    if (nuevoDiaInhabil && !diasAdicionales.includes(nuevoDiaInhabil)) {
+      setDiasAdicionales([...diasAdicionales, nuevoDiaInhabil]);
+      setNuevoDiaInhabil('');
+    }
+  };
+
+  const guardarCalculo = () => {
+    if (!numeroExpediente || !resultado) return;
+    
+    const nuevoCalculo = {
+      id: Date.now(),
+      expediente: numeroExpediente,
+      fechaGuardado: new Date().toISOString(),
+      fechaVencimiento: resultado.fechaFin.toISOString(),
+      tipoRecurso: formData.tipoRecurso,
+      telefono: telefonoWhatsApp,
+      notificaciones: {
+        tresDias: false,
+        dosDias: false,
+        unDia: false,
+        vencimiento: false
+      }
+    };
+    
+    const nuevosCalculos = [...calculos, nuevoCalculo];
+    setCalculos(nuevosCalculos);
+    localStorage.setItem('calculosGuardados', JSON.stringify(nuevosCalculos));
+    
+    alert(`Cálculo guardado para expediente ${numeroExpediente}`);
+    setNumeroExpediente('');
+  };
+
+  const generarTexto = () => {
+    if (!resultado) return '';
+    
+    // Determinar el género correcto según la parte recurrente
+    const esQuejoso = formData.parteRecurrente === 'quejoso';
+    const generoRecurrente = esQuejoso ? 'la recurrente' : 'el recurrente';
+    const parteTexto = esQuejoso ? 'parte quejosa' : 'parte autoridad responsable';
+    
+    // Obtener el año de las fechas
+    const año = new Date(formData.fechaNotificacion + 'T12:00:00').getFullYear();
+    
+    // Función para simplificar fecha (solo día y mes para fechas intermedias)
+    const simplificarFecha = (fechaTexto: string, esPrimera: boolean = false, esUltima: boolean = false) => {
+      if (esPrimera || esUltima) return fechaTexto; // Mantener completa primera y última fecha
+      // Extraer solo día y mes para fechas intermedias
+      const partes = fechaTexto.split(' de ');
+      if (partes.length >= 2) {
+        return `${partes[0]} de ${partes[1]}`;
+      }
+      return fechaTexto;
+    };
+    
+    // Simplificar las fechas para evitar repetir el año
+    const extraerDiaMes = (fechaTexto: string) => {
+      const partes = fechaTexto.split(' de ');
+      if (partes.length >= 3) {
+        return `${partes[0]} de ${partes[1]}`;
+      }
+      return fechaTexto;
+    };
+    
+    // Casos especiales para actos sin plazo específico
+    if (formData.tipoFecha === 'desconoce') {
+      // Caso 1: Se desconoce el acto reclamado
+      return `La presentación de la demanda debe estimarse es oportuna, habida cuenta que la parte quejosa refiere que desconoce el acto reclamado y hasta este momento no se cuenta con constancias de las que se advierta lo contrario.`;
+    }
+    
+    // Casos con plazo "en cualquier tiempo"
+    if (resultado.plazo === 'En cualquier tiempo') {
+      let texto = '';
+      
+      if (formData.resolucionImpugnada === 'omision_legislativa_absoluta') {
+        // Caso 3: Omisión legislativa absoluta
+        texto = `La presentación del amparo es oportuna. El promovente impugna una omisión legislativa absoluta, la cual puede impugnarse en cualquier tiempo mientras persista la omisión, de conformidad con la ${resultado.fundamento}.`;
+      } else {
+        // Caso 2: Actos específicos sin plazo
+        const actosTexto = {
+          'actos_22_constitucional': 'actos que importen peligro de privación de la vida, u otros previstos en el artículo 22 constitucional',
+          'dilacion_excesiva': 'dilación excesiva en el procedimiento',
+          'procedimiento_extradicion': 'procedimiento de extradición'
+        };
+        
+        const actoDescripcion = actosTexto[formData.resolucionImpugnada as keyof typeof actosTexto] || 'el acto reclamado';
+        texto = `La presentación del amparo es oportuna. El promovente impugna ${actoDescripcion}, el cual puede impugnarse en cualquier tiempo de conformidad con el ${resultado.fundamento}.`;
+      }
+      
+      return texto;
+    }
+    
+    // Texto estándar para casos con plazo específico
+    let texto = `La presentación del recurso de revisión ${formData.tipoRecurso} es ${resultado.esOportuno ? 'oportuna' : 'extemporánea'}, dado que la notificación ${formData.resolucionImpugnada === 'auto' ? 'del acuerdo impugnado' : formData.resolucionImpugnada === 'sentencia' ? 'de la sentencia impugnada' : 'de la interlocutoria dictada en el incidente de suspensión'} se realizó ${formData.formaNotificacion === 'personal' ? 'personalmente' : formData.formaNotificacion === 'oficio' ? 'por oficio' : formData.formaNotificacion === 'lista' ? 'por lista' : 'en forma electrónica'} a ${generoRecurrente}, ${parteTexto} en el juicio de amparo, el ${resultado.fechaNotificacionTexto}, y surtió efectos el ${extraerDiaMes(resultado.fechaSurteEfectosTexto)} siguiente, de conformidad con el ${resultado.fundamentoSurte}, por lo que el plazo de ${resultado.plazoTexto} días que prevé el diverso artículo 86, párrafo primero, de esa ley, transcurrió del ${extraerDiaMes(resultado.fechaInicioTexto)} al ${extraerDiaMes(resultado.fechaFinTexto)}, todos del citado año, con exclusión de los días ${resultado.diasInhabilesTexto}.
+
+Por ende, si el referido medio de impugnación se interpuso el ${resultado.fechaPresentacionTexto}, como se aprecia ${resultado.formaPresentacion}, es inconcuso que su presentación es ${resultado.esOportuno ? 'oportuna' : 'extemporánea'}.`;
+    
+    // Agregar notas al pie si existen
+    if (resultado.notasAlPieTexto && resultado.notasAlPieTexto.length > 0) {
+      texto += '\n\n__________________________________\n';
+      resultado.notasAlPieTexto.forEach((nota: string, index: number) => {
+        texto += `${index + 1} ${nota}\n`;
+      });
+    }
+    
+    return texto;
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-white shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <Link href="/" className="text-2xl font-bold text-blue-900">
+                LegalCompute Pro
+              </Link>
+              <span className="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+                Modo: {tipoUsuario === 'litigante' ? 'Litigante' : 'Servidor Público'}
+              </span>
+            </div>
+            <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">
+              Cambiar modo
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <h1 style={{fontSize: '2rem', fontWeight: 'bold', marginBottom: '2rem', color: 'red'}}>Calculadora de Plazos - Amparo Indirecto</h1>
+        
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Tipo de Demanda</label>
+                  <input 
+                    type="text" 
+                    value="Amparo Indirecto" 
+                    readOnly 
+                    className="w-full p-2 border rounded-lg bg-gray-100 cursor-not-allowed" 
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">Acto Reclamado</label>
+                  <select name="resolucionImpugnada" value={formData.resolucionImpugnada} onChange={handleChange} className="w-full p-2 border rounded-lg" required>
+                    <option value="">Seleccione...</option>
+                    <option value="ley_entrada_vigor">Ley por su entrada en vigor</option>
+                    <option value="ley_acto_aplicacion">Ley, con motivo de un acto concreto de aplicación</option>
+                    <option value="actos_22_constitucional">Actos que importen peligro de privación de la vida, u otros previstos en el 22 constitucional</option>
+                    <option value="procedimiento_extradicion">Procedimiento de extradición</option>
+                    <option value="dilacion_excesiva">Dilación excesiva (considere el lapso que debe transcurrir para que se considere excesiva, conforme la ley la jurisprudencia)</option>
+                    <option value="fecha_lejana_audiencia">Señalamiento de una fecha lejana para la celebración de una audiencia</option>
+                    <option value="omision_legislativa_absoluta">Omisión legislativa absoluta</option>
+                    <option value="omision_legislativa_relativa">Omisión legislativa relativa</option>
+                    <option value="acto_restrictivo_libertad">Acto (incluidos los actos restrictivos de libertad como O.A. y A.V.P.)</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">Promovente</label>
+                  <select name="parteRecurrente" value={formData.parteRecurrente} onChange={handleChange} className="w-full p-2 border rounded-lg" required>
+                    <option value="">Seleccione...</option>
+                    <option value="quejoso">Quejoso</option>
+                  </select>
+                </div>
+                
+                {formData.resolucionImpugnada === 'ley_entrada_vigor' ? (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Fecha de entrada en vigor</label>
+                    <input 
+                      type="date" 
+                      name="fechaNotificacion" 
+                      value={formData.fechaNotificacion} 
+                      onChange={(e) => {
+                        const newFormData = { ...formData, fechaNotificacion: e.target.value, tipoFecha: 'entrada_vigor' };
+                        setFormData(newFormData);
+                      }} 
+                      className="w-full p-2 border rounded-lg" 
+                      required 
+                    />
+                  </div>
+                ) : formData.resolucionImpugnada === 'actos_22_constitucional' ? (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Acto reclamable en cualquier tiempo</strong><br/>
+                      Los actos que importen peligro de privación de la vida pueden reclamarse en cualquier tiempo conforme al artículo 17, fracción IV, de la Ley de Amparo.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div className={formData.tipoFecha !== '' && formData.tipoFecha !== 'desconoce' ? 'opacity-50' : ''}>
+                      <label className="flex items-center">
+                        <input 
+                          type="radio" 
+                          name="tipoFecha" 
+                          value="desconoce" 
+                          checked={formData.tipoFecha === 'desconoce'} 
+                          onChange={handleChange} 
+                          className="mr-2"
+                        />
+                        Se desconoce el acto reclamado
+                      </label>
+                    </div>
+                    <div className={formData.tipoFecha !== '' && formData.tipoFecha !== 'fecha' ? 'opacity-50' : ''}>
+                      <label className="flex items-center">
+                        <input 
+                          type="radio" 
+                          name="tipoFecha" 
+                          value="fecha" 
+                          checked={formData.tipoFecha === 'fecha'} 
+                          onChange={handleChange} 
+                          className="mr-2"
+                        />
+                        Fecha de notificación
+                      </label>
+                      {formData.tipoFecha === 'fecha' && (
+                        <input 
+                          type="date" 
+                          name="fechaNotificacion" 
+                          value={formData.fechaNotificacion} 
+                          onChange={handleChange} 
+                          className="w-full p-2 border rounded-lg mt-1" 
+                          required 
+                        />
+                      )}
+                    </div>
+                    <div className={formData.tipoFecha !== '' && formData.tipoFecha !== 'conocimiento' ? 'opacity-50' : ''}>
+                      <label className="flex items-center">
+                        <input 
+                          type="radio" 
+                          name="tipoFecha" 
+                          value="conocimiento" 
+                          checked={formData.tipoFecha === 'conocimiento'} 
+                          onChange={handleChange} 
+                          className="mr-2"
+                        />
+                        Fecha en que se tuvo conocimiento completo (no hubo notificación)
+                      </label>
+                      {formData.tipoFecha === 'conocimiento' && (
+                        <input 
+                          type="date" 
+                          name="fechaNotificacion" 
+                          value={formData.fechaNotificacion} 
+                          onChange={handleChange} 
+                          className="w-full p-2 border rounded-lg mt-1" 
+                          required 
+                        />
+                      )}
+                    </div>
+                  </div>
+                )}
+                
+                {formData.tipoFecha === 'fecha' && formData.resolucionImpugnada !== 'ley_entrada_vigor' && formData.resolucionImpugnada !== 'actos_22_constitucional' && (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Ley que rige la notificación del acto</label>
+                    <select 
+                      name="leyDelActo" 
+                      value={(formData as any).leyDelActo || ''} 
+                      onChange={handleChange} 
+                      className="w-full p-2 border rounded-lg"
+                      required
+                    >
+                      <option value="">Seleccione...</option>
+                      <option value="manual" style={{fontWeight: 'bold'}}>Introducir manualmente</option>
+                      <option value="ley_amparo">Ley de Amparo</option>
+                      <option value="ley_federal">Ley Federal del Procedimiento Contencioso Administrativo</option>
+                      <option value="codigo_federal">Código Federal de Procedimientos Civiles</option>
+                      <option value="codigo_comercio">Código de Comercio</option>
+                      <option value="ley_trabajo">Ley Federal del Trabajo</option>
+                      <option value="ley_seguro_social">Ley del Seguro Social</option>
+                      <option value="ley_issste">Ley del ISSSTE</option>
+                      <option value="ley_equilibrio_ecologico">Ley General del Equilibrio Ecológico</option>
+                      <option value="ley_migracion">Ley de Migración</option>
+                      <option value="ley_transparencia">Ley General de Transparencia y Acceso a la Información Pública</option>
+                      <option value="ley_propiedad_industrial">Ley de la Propiedad Industrial</option>
+                      <option value="ley_derecho_autor">Ley Federal del Derecho de Autor</option>
+                      <option value="ley_infonavit">Ley del Instituto del Fondo Nacional de la Vivienda para los Trabajadores</option>
+                      <option value="ley_telecomunicaciones">Ley Federal de Telecomunicaciones y Radiodifusión</option>
+                      <option value="ley_electoral">Ley General de Instituciones y Procedimientos Electorales</option>
+                      <option value="ley_competencia_economica">Ley Federal de Competencia Económica</option>
+                    </select>
+                    {(formData as any).leyDelActo === 'manual' && (
+                      <input 
+                        type="text" 
+                        name="leyDelActoManual" 
+                        value={(formData as any).leyDelActoManual || ''} 
+                        onChange={handleChange} 
+                        placeholder="Escriba el nombre de la ley..."
+                        className="w-full p-2 border rounded-lg mt-2" 
+                        required 
+                      />
+                    )}
+                  </div>
+                )}
+                
+                {formData.resolucionImpugnada !== 'ley_entrada_vigor' && formData.resolucionImpugnada !== 'actos_22_constitucional' && (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Forma de Notificación</label>
+                    {(formData.tipoFecha === 'desconoce' || formData.tipoFecha === 'conocimiento') ? (
+                    <select 
+                      name="formaNotificacion" 
+                      value="no_aplica"
+                      className="w-full p-2 border rounded-lg bg-gray-100" 
+                      disabled
+                    >
+                      <option value="no_aplica">No aplica</option>
+                    </select>
+                  ) : (
+                    <select 
+                      name="formaNotificacion" 
+                      value={formData.formaNotificacion} 
+                      onChange={handleChange} 
+                      className="w-full p-2 border rounded-lg" 
+                      required
+                    >
+                      <option value="">Seleccione...</option>
+                      <option value="personal">Personalmente</option>
+                      <option value="oficio">Por oficio</option>
+                      <option value="lista">Por lista</option>
+                      <option value="electronica">En forma electrónica</option>
+                    </select>
+                  )}
+                  </div>
+                )}
+                
+                {tipoUsuario === 'servidor' && (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Fecha de Presentación</label>
+                      <input type="date" name="fechaPresentacion" value={formData.fechaPresentacion} onChange={handleChange} className="w-full p-2 border rounded-lg" required={tipoUsuario === 'servidor'} />
+                    </div>
+                    
+                    {(formData.tipoFecha === 'fecha' || formData.resolucionImpugnada === 'ley_entrada_vigor') && (
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium mb-2">Forma de Presentación</label>
+                        <select name="formaPresentacion" value={formData.formaPresentacion} onChange={handleChange} className="w-full p-2 border rounded-lg" required={tipoUsuario === 'servidor'}>
+                          <option value="">Seleccione...</option>
+                          <option value="escrito">Por escrito</option>
+                          <option value="correo">Por correo</option>
+                          {formData.resolucionImpugnada !== 'ley_entrada_vigor' && (
+                            <option value="momento">Al momento de ser notificado</option>
+                          )}
+                          <option value="electronica">En forma electrónica</option>
+                        </select>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+              
+              <button type="submit" disabled={calculando} className="mt-6 w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400">
+                {calculando ? 'Calculando...' : 'Calcular Plazo'}
+              </button>
+            </form>
+          </div>
+          
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow p-6">
+              <h3 className="font-semibold mb-4">Días Inhábiles Adicionales</h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Agregar día inhábil</label>
+                  <div className="flex gap-2">
+                    <input type="date" value={nuevoDiaInhabil} onChange={(e) => setNuevoDiaInhabil(e.target.value)} className="flex-1 p-2 border rounded-lg text-sm" />
+                    <button type="button" onClick={agregarDiaInhabil} className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm">
+                      Agregar
+                    </button>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">Fundamento legal</label>
+                  <input type="text" value={fundamentoAdicional} onChange={(e) => setFundamentoAdicional(e.target.value)} placeholder="Ej: Circular CCNO/1/2024" className="w-full p-2 border rounded-lg text-sm" />
+                </div>
+                
+                {diasAdicionales.length > 0 && (
+                  <div className="mt-4">
+                    <p className="text-sm font-medium mb-2">Días agregados:</p>
+                    <div className="space-y-1">
+                      {diasAdicionales.map((dia) => (
+                        <div key={dia} className="flex justify-between items-center bg-gray-50 p-2 rounded text-sm">
+                          <span>{tipoUsuario === 'litigante' ? fechaParaLitigante(dia) : fechaATexto(dia)}</span>
+                          <button type="button" onClick={() => setDiasAdicionales(diasAdicionales.filter(d => d !== dia))} className="text-red-600 hover:text-red-800">
+                            Eliminar
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+                         </div>
+          </div>
+        </div>
+        
+        {resultado && (
+          <>
+            <div className="mt-6 bg-white rounded-lg shadow p-6">
+              <h2 className="text-2xl font-bold mb-4">Resultado del Cálculo</h2>
+              
+              <div className={`p-4 rounded-lg mb-4 ${resultado.esOportuno ? 'bg-green-100 border border-green-500' : 'bg-red-100 border border-red-500'}`}>
+                {tipoUsuario === 'servidor' ? (
+                  <p className="text-lg font-semibold">
+                    El recurso se presentó de forma: {' '}
+                    <span className={resultado.esOportuno ? 'text-green-700' : 'text-red-700'}>
+                      {resultado.esOportuno ? 'OPORTUNA' : 'EXTEMPORÁNEA'}
+                    </span>
+                  </p>
+                ) : (
+                  <div>
+                    <p className="text-lg font-semibold">
+                      El plazo para presentar el recurso vence el: {' '}
+                      <span className="text-green-700">
+                        {fechaParaLitigante(resultado.fechaFin.toISOString().split('T')[0])}
+                      </span>
+                    </p>
+                    {resultado.diasRestantes > 0 && (
+                      <p className="mt-2 text-sm">
+                        Quedan <strong>{resultado.diasRestantes}</strong> días hábiles para el vencimiento
+                      </p>
+                    )}
+                    {resultado.diasRestantes === 0 && (
+                      <p className="mt-2 text-sm text-red-600 font-bold">
+                        ⚠️ El plazo ha vencido
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                <h3 className="font-semibold mb-2">Detalles del Cómputo:</h3>
+                <div className="space-y-1 text-sm">
+                  <p><strong>Plazo legal:</strong> {typeof resultado.plazo === 'number' ? `${resultado.plazo} días` : resultado.plazo}</p>
+                  <p><strong>Fundamento:</strong> {formData.tipoFecha === 'desconoce' ? 'Artículos 17 de la Ley de Amparo, en relación con el 18, pues este último prevé que los plazos a que alude el primero de ellos se computarán a partir del día siguiente a aquél en que surta efectos, conforme a la ley del acto, la notificación a la persona quejosa del acto o resolución que reclame o a aquella en que haya tenido conocimiento o se ostente sabedora del acto reclamado o de su ejecución, salvo el caso de la fracción I del artículo anterior en el que se computará a partir del día de su entrada en vigor; y en el caso se eligió la opción relativa a que se desconoce el acto reclamado, por lo cual se entiende que éste no fue notificado ni se hizo del conocimiento de quien pretende reclamarlo.' : resultado.fundamento}</p>
+                  <p><strong>{formData.resolucionImpugnada === 'ley_entrada_vigor' ? 'Fecha en que la norma reclamada entró en vigor:' : 'Fecha de notificación o de conocimiento completo:'}</strong> {formData.tipoFecha === 'desconoce' ? 'Se desconoce el acto reclamado' : formData.tipoFecha === 'conocimiento' ? `Conocimiento completo: ${fechaParaLitigante(formData.fechaNotificacion)}` : formData.resolucionImpugnada === 'ley_entrada_vigor' ? fechaParaLitigante(formData.fechaNotificacion) : `Notificación: ${fechaParaLitigante(formData.fechaNotificacion)}`}</p>
+                  {formData.tipoFecha !== 'desconoce' && formData.resolucionImpugnada !== 'ley_entrada_vigor' && (
+                    <p><strong>Surte efectos:</strong> {fechaParaLitigante(resultado.fechaSurte.toISOString().split('T')[0])}</p>
+                  )}
+                  <p><strong>Período del cómputo:</strong> {formData.tipoFecha === 'desconoce' ? 'La demanda puede presentarse en cualquier tiempo puesto que no existe fecha de notificación o conocimiento completo.' : `Del ${fechaParaLitigante(resultado.fechaInicio.toISOString().split('T')[0])} al ${fechaParaLitigante(resultado.fechaFin.toISOString().split('T')[0])}`}</p>
+                  {tipoUsuario === 'servidor' && (
+                    <p><strong>Fecha de presentación:</strong> {formData.fechaPresentacion ? fechaParaLitigante(formData.fechaPresentacion) : ''}</p>
+                  )}
+                  <p><strong>Días inhábiles excluidos:</strong> {resultado.diasInhabiles}</p>
+                </div>
+              </div>
+              
+              {/* Calendario visual - solo para servidores y cuando no se desconoce el acto */}
+              {tipoUsuario === 'servidor' && (formData.tipoFecha === 'fecha' || formData.resolucionImpugnada === 'ley_entrada_vigor') && (
+                <Calendario 
+                  fechaNotificacion={resultado.fechaNotificacion}
+                  fechaSurte={resultado.fechaSurte}
+                  fechaInicio={resultado.fechaInicio}
+                  fechaFin={resultado.fechaFin}
+                  diasAdicionales={diasAdicionales}
+                  tipoUsuario={tipoUsuario}
+                />
+              )}
+              
+              {tipoUsuario === 'servidor' && (
+                <div className="bg-blue-50 p-4 rounded-lg mt-6">
+                  <h3 className="font-semibold mb-2">Texto para Resolución:</h3>
+                  <div className="text-sm font-['Arial'] leading-relaxed whitespace-pre-wrap">
+                    {generarTexto()}
+                  </div>
+                </div>
+              )}
+              
+              <div className="mt-6 flex gap-4">
+                {tipoUsuario === 'servidor' && (
+                  <button onClick={() => { navigator.clipboard.writeText(generarTexto()); alert('Texto copiado al portapapeles'); }} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                    Copiar Texto
+                  </button>
+                )}
+                <button onClick={() => { setResultado(null); setFormData({ tipoRecurso: 'principal', resolucionImpugnada: '', parteRecurrente: '', fechaNotificacion: '', tipoFecha: '', formaNotificacion: '', leyDelActo: '', leyDelActoManual: '', fechaPresentacion: '', formaPresentacion: '' }); }} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                  Nuevo Cálculo
+                </button>
+              </div>
+            </div>
+            
+            {/* Sección para litigantes */}
+            {tipoUsuario === 'litigante' && (
+              <div className="mt-6 bg-white rounded-lg shadow p-6">
+                <h3 className="text-xl font-bold mb-4">Guardar Cálculo y Notificaciones</h3>
+                
+                <div className="grid md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Número de Expediente</label>
+                    <input 
+                      type="text" 
+                      value={numeroExpediente} 
+                      onChange={(e) => setNumeroExpediente(e.target.value)}
+                      placeholder="Ej: 123/2024"
+                      className="w-full p-2 border rounded-lg"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">WhatsApp (opcional)</label>
+                    <input 
+                      type="tel" 
+                      value={telefonoWhatsApp} 
+                      onChange={(e) => setTelefonoWhatsApp(e.target.value)}
+                      placeholder="Ej: +52 1234567890"
+                      className="w-full p-2 border rounded-lg"
+                    />
+                  </div>
+                </div>
+                
+                <button 
+                  onClick={guardarCalculo}
+                  disabled={!numeroExpediente}
+                  className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 disabled:bg-gray-400"
+                >
+                  Guardar Cálculo
+                </button>
+                
+                {telefonoWhatsApp && (
+                  <p className="mt-2 text-sm text-gray-600">
+                    Recibirás recordatorios 3, 2 y 1 día antes del vencimiento, y el día del vencimiento.
+                  </p>
+                )}
+              </div>
+            )}
+          </>
+        )}
+        
+        {/* Lista de cálculos guardados para litigantes */}
+        {tipoUsuario === 'litigante' && calculos.length > 0 && (
+          <div className="mt-6 bg-white rounded-lg shadow p-6">
+            <h3 className="text-xl font-bold mb-4">Cálculos Guardados</h3>
+            <div className="space-y-2">
+              {calculos.map((calc) => (
+                <div key={calc.id} className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                  <div>
+                    <p className="font-semibold">Expediente: {calc.expediente}</p>
+                    <p className="text-sm text-gray-600">
+                      Vence: {new Date(calc.fechaVencimiento).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <button 
+                    onClick={() => {
+                      setCalculos(calculos.filter(c => c.id !== calc.id));
+                      localStorage.setItem('calculosGuardados', 
+                        JSON.stringify(calculos.filter(c => c.id !== calc.id))
+                      );
+                    }}
+                    className="text-red-600 hover:text-red-800"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

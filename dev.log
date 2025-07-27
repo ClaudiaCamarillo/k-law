@@ -1,0 +1,26 @@
+
+> mi-app-juridica@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.3.3
+   - Local:        http://localhost:3000
+   - Network:      http://10.255.255.254:3000
+
+ ✓ Starting...
+ ✓ Ready in 39.3s
+ ○ Compiling /calculadoras/revision ...
+ ✓ Compiled /calculadoras/revision in 47.5s (782 modules)
+ GET /calculadoras/revision 200 in 54557ms
+ GET /calculadoras/revision 200 in 7754ms
+ ○ Compiling / ...
+ ✓ Compiled / in 2.4s (773 modules)
+ GET / 200 in 4087ms
+ GET /calculadoras/revision 200 in 1885ms
+ GET / 200 in 556ms
+ ○ Compiling /calculadoras ...
+ ✓ Compiled /calculadoras in 1989ms (765 modules)
+ GET /calculadoras 200 in 3253ms
+ GET /calculadoras/revision 200 in 649ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 1001ms (764 modules)
+ GET /calculadoras/revision 404 in 1795ms

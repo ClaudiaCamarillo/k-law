@@ -15,7 +15,7 @@ export const diasInhabilesData = [
   
   // Ley Federal del Trabajo - Días móviles
   { dia: 'primer lunes de febrero', fundamento: 'artículo 74 de la Ley Federal del Trabajo', tipo: 'movil', aplicaPara: 'todos' },
-  { dia: 'tercer lunes de marzo', fundamento: 'artículo 74 de la Ley Federal del Trabajo', tipo: 'movil', aplicaPara: 'todos' },
+  { dia: 'tercer lunes de marzo', fundamento: 'artículo 74, fracción III, de la Ley Federal del Trabajo y artículo 19 de la Ley de Amparo', tipo: 'movil', aplicaPara: 'todos' },
   { dia: 'tercer lunes de noviembre', fundamento: 'artículo 74 de la Ley Federal del Trabajo', tipo: 'movil', aplicaPara: 'todos' },
   
   // Días de cambio de gobierno
@@ -74,10 +74,9 @@ export const diasInhabilesData = [
   { dia: '31 de diciembre 2024', fundamento: 'Artículo 75 de la Ley Orgánica del Poder Judicial de la Federación', fecha: '2024-12-31', aplicaPara: 'todos' },
   
   // Días móviles 2024
-  { dia: '05 de febrero 2024', fundamento: 'Artículo 74 de la Ley Federal del Trabajo', fecha: '2024-02-05', aplicaPara: 'todos' }, // Primer lunes febrero
-
- { dia: '18 de marzo 2024', fundamento: 'Artículo 74 de la Ley Federal del Trabajo', fecha: '2024-03-18', aplicaPara: 'todos' }, // Tercer lunes marzo
-  { dia: '18 de noviembre 2024', fundamento: 'Artículo 74 de la Ley Federal del Trabajo', fecha: '2024-11-18', aplicaPara: 'todos' }, // Tercer lunes noviembre
+  { dia: '05 de febrero 2024', fundamento: 'artículo 74 de la Ley Federal del Trabajo', fecha: '2024-02-05', aplicaPara: 'todos' }, // Primer lunes febrero
+  { dia: '18 de marzo 2024', fundamento: 'artículo 74 de la Ley Federal del Trabajo', fecha: '2024-03-18', aplicaPara: 'todos' }, // Tercer lunes marzo
+  { dia: '18 de noviembre 2024', fundamento: 'artículo 74 de la Ley Federal del Trabajo', fecha: '2024-11-18', aplicaPara: 'todos' }, // Tercer lunes noviembre
   
   // Período de suspensión por paro - agosto a octubre 2024
   { dia: '19 de agosto 2024', fundamento: 'diversas circulares del Pleno del Consejo de la Judicatura Federal', fecha: '2024-08-19', aplicaPara: 'todos' },
