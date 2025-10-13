@@ -1,11 +1,11 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { loadStripe } from '@stripe/stripe-js'
+// import { loadStripe } from '@stripe/stripe-js'
 import Image from 'next/image'
 
-// Inicializar Stripe
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+// Inicializar Stripe - no es necesario aquí
+// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
 export default function Home() {
   const router = useRouter()
@@ -20,159 +20,359 @@ export default function Home() {
   }
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: '#ffffff' }}>
+    <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: '#F4EFE8' }}>
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
       `}</style>
       
-      {/* Hero Section */}
-      <div className="flex-shrink-0" style={{ 
-        background: 'linear-gradient(135deg, #1A1A2E 0%, #0f1f33 100%)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        {/* Background Pattern */}
+      {/* Golden Strip */}
+      <div style={{ 
+        backgroundColor: '#C5A770', 
+        height: '120px',
+        width: '100%',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1
+      }} />
+      
+      {/* Elegant Header */}
+      <div className="relative py-4 md:py-8" style={{ zIndex: 2 }}>
+        {/* Subtle pattern overlay */}
         <div style={{
           position: 'absolute',
           top: 0,
           left: 0,
           right: 0,
           bottom: 0,
-          opacity: 0.1,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          opacity: 0.03,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231C1C1C' fill-opacity='1'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`
         }} />
         
-        <div className="relative z-10 py-6 md:py-8 text-center">
-          <h1 className="text-2xl md:text-3xl" style={{ fontWeight: '800', color: '#c9a961', fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.05em', marginBottom: '0.5rem' }}>K-LAW</h1>
-          <p className="text-white text-sm md:text-base" style={{ fontFamily: 'Inter, sans-serif', fontWeight: '400' }}>
+        <div className="relative text-center px-6" style={{ paddingTop: '0px', zIndex: 10, position: 'relative' }}>
+          <div className="mb-2" style={{ marginTop: '-50px' }}>
+            <img 
+              src="/LOGO-KLAW.gif" 
+              alt="K-LAW Logo" 
+              className="mx-auto"
+              style={{ 
+                display: 'block',
+                width: 'auto',
+                height: 'auto',
+                maxWidth: '640px',
+                maxHeight: '240px',
+                position: 'relative',
+                zIndex: 20
+              }}
+            />
+          </div>
+          <p className="text-sm md:text-base" style={{ 
+            fontFamily: 'Inter, sans-serif',
+            color: '#3D3D3D',
+            fontWeight: '300',
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase'
+          }}>
             Soluciones Jurídicas Inteligentes
           </p>
         </div>
       </div>
       
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center px-4 py-4 overflow-hidden">
-        <div className="w-full max-w-6xl h-full flex flex-col">
-          {/* Header */}
-          <div className="text-center mb-3 md:mb-4 flex-shrink-0">
-            <h1 className="text-xl md:text-2xl lg:text-3xl" style={{ fontWeight: '700', marginBottom: '0.25rem', color: '#111827', fontFamily: 'Montserrat, sans-serif', letterSpacing: '-0.02em' }}>
-              Elige tu Plan
-            </h1>
-            <p className="text-xs md:text-sm lg:text-base" style={{ color: '#6b7280', fontFamily: 'Inter, sans-serif', fontWeight: '400' }}>
-              Comienza gratis o desbloquea todo el potencial
+      <div className="flex-1 flex flex-col items-center px-4 pb-4">
+        <div className="w-full max-w-5xl">
+          {/* Tienda Button */}
+          <div className="text-center mb-6">
+            <button
+              onClick={() => router.push('/tienda')}
+              className="px-6 py-2 transition-all duration-300"
+              style={{
+                backgroundColor: 'transparent',
+                color: '#1C1C1C',
+                fontWeight: '500',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '0.875rem',
+                border: '1.5px solid #1C1C1C',
+                letterSpacing: '0.02em',
+                borderRadius: '30px',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#1C1C1C';
+                e.currentTarget.style.color = '#F4EFE8';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = '#1C1C1C';
+              }}
+            >
+              🛍️ Ir a la Tienda
+            </button>
+          </div>
+          {/* Section Title */}
+          <div className="text-center mb-4 md:mb-8">
+            <h2 className="text-xl md:text-2xl lg:text-3xl mb-2" style={{ 
+              fontFamily: 'Playfair Display, serif',
+              fontWeight: '700',
+              color: '#1C1C1C',
+              letterSpacing: '-0.01em'
+            }}>
+              Selecciona tu Plan
+            </h2>
+            <p className="text-base md:text-lg" style={{ 
+              fontFamily: 'Inter, sans-serif',
+              color: '#3D3D3D',
+              fontWeight: '300'
+            }}>
+              Elige la opción que mejor se adapte a tus necesidades
             </p>
           </div>
 
-          {/* Plans Container */}
-          <div className="flex-1 flex flex-col md:flex-row justify-center items-stretch gap-3 md:gap-4 overflow-y-auto">
-            {/* Free Plan Card */}
-            <div className="relative w-full md:max-w-[350px] md:hover:scale-105 transition-all duration-300">
-              <div className="h-full flex flex-col" style={{ backgroundColor: '#f9fafb', borderRadius: '16px', padding: '1.25rem md:1.5rem', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', border: '1px solid #e5e7eb' }}>
-                <div className="text-center flex-shrink-0">
-                  <h2 className="text-lg md:text-xl" style={{ fontWeight: '700', color: '#111827', marginBottom: '0.25rem', fontFamily: 'Montserrat, sans-serif' }}>Free</h2>
-                  <div style={{ marginBottom: '0.5rem' }}>
-                    <span className="text-2xl md:text-3xl" style={{ fontWeight: '800', color: '#111827', fontFamily: 'Montserrat, sans-serif' }}>$0</span>
-                    <span className="text-xs md:text-sm" style={{ color: '#666', marginLeft: '0.25rem', fontFamily: 'Inter, sans-serif' }}>MXN</span>
+          {/* Plans Grid */}
+          <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto">
+            {/* Free Plan */}
+            <div className="group">
+              <div className="h-full flex flex-col p-4 md:p-6 transition-all duration-300" 
+                style={{ 
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '20px',
+                  border: '1px solid #E5E5E5',
+                  boxShadow: '0 4px 20px rgba(28, 28, 28, 0.05)'
+                }}>
+                <div className="flex-1">
+                  <div className="mb-3">
+                    <h3 className="text-lg md:text-xl mb-1" style={{ 
+                      fontFamily: 'Playfair Display, serif',
+                      fontWeight: '700',
+                      color: '#1C1C1C'
+                    }}>
+                      Plan Gratuito
+                    </h3>
+                    <div className="flex items-baseline gap-1 mb-2">
+                      <span className="text-2xl md:text-3xl" style={{ 
+                        fontFamily: 'Playfair Display, serif',
+                        fontWeight: '700',
+                        color: '#1C1C1C'
+                      }}>$0</span>
+                      <span className="text-sm" style={{ 
+                        fontFamily: 'Inter, sans-serif',
+                        color: '#3D3D3D',
+                        fontWeight: '300'
+                      }}>MXN</span>
+                    </div>
+                    <p className="text-sm" style={{ 
+                      fontFamily: 'Inter, sans-serif',
+                      color: '#3D3D3D',
+                      fontWeight: '300',
+                      lineHeight: '1.6'
+                    }}>
+                      Ideal para comenzar a explorar nuestras herramientas
+                    </p>
                   </div>
-                  <p className="text-xs md:text-sm" style={{ color: '#666', marginBottom: '0.75rem', fontFamily: 'Inter, sans-serif' }}>Perfecto para comenzar</p>
+
+                  <ul className="space-y-2 mb-4">
+                    <li className="flex items-start gap-3">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="mt-0.5 flex-shrink-0">
+                        <circle cx="10" cy="10" r="10" fill="#F4EFE8"/>
+                        <path d="M14 7L8.5 12.5L6 10" stroke="#1C1C1C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span className="text-sm" style={{ 
+                        fontFamily: 'Inter, sans-serif',
+                        color: '#1C1C1C',
+                        fontWeight: '400'
+                      }}>3 cálculos diarios</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="mt-0.5 flex-shrink-0">
+                        <circle cx="10" cy="10" r="10" fill="#F4EFE8"/>
+                        <path d="M14 7L8.5 12.5L6 10" stroke="#1C1C1C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span className="text-sm" style={{ 
+                        fontFamily: 'Inter, sans-serif',
+                        color: '#1C1C1C',
+                        fontWeight: '400'
+                      }}>Calculadoras básicas</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="mt-0.5 flex-shrink-0">
+                        <circle cx="10" cy="10" r="10" fill="#F4EFE8"/>
+                        <path d="M8 8L12 12M12 8L8 12" stroke="#3D3D3D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span className="text-sm" style={{ 
+                        fontFamily: 'Inter, sans-serif',
+                        color: '#3D3D3D',
+                        fontWeight: '300'
+                      }}>Sin historial</span>
+                    </li>
+                  </ul>
                 </div>
-                
-                <ul className="flex-1 min-h-0" style={{ listStyle: 'none', padding: 0, margin: '0 0 0.75rem 0' }}>
-                  <li className="py-1.5 md:py-2" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-1 15l-5-5 1.41-1.41L9 12.17l7.59-7.59L18 6l-9 9z" fill="#16a34a"/>
-                    </svg>
-                    <span className="text-xs md:text-sm" style={{ color: '#333333', fontFamily: 'Inter, sans-serif' }}>3 cálculos por día</span>
-                  </li>
-                  <li className="py-1.5 md:py-2" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-1 15l-5-5 1.41-1.41L9 12.17l7.59-7.59L18 6l-9 9z" fill="#16a34a"/>
-                    </svg>
-                    <span className="text-xs md:text-sm" style={{ color: '#333333', fontFamily: 'Inter, sans-serif' }}>Calculadoras básicas</span>
-                  </li>
-                  <li className="py-1.5 md:py-2" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm5 11h-4v4H9v-4H5V9h4V5h2v4h4v2z" fill="#ef4444" transform="rotate(45 10 10)"/>
-                    </svg>
-                    <span className="text-xs md:text-sm" style={{ color: '#999', fontFamily: 'Inter, sans-serif' }}>Sin guardar histórico</span>
-                  </li>
-                </ul>
-                
+
                 <button
                   onClick={() => seleccionarPlan('free')}
-                  className="w-full text-xs md:text-sm flex-shrink-0"
-                  style={{ padding: '0.6rem 1rem', backgroundColor: '#ffffff', color: '#1A1A2E', borderRadius: '10px', fontWeight: '600', fontFamily: 'Inter, sans-serif', border: '2px solid #e5e7eb', cursor: 'pointer', transition: 'all 0.3s ease' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f9fafb'; e.currentTarget.style.borderColor = '#1A1A2E'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e5e7eb'; }}
+                  className="w-full py-2 rounded-full transition-all duration-300 transform hover:scale-[1.02]"
+                  style={{ 
+                    backgroundColor: 'transparent',
+                    border: '1.5px solid #1C1C1C',
+                    color: '#1C1C1C',
+                    fontFamily: 'Inter, sans-serif',
+                    fontWeight: '500',
+                    fontSize: '15px',
+                    letterSpacing: '0.02em'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#1C1C1C';
+                    e.currentTarget.style.color = '#F4EFE8';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = '#1C1C1C';
+                  }}
                 >
                   Comenzar Gratis
                 </button>
               </div>
             </div>
 
-            {/* Premium Plan Card */}
-            <div className="relative w-full md:max-w-[350px] md:hover:scale-105 transition-all duration-300">
-              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 text-xs" style={{ backgroundColor: '#c9a961', color: '#1A1A2E', padding: '0.2rem 0.75rem', borderRadius: '12px', fontWeight: '700', fontFamily: 'Inter, sans-serif', fontSize: '0.7rem' }}>
-                MÁS POPULAR
+            {/* Premium Plan */}
+            <div className="group relative">
+              <div className="absolute top-2 right-4 z-10">
+                <span className="px-4 py-1.5 text-xs rounded-full" style={{ 
+                  backgroundColor: '#C5A770',
+                  color: '#FFFFFF',
+                  fontFamily: 'Inter, sans-serif',
+                  fontWeight: '600',
+                  letterSpacing: '0.05em',
+                  textTransform: 'uppercase'
+                }}>
+                  Recomendado
+                </span>
               </div>
-              <div className="h-full flex flex-col" style={{ backgroundColor: '#1A1A2E', borderRadius: '16px', padding: '1.25rem md:1.5rem', boxShadow: '0 4px 20px rgba(0,0,0,0.1)', border: '2px solid #c9a961' }}>
-                <div className="text-center flex-shrink-0">
-                  <h2 className="text-lg md:text-xl" style={{ fontWeight: '700', color: '#c9a961', marginBottom: '0.25rem', fontFamily: 'Montserrat, sans-serif' }}>Premium</h2>
-                  <div style={{ marginBottom: '0.5rem' }}>
-                    <span className="text-2xl md:text-3xl" style={{ fontWeight: '800', color: '#ffffff', fontFamily: 'Montserrat, sans-serif' }}>$299</span>
-                    <span className="text-xs md:text-sm" style={{ color: '#c9a961', marginLeft: '0.25rem', fontFamily: 'Inter, sans-serif' }}>MXN/mes</span>
+              <div className="h-full flex flex-col p-4 md:p-6 transition-all duration-300" 
+                style={{ 
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '20px',
+                  border: '2px solid #C5A770',
+                  boxShadow: '0 8px 30px rgba(197, 167, 112, 0.15)'
+                }}>
+                <div className="flex-1">
+                  <div className="mb-3">
+                    <h3 className="text-lg md:text-xl mb-1" style={{ 
+                      fontFamily: 'Playfair Display, serif',
+                      fontWeight: '700',
+                      color: '#1C1C1C'
+                    }}>
+                      Plan Premium
+                    </h3>
+                    <div className="flex items-baseline gap-1 mb-2">
+                      <span className="text-2xl md:text-3xl" style={{ 
+                        fontFamily: 'Playfair Display, serif',
+                        fontWeight: '700',
+                        color: '#1C1C1C'
+                      }}>$299</span>
+                      <span className="text-sm" style={{ 
+                        fontFamily: 'Inter, sans-serif',
+                        color: '#3D3D3D',
+                        fontWeight: '300'
+                      }}>MXN/mes</span>
+                    </div>
+                    <p className="text-sm" style={{ 
+                      fontFamily: 'Inter, sans-serif',
+                      color: '#3D3D3D',
+                      fontWeight: '300',
+                      lineHeight: '1.6'
+                    }}>
+                      Acceso completo a todas las funcionalidades
+                    </p>
                   </div>
-                  <p className="text-xs md:text-sm" style={{ color: '#ffffff', marginBottom: '0.75rem', fontFamily: 'Inter, sans-serif' }}>Todo el poder de K-LAW</p>
+
+                  <ul className="space-y-2 mb-4">
+                    <li className="flex items-start gap-3">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="mt-0.5 flex-shrink-0">
+                        <circle cx="10" cy="10" r="10" fill="#F4EFE8"/>
+                        <path d="M14 7L8.5 12.5L6 10" stroke="#C5A770" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span className="text-sm" style={{ 
+                        fontFamily: 'Inter, sans-serif',
+                        color: '#1C1C1C',
+                        fontWeight: '400'
+                      }}>Cálculos ilimitados</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="mt-0.5 flex-shrink-0">
+                        <circle cx="10" cy="10" r="10" fill="#F4EFE8"/>
+                        <path d="M14 7L8.5 12.5L6 10" stroke="#C5A770" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span className="text-sm" style={{ 
+                        fontFamily: 'Inter, sans-serif',
+                        color: '#1C1C1C',
+                        fontWeight: '400'
+                      }}>Todas las calculadoras</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="mt-0.5 flex-shrink-0">
+                        <circle cx="10" cy="10" r="10" fill="#F4EFE8"/>
+                        <path d="M14 7L8.5 12.5L6 10" stroke="#C5A770" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span className="text-sm" style={{ 
+                        fontFamily: 'Inter, sans-serif',
+                        color: '#1C1C1C',
+                        fontWeight: '400'
+                      }}>Historial completo</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="mt-0.5 flex-shrink-0">
+                        <circle cx="10" cy="10" r="10" fill="#F4EFE8"/>
+                        <path d="M14 7L8.5 12.5L6 10" stroke="#C5A770" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span className="text-sm" style={{ 
+                        fontFamily: 'Inter, sans-serif',
+                        color: '#1C1C1C',
+                        fontWeight: '400'
+                      }}>Acceso a formatos</span>
+                    </li>
+                  </ul>
                 </div>
-                
-                <ul className="flex-1 min-h-0" style={{ listStyle: 'none', padding: 0, margin: '0 0 0.75rem 0' }}>
-                  <li className="py-1.5 md:py-2" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-1 15l-5-5 1.41-1.41L9 12.17l7.59-7.59L18 6l-9 9z" fill="#c9a961"/>
-                    </svg>
-                    <span className="text-xs md:text-sm" style={{ color: '#ffffff', fontFamily: 'Inter, sans-serif' }}>Cálculos ilimitados</span>
-                  </li>
-                  <li className="py-1.5 md:py-2" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-1 15l-5-5 1.41-1.41L9 12.17l7.59-7.59L18 6l-9 9z" fill="#c9a961"/>
-                    </svg>
-                    <span className="text-xs md:text-sm" style={{ color: '#ffffff', fontFamily: 'Inter, sans-serif' }}>Todas las calculadoras</span>
-                  </li>
-                  <li className="py-1.5 md:py-2" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-1 15l-5-5 1.41-1.41L9 12.17l7.59-7.59L18 6l-9 9z" fill="#c9a961"/>
-                    </svg>
-                    <span className="text-xs md:text-sm" style={{ color: '#ffffff', fontFamily: 'Inter, sans-serif' }}>Histórico completo</span>
-                  </li>
-                  <li className="py-1.5 md:py-2 hidden sm:flex" style={{ alignItems: 'center', gap: '0.5rem' }}>
-                    <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-1 15l-5-5 1.41-1.41L9 12.17l7.59-7.59L18 6l-9 9z" fill="#c9a961"/>
-                    </svg>
-                    <span className="text-xs md:text-sm" style={{ color: '#ffffff', fontFamily: 'Inter, sans-serif' }}>Formatos de demanda</span>
-                  </li>
-                </ul>
+
                 <button
                   onClick={() => seleccionarPlan('premium')}
-                  className="w-full text-xs md:text-sm flex-shrink-0"
-                  style={{ padding: '0.6rem 1rem', backgroundColor: '#c9a961', color: '#1A1A2E', borderRadius: '10px', fontWeight: '700', fontFamily: 'Inter, sans-serif', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#b8975a'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#c9a961'; }}
+                  className="w-full py-2 rounded-full transition-all duration-300 transform hover:scale-[1.02]"
+                  style={{ 
+                    backgroundColor: '#C5A770',
+                    border: '1.5px solid #C5A770',
+                    color: '#FFFFFF',
+                    fontFamily: 'Inter, sans-serif',
+                    fontWeight: '600',
+                    fontSize: '15px',
+                    letterSpacing: '0.02em'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#B39760';
+                    e.currentTarget.style.borderColor = '#B39760';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#C5A770';
+                    e.currentTarget.style.borderColor = '#C5A770';
+                  }}
                 >
-                  Comenzar Prueba
+                  Comenzar Premium
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="text-center mt-2 md:mt-3 flex-shrink-0">
-            <p className="text-xs" style={{ color: '#999', fontFamily: 'Inter, sans-serif' }}>
-              Cancela cuando quieras • Precios incluyen IVA
+          {/* Footer note */}
+          <div className="text-center mt-16">
+            <p className="text-sm" style={{ 
+              fontFamily: 'Inter, sans-serif',
+              color: '#3D3D3D',
+              fontWeight: '300'
+            }}>
+              Cancela cuando quieras • Precios en MXN incluyen IVA
             </p>
           </div>
         </div>
       </div>
-      
     </div>
   )
 }

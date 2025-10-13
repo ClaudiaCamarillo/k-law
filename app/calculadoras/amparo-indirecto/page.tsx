@@ -7,6 +7,14 @@ import { SelectorLeyNotificacion } from '@/components/SelectorLeyNotificacion'
 import { BuscadorLeyNotificacion } from '@/components/BuscadorLeyNotificacion'
 import { PreguntasActoConcreto } from '@/components/PreguntasActoConcreto'
 
+// Interfaz para las reglas de notificación
+interface ReglaNotificacion {
+  articulo: string;
+  textoSurte: string;
+  surteEfectos: 'mismo_dia' | 'dia_siguiente' | 'tercer_dia';
+  fundamento: string;
+}
+
 // Función para convertir fecha a texto en español
 function fechaATexto(fecha: string): string {
   if (!fecha) return '';
@@ -109,9 +117,10 @@ function esDiaInhabil(fecha: Date, diasAdicionales: string[] = [], tipoUsuario: 
   const fechaStr = fecha.toISOString().split('T')[0];
   const año = fecha.getFullYear();
   
-  // Filtrar días según tipo de usuario
+  // Filtrar días según tipo de usuario Y excluir días de la Ley Orgánica del Poder Judicial
   const diasAplicables = diasInhabilesData.filter(d => 
-    d.aplicaPara === 'todos' || d.aplicaPara === tipoUsuario
+    (d.aplicaPara === 'todos' || d.aplicaPara === tipoUsuario) &&
+    !d.fundamento.includes('Ley Orgánica del Poder Judicial de la Federación')
   );
   
   // Días fijos
@@ -170,6 +179,73 @@ function calcularPlazoLeyEntradaVigor(fechaEntrada: Date, dias: number, diasAdic
   }
   
   return fecha;
+}
+
+// Función para obtener las reglas de notificación de la LFPA
+function obtenerReglaNotificacionLFPA(formaNotificacion: string): ReglaNotificacion {
+  const reglas: Record<string, ReglaNotificacion> = {
+    'personal': {
+      articulo: 'artículo 35, fracción I',
+      textoSurte: 'el día en que hubieren sido realizadas',
+      surteEfectos: 'mismo_dia',
+      fundamento: 'artículo 38 de la Ley Federal de Procedimiento Administrativo'
+    },
+    'correo_certificado_acuse': {
+      articulo: 'artículo 35, fracción II',
+      textoSurte: 'al día siguiente de la notificación',
+      surteEfectos: 'dia_siguiente',
+      fundamento: 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo'
+    },
+    'mensajeria_acuse': {
+      articulo: 'artículo 35, fracción III',
+      textoSurte: 'al día siguiente de la notificación',
+      surteEfectos: 'dia_siguiente',
+      fundamento: 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo'
+    },
+    'estrados': {
+      articulo: '',
+      textoSurte: 'al día siguiente de la notificación',
+      surteEfectos: 'dia_siguiente',
+      fundamento: 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo'
+    },
+    'edictos': {
+      articulo: 'artículo 35, fracción III',
+      textoSurte: 'al día siguiente de la última publicación',
+      surteEfectos: 'dia_siguiente',
+      fundamento: 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo'
+    },
+    'medios_electronicos': {
+      articulo: 'artículo 35, fracciones II y III',
+      textoSurte: 'al día siguiente de la notificación',
+      surteEfectos: 'dia_siguiente',
+      fundamento: 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo'
+    },
+    'oficio': {
+      articulo: 'artículo 35, fracción II',
+      textoSurte: 'al día siguiente de la notificación',
+      surteEfectos: 'dia_siguiente',
+      fundamento: 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo'
+    },
+    'correo_ordinario': {
+      articulo: 'artículo 35, fracción III',
+      textoSurte: 'al día siguiente de la notificación',
+      surteEfectos: 'dia_siguiente',
+      fundamento: 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo'
+    },
+    'telegrama': {
+      articulo: 'artículo 35, fracción III',
+      textoSurte: 'al día siguiente de la notificación',
+      surteEfectos: 'dia_siguiente',
+      fundamento: 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo'
+    }
+  };
+  
+  return reglas[formaNotificacion] || {
+    articulo: 'artículos 35 y 38',
+    textoSurte: 'al día siguiente de la notificación',
+    surteEfectos: 'dia_siguiente',
+    fundamento: 'artículos 35 y 38 de la Ley Federal de Procedimiento Administrativo'
+  };
 }
 
 // Función para agrupar días consecutivos
@@ -436,9 +512,10 @@ function obtenerDiasInhabilesSimplificado(inicio: Date, fin: Date, diasAdicional
       const año = fecha.getFullYear();
       mesesConFinDeSemana.add(`${mesTexto} de ${año}`);
     } else {
-      // Filtrar días según tipo de usuario
+      // Filtrar días según tipo de usuario Y excluir días de la Ley Orgánica del Poder Judicial
       const diasAplicables = diasInhabilesData.filter(d => 
-        d.aplicaPara === 'todos' || d.aplicaPara === tipoUsuario
+        (d.aplicaPara === 'todos' || d.aplicaPara === tipoUsuario) &&
+        !d.fundamento.includes('Ley Orgánica del Poder Judicial de la Federación')
       );
       
       // Verificar días fijos
@@ -778,14 +855,65 @@ function obtenerDiasInhabilesSimplificado(inicio: Date, fin: Date, diasAdicional
   });
   
   if (partesOtrosDias.length > 0) {
-    let textoOtrosDias;
-    if (partesOtrosDias.length === 1) {
-      textoOtrosDias = `así como el ${partesOtrosDias[0]}`;
-    } else {
-      const ultimaParte = partesOtrosDias.pop();
-      textoOtrosDias = `así como el ${partesOtrosDias.join(', ')} y el ${ultimaParte}`;
+    // Procesar las partes para simplificar mes y año
+    const partesFormateadas: string[] = [];
+    let mesAñoActual = '';
+    let diasDelMismoMes: string[] = [];
+    
+    partesOtrosDias.forEach((parte, index) => {
+      // Extraer día y mes/año de cada parte
+      const match = parte.match(/^(.+?) de (.+)$/);
+      if (match) {
+        const [_, dias, mesAño] = match;
+        
+        if (mesAño === mesAñoActual) {
+          // Mismo mes/año, solo agregar los días
+          diasDelMismoMes.push(dias);
+        } else {
+          // Nuevo mes/año, procesar los días acumulados anteriores
+          if (diasDelMismoMes.length > 0) {
+            const diasFormateados = diasDelMismoMes.length === 1 
+              ? diasDelMismoMes[0]
+              : diasDelMismoMes.slice(0, -1).join(', ') + ' y ' + diasDelMismoMes[diasDelMismoMes.length - 1];
+            
+            // Para el primer grupo usar el año completo, para los siguientes usar "del mismo año" si es el mismo año
+            const añoFormateado = partesFormateadas.length === 0 
+              ? mesAñoActual 
+              : mesAñoActual.replace(/de (dos mil \w+|2\d{3})/, 'del mismo año');
+              
+            partesFormateadas.push(`${diasFormateados} de ${añoFormateado}`);
+          }
+          
+          // Iniciar nuevo grupo
+          mesAñoActual = mesAño;
+          diasDelMismoMes = [dias];
+        }
+      }
+    });
+    
+    // Procesar el último grupo
+    if (diasDelMismoMes.length > 0) {
+      const diasFormateados = diasDelMismoMes.length === 1 
+        ? diasDelMismoMes[0]
+        : diasDelMismoMes.slice(0, -1).join(', ') + ' y ' + diasDelMismoMes[diasDelMismoMes.length - 1];
+      
+      const añoFormateado = partesFormateadas.length === 0 
+        ? mesAñoActual 
+        : mesAñoActual.replace(/de (dos mil \w+|2\d{3})/, 'del mismo año');
+        
+      partesFormateadas.push(`${diasFormateados} de ${añoFormateado}`);
     }
-    partes.push(textoOtrosDias);
+    
+    // Construir el texto final
+    let textoOtrosDias;
+    if (partesFormateadas.length === 1) {
+      textoOtrosDias = partesFormateadas[0];
+    } else {
+      const ultimaParte = partesFormateadas.pop();
+      textoOtrosDias = partesFormateadas.join(', ') + ', y ' + ultimaParte;
+    }
+    
+    partes.push('así como ' + textoOtrosDias);
     
     // Guardar las notas para uso externo
     // (obtenerDiasInhabilesSimplificado as any).notasAlPie = notasAlPie;
@@ -804,7 +932,7 @@ function obtenerDiasInhabilesSimplificado(inicio: Date, fin: Date, diasAdicional
 }
 
 // Función para obtener días inhábiles con notas al pie (formato numérico para detalles)
-function obtenerDiasInhabilesConNotas(inicio: Date, fin: Date, diasAdicionales: string[] = [], fundamentoAdicional: string = '', tipoUsuario: string = 'litigante') {
+function obtenerDiasInhabilesConNotas(inicio: Date, fin: Date, diasAdicionales: string[] = [], fundamentoAdicional: string = '', tipoUsuario: string = 'litigante', leyNotificacion: string = '', fechaSurteEfectos: Date | null = null) {
   const diasPorFundamento: {[key: string]: string[]} = {};
   const diasYaIncluidos = new Set<string>();
   let hayFinDeSemana = false;
@@ -812,6 +940,7 @@ function obtenerDiasInhabilesConNotas(inicio: Date, fin: Date, diasAdicionales: 
   // Orden de prioridad de fundamentos
   const ordenFundamentos = [
     'artículo 19 de la Ley de Amparo',
+    'artículo 94 del Código Nacional de Procedimientos Penales',
     'artículo 74 de la Ley Federal del Trabajo',
     'Ley Orgánica',
     'Circular',
@@ -828,9 +957,10 @@ function obtenerDiasInhabilesConNotas(inicio: Date, fin: Date, diasAdicionales: 
     if (fecha.getDay() === 0 || fecha.getDay() === 6) {
       hayFinDeSemana = true;
     } else {
-      // Filtrar días según tipo de usuario
+      // Filtrar días según tipo de usuario Y excluir días de la Ley Orgánica del Poder Judicial
       const diasAplicables = diasInhabilesData.filter(d => 
-        d.aplicaPara === 'todos' || d.aplicaPara === tipoUsuario
+        (d.aplicaPara === 'todos' || d.aplicaPara === tipoUsuario) &&
+        !d.fundamento.includes('Ley Orgánica del Poder Judicial de la Federación')
       );
       
       // Verificar días fijos
@@ -1018,9 +1148,10 @@ function obtenerDiasInhabilesParaTexto(inicio: Date, fin: Date, diasAdicionales:
     if (fecha.getDay() === 0 || fecha.getDay() === 6) {
       hayFinDeSemana = true;
     } else {
-      // Filtrar días según tipo de usuario
+      // Filtrar días según tipo de usuario Y excluir días de la Ley Orgánica del Poder Judicial
       const diasAplicables = diasInhabilesData.filter(d => 
-        d.aplicaPara === 'todos' || d.aplicaPara === tipoUsuario
+        (d.aplicaPara === 'todos' || d.aplicaPara === tipoUsuario) &&
+        !d.fundamento.includes('Ley Orgánica del Poder Judicial de la Federación')
       );
       
       // Verificar días fijos
@@ -1303,8 +1434,8 @@ function Calendario({
           return (
             <div key={idx} style={{
               backgroundColor: 'white',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
+              border: '1.5px solid #C5A770',
+              borderRadius: '0',
               padding: '8px',
               width: '140px',
               flexShrink: 0
@@ -1313,8 +1444,9 @@ function Calendario({
                 fontWeight: 'bold',
                 textAlign: 'center',
                 marginBottom: '2px',
-                color: 'black',
-                fontSize: '10px'
+                color: '#1C1C1C',
+                fontSize: '10px',
+                fontFamily: 'Inter, sans-serif'
               }}>
                 {meses[mes.getMonth()]} {mes.getFullYear()}
               </h4>
@@ -1325,13 +1457,13 @@ function Calendario({
                 textAlign: 'center',
                 fontSize: '8px'
               }}>
-                <div style={{fontWeight: 'bold'}}>D</div>
-                <div style={{fontWeight: 'bold'}}>L</div>
-                <div style={{fontWeight: 'bold'}}>M</div>
-                <div style={{fontWeight: 'bold'}}>M</div>
-                <div style={{fontWeight: 'bold'}}>J</div>
-                <div style={{fontWeight: 'bold'}}>V</div>
-                <div style={{fontWeight: 'bold'}}>S</div>
+                <div style={{fontWeight: 'bold', color: '#1C1C1C', fontFamily: 'Inter, sans-serif'}}>D</div>
+                <div style={{fontWeight: 'bold', color: '#1C1C1C', fontFamily: 'Inter, sans-serif'}}>L</div>
+                <div style={{fontWeight: 'bold', color: '#1C1C1C', fontFamily: 'Inter, sans-serif'}}>M</div>
+                <div style={{fontWeight: 'bold', color: '#1C1C1C', fontFamily: 'Inter, sans-serif'}}>M</div>
+                <div style={{fontWeight: 'bold', color: '#1C1C1C', fontFamily: 'Inter, sans-serif'}}>J</div>
+                <div style={{fontWeight: 'bold', color: '#1C1C1C', fontFamily: 'Inter, sans-serif'}}>V</div>
+                <div style={{fontWeight: 'bold', color: '#1C1C1C', fontFamily: 'Inter, sans-serif'}}>S</div>
                 {dias.map((dia, i) => (
                   <div key={i} style={{height: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                     {dia && (
@@ -1349,8 +1481,8 @@ function Calendario({
                               <div style={{
                                 width: '12px',
                                 height: '12px',
-                                backgroundColor: '#3b82f6',
-                                border: '2px solid #10b981',
+                                backgroundColor: '#1C1C1C',
+                                border: '2px solid #C5A770',
                                 clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
                                 display: 'flex',
                                 alignItems: 'center',
@@ -1386,7 +1518,7 @@ function Calendario({
                                     position: 'absolute',
                                     width: '12px',
                                     height: '12px',
-                                    backgroundColor: '#3b82f6',
+                                    backgroundColor: '#1C1C1C',
                                     clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
                                     zIndex: 1
                                   }}></div>
@@ -1395,7 +1527,7 @@ function Calendario({
                                     position: 'absolute',
                                     width: '8px',
                                     height: '8px',
-                                    backgroundColor: '#fcd34d',
+                                    backgroundColor: '#C5A770',
                                     borderRadius: '50%',
                                     top: '6px',
                                     left: '2px',
@@ -1440,7 +1572,7 @@ function Calendario({
                               <div style={{
                                 width: '12px',
                                 height: '12px',
-                                backgroundColor: '#10b981',
+                                backgroundColor: '#C5A770',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -1466,12 +1598,12 @@ function Calendario({
                               <div style={{
                                 width: '12px',
                                 height: '12px',
-                                backgroundColor: '#fcd34d',
+                                backgroundColor: '#C5A770',
                                 borderRadius: '50%',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                color: 'black',
+                                color: '#1C1C1C',
                                 fontSize: '6px',
                                 fontWeight: 'bold'
                               }}>
@@ -1493,14 +1625,14 @@ function Calendario({
                               }}>
                                 <div style={{
                                   position: 'absolute',
-                                  color: '#ef4444',
+                                  color: '#dc2626',
                                   fontSize: '14px',
                                   fontWeight: 'bold',
                                   lineHeight: '1'
                                 }}>
                                   ×
                                 </div>
-                                <div style={{fontSize: '6px', color: '#666'}}>
+                                <div style={{fontSize: '6px', color: '#3D3D3D', fontFamily: 'Inter, sans-serif'}}>
                                   {dia}
                                 </div>
                               </div>
@@ -1520,14 +1652,14 @@ function Calendario({
                               }}>
                                 <div style={{
                                   position: 'absolute',
-                                  color: '#ef4444',
+                                  color: '#dc2626',
                                   fontSize: '14px',
                                   fontWeight: 'bold',
                                   lineHeight: '1'
                                 }}>
                                   ×
                                 </div>
-                                <div style={{fontSize: '6px', color: '#666'}}>
+                                <div style={{fontSize: '6px', color: '#3D3D3D', fontFamily: 'Inter, sans-serif'}}>
                                   {dia}
                                 </div>
                               </div>
@@ -1561,6 +1693,7 @@ export default function Page() {
   const [formData, setFormData] = useState({
     tipoRecurso: 'principal',
     resolucionImpugnada: '',
+    tieneActoEspecial: 'no',
     parteRecurrente: '',
     fechaNotificacion: '',
     tipoFecha: '',
@@ -1604,10 +1737,10 @@ export default function Page() {
   // Evitar hidratación hasta que el componente esté montado
   if (!mounted) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F4EFE8' }}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-400 mx-auto mb-4"></div>
-          <p className="k-law-text">Cargando calculadora...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: '#C5A770' }}></div>
+          <p style={{ color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}>Cargando calculadora...</p>
         </div>
       </div>
     );
@@ -1655,10 +1788,6 @@ export default function Page() {
           plazo = 30;
           fundamento = 'artículo 17, fracción I, de la Ley de Amparo';
           break;
-        case 'ley_acto_aplicacion':
-          plazo = 15;
-          fundamento = 'artículo 17, fracción I, de la Ley de Amparo';
-          break;
         case 'acto_restrictivo_libertad':
         case 'fecha_lejana_audiencia':
           plazo = 15;
@@ -1682,10 +1811,6 @@ export default function Page() {
           plazo = 'En cualquier tiempo';
           fundamento = 'Jurisprudencia 2a./J. 87/2018 - mientras persista la omisión';
           esEnCualquierTiempo = true;
-          break;
-        case 'omision_legislativa_relativa':
-          plazo = 15;
-          fundamento = 'Jurisprudencia 2a./J. 87/2018 - desde conocimiento de la deficiencia normativa';
           break;
         default:
           plazo = 15;
@@ -1724,6 +1849,9 @@ export default function Page() {
       let textoSurte = '';
       let fundamentoSurte = '';
       
+      // Inicializar días adicionales como array vacío
+      const diasAdicionales: string[] = [];
+      
       // Aplicar artículo 18 de la Ley de Amparo
       let fechaInicio: Date;
       if (formData.resolucionImpugnada === 'ley_entrada_vigor') {
@@ -1733,8 +1861,769 @@ export default function Page() {
         fundamentoSurte = 'artículo 18 de la Ley de Amparo';
         fechaSurte = new Date(fechaNotif); // La fecha de entrada en vigor es la referencia
       } else {
-        // Si hay una regla de ley específica, úsala
-        if (reglaLey) {
+        // Verificar si es Código Nacional de Procedimientos Penales
+        if (formData.leyNotificacion === 'Código Nacional de Procedimientos Penales') {
+          // Reglas específicas del CNPP
+          switch (formData.formaNotificacion) {
+            case 'personal_audiencia':
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente en que hubieren sido practicadas';
+              fundamentoSurte = 'artículo 82, fracción I, inciso a), y último párrafo del Código Nacional de Procedimientos Penales';
+              break;
+            case 'personal_correo_electronico':
+            case 'personal_telefono':
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente en que hubieren sido practicadas';
+              fundamentoSurte = 'artículo 82, fracción I, inciso b), y último párrafo del Código Nacional de Procedimientos Penales';
+              break;
+            case 'personal_domicilio':
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente en que hubieren sido practicadas';
+              fundamentoSurte = 'artículo 82, fracción I, inciso d), y último párrafo del Código Nacional de Procedimientos Penales';
+              break;
+            case 'personal_instructivo':
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente en que hubieren sido practicadas';
+              fundamentoSurte = 'artículo 82, fracción I, inciso d), punto 2), y último párrafo del Código Nacional de Procedimientos Penales';
+              break;
+            case 'personal_instalaciones':
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente en que hubieren sido practicadas';
+              fundamentoSurte = 'artículo 82, fracción I, inciso c), y último párrafo del Código Nacional de Procedimientos Penales';
+              break;
+            case 'edictos':
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'el día siguiente de su publicación';
+              fundamentoSurte = 'artículo 82, fracción III, y último párrafo del Código Nacional de Procedimientos Penales';
+              break;
+            case 'correo_certificado':
+              fechaSurte = new Date(fechaNotif);
+              textoSurte = 'el mismo día en que se recibe';
+              fundamentoSurte = 'artículo 87, segundo párrafo del Código Nacional de Procedimientos Penales';
+              break;
+            case 'boletin_jurisdiccional':
+            case 'estrados':
+            case 'lista':
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'el día siguiente de su publicación';
+              fundamentoSurte = 'artículo 82, fracción II, y último párrafo del Código Nacional de Procedimientos Penales';
+              break;
+            case 'personal_detencion':
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente en que hubieren sido practicadas';
+              fundamentoSurte = 'artículo 85, tercer párrafo, y artículo 82, último párrafo del Código Nacional de Procedimientos Penales';
+              break;
+            case 'electronica':
+              fechaSurte = new Date(fechaNotif);
+              textoSurte = 'el mismo día en que por sistema se confirme que recibió el archivo electrónico correspondiente';
+              fundamentoSurte = 'artículo 87, primer párrafo del Código Nacional de Procedimientos Penales';
+              break;
+            default:
+              // Si no coincide con ningún caso específico, usar regla general
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente';
+              fundamentoSurte = 'artículo 82 del Código Nacional de Procedimientos Penales';
+          }
+        } else if (formData.leyNotificacion === 'Código Federal de Procedimientos Civiles') {
+          // Reglas específicas del Código Federal de Procedimientos Civiles
+          switch (formData.formaNotificacion) {
+            case 'personal':
+            case 'personal_domicilio':
+            case 'personal_organo':
+              // Personal - artículo 309
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles';
+              break;
+            case 'cedula':
+              // Por cédula - artículo 459
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles';
+              break;
+            case 'estrados':
+              // Por estrados
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de su publicación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles';
+              break;
+            case 'boletin_judicial':
+              // Por boletín judicial
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de su publicación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles';
+              break;
+            case 'edictos':
+              // Por edictos - artículo 315
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la última publicación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles';
+              break;
+            case 'correo_certificado':
+              // Por correo certificado
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la recepción';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles';
+              break;
+            case 'telegrama':
+              // Por telegrama
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la recepción';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles';
+              break;
+            case 'rotulon':
+              // Por rotulón - artículo 315
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'el día siguiente al en que se publique';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles';
+              break;
+            case 'instructivo':
+              // Por instructivo - artículo 310
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'el día siguiente al en que se publique';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles';
+              break;
+            default:
+              // Regla general
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles';
+          }
+        } else if (formData.leyNotificacion === 'Ley Federal de Procedimiento Administrativo') {
+          // Reglas específicas de la Ley Federal de Procedimiento Administrativo
+          switch (formData.formaNotificacion) {
+            case 'personal':
+            case 'personal_domicilio':
+            case 'personal_organo':
+              // Personal - artículo 35, fracción I - surte efectos el mismo día
+              fechaSurte = new Date(fechaNotif);
+              textoSurte = 'el día en que hubieren sido realizadas';
+              fundamentoSurte = 'artículo 38 de la Ley Federal de Procedimiento Administrativo';
+              break;
+            case 'correo_certificado_acuse':
+              // Por correo certificado con acuse de recibo - artículo 35, fracción II
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+              break;
+            case 'mensajeria_acuse':
+              // Por mensajería, con acuse de recibo - artículo 35, fracción III
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+              break;
+            case 'oficio':
+              // Por oficio - artículo 35, fracción II
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+              break;
+            case 'estrados':
+              // Por estrados
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+              break;
+            case 'edictos':
+              // Por edictos - artículo 35, fracción III
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la última publicación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+              break;
+            case 'medios_electronicos':
+            case 'electronica':
+              // Por medios electrónicos - artículo 35, fracciones II y III
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+              break;
+            case 'correo_ordinario':
+              // Por correo ordinario - artículo 35, fracción III
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+              break;
+            case 'telegrama':
+              // Por telegrama - artículo 35, fracción III
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+              break;
+            case 'medios_magneticos_digitales':
+              // a través de medios magnéticos, digitales, electrónicos, ópticos, magneto ópticos - artículo 40
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'el día hábil siguiente a aquél en que sean realizadas';
+              fundamentoSurte = 'artículo 40';
+              break;
+            case 'buzon_imss':
+              // a través del Buzón IMSS - artículo 286
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente en que fueron hechas';
+              fundamentoSurte = 'artículo 135, primer párrafo, del CFF de aplicación supletoria (en cuanto se actúe como ente fiscalizador)';
+              break;
+            default:
+              // Regla general - al día siguiente
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+          }
+        } else if (formData.leyNotificacion === 'Código de Comercio') {
+          // Reglas específicas del Código de Comercio
+          switch (formData.formaNotificacion) {
+            case 'personal':
+              // Notificaciones personales - Arts. 1068 Bis y 1075, párrafo 2°
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente del que se hayan practicado';
+              fundamentoSurte = 'Arts. 1068 Bis y 1075, párrafo 2° del Código de Comercio';
+              break;
+            case 'boletin_judicial':
+              // Por Boletín Judicial - Arts. 1068, fracc. II y 1075, párrafo 2°
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de aquel en que se hubieren hecho';
+              fundamentoSurte = 'Arts. 1068, fracc. II y 1075, párrafo 2° del Código de Comercio';
+              break;
+            case 'gaceta_judicial':
+              // Por Gaceta Judicial - Arts. 1068, fracc. II y 1075, párrafo 2°
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de aquel en que se hubieren hecho';
+              fundamentoSurte = 'Arts. 1068, fracc. II y 1075, párrafo 2° del Código de Comercio';
+              break;
+            case 'periodico_judicial':
+              // Por Periódico Judicial - Arts. 1068, fracc. II y 1075, párrafo 2°
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de aquel en que se hubieren hecho';
+              fundamentoSurte = 'Arts. 1068, fracc. II y 1075, párrafo 2° del Código de Comercio';
+              break;
+            case 'estrados':
+              // Por estrados - Arts. 1068, fracc. III y 1075, párrafo 2°
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de aquel en que se hubieren fijado';
+              fundamentoSurte = 'Arts. 1068, fracc. III y 1075, párrafo 2° del Código de Comercio';
+              break;
+            case 'correo':
+              // Por correo - Arts. 1068, fracc. V y 1075, párrafo 2°
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de que exista constancia de haberse entregado';
+              fundamentoSurte = 'Arts. 1068, fracc. V y 1075, párrafo 2° del Código de Comercio';
+              break;
+            case 'telegrafo':
+              // Por telégrafo - Arts. 1068, fracc. VI y 1075, párrafo 2°
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de que exista constancia de haberse entregado';
+              fundamentoSurte = 'Arts. 1068, fracc. VI y 1075, párrafo 2° del Código de Comercio';
+              break;
+            case 'edictos':
+              // Por edictos - Arts. 1070 y 1075, párrafo 2°
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de haberse hecho la última publicación';
+              fundamentoSurte = 'Arts. 1070 y 1075, párrafo 2° del Código de Comercio';
+              break;
+            case 'audiencia':
+              // En audiencia - Arts. 1390 Bis 22 y 1075
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente (aplicando regla general del Art. 1075)';
+              fundamentoSurte = 'Arts. 1390 Bis 22 y 1075 del Código de Comercio';
+              break;
+            default:
+              // Regla general - al día siguiente
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de que se hubieren hecho';
+              fundamentoSurte = 'artículo 1075, párrafo 2° del Código de Comercio';
+          }
+        } else if (formData.leyNotificacion === 'Código Fiscal de la Federación') {
+          // Reglas específicas del Código Fiscal de la Federación
+          switch (formData.formaNotificacion) {
+            case 'personal':
+            case 'personal_domicilio':
+            case 'personal_organo':
+              // Personal - artículo 134, fracción I
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente en que fueron hechas';
+              fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
+              break;
+            case 'correo_certificado':
+              // Por correo certificado - artículo 134, fracción I
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente al de la fecha del acuse de recibo';
+              fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
+              break;
+            case 'estrados':
+              // Por estrados - artículo 134, fracción III
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente en que fueron hechas, en la inteligencia de que se tienen por hechas el decimoprimer día contado a partir del día siguiente a aquél en el que se hubiera publicado el documento';
+              fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
+              break;
+            case 'edictos':
+              // Por edictos - artículo 134, fracción IV
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente al de la última publicación';
+              fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
+              break;
+            case 'buzon_tributario':
+              // Por buzón tributario - artículo 134, fracción I
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente al de la fecha del acuse de recibo';
+              fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
+              break;
+            case 'correo_ordinario':
+              // Por correo ordinario - artículo 134, fracción II
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente al de la fecha del acuse de recibo';
+              fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
+              break;
+            case 'telegrama':
+              // Por telegrama - artículo 134, fracción II
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente al de la fecha del acuse de recibo';
+              fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
+              break;
+            default:
+              // Regla general - al día hábil siguiente
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente en que fueron hechas';
+              fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
+          }
+        } else if (formData.leyNotificacion === 'Ley Federal del Trabajo') {
+          // Reglas específicas de la Ley Federal del Trabajo
+          switch (formData.formaNotificacion) {
+            case 'personal':
+            case 'personal_domicilio':
+            case 'personal_organo':
+              // Personal - artículo 739 - el día y hora en que se practiquen
+              fechaSurte = new Date(fechaNotif);
+              textoSurte = 'el día y hora en que se practiquen';
+              fundamentoSurte = 'artículo 747, fracción I de la Ley Federal del Trabajo';
+              break;
+            case 'boletin':
+            case 'boletin_jurisdiccional':
+              // Por boletín - artículo 739
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de su publicación';
+              fundamentoSurte = 'artículo 747, fracción II de la Ley Federal del Trabajo';
+              break;
+            case 'estrados':
+              // Por estrados - artículo 739
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de su fijación';
+              fundamentoSurte = 'artículo 747, fracción II de la Ley Federal del Trabajo';
+              break;
+            case 'lista':
+              // Por lista - artículo 739 Ter, fracción III
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de su publicación';
+              fundamentoSurte = 'artículo 747, fracción II de la Ley Federal del Trabajo';
+              break;
+            case 'oficio':
+              // Por oficio - artículo 739 Ter, fracción II - Solo para autoridades específicas
+              fechaSurte = new Date(fechaNotif);
+              textoSurte = 'el día y hora en que se practiquen';
+              fundamentoSurte = 'artículo 747, fracción I de la Ley Federal del Trabajo';
+              break;
+            case 'via_electronica':
+            case 'medios_electronicos':
+            case 'electronica':
+              // Por vía electrónica - artículo 739
+              const fechaTemporal = new Date(fechaNotif);
+              fechaTemporal.setDate(fechaTemporal.getDate() + 2);
+              fechaSurte = siguienteDiaHabil(fechaTemporal, diasAdicionales, tipoUsuario);
+              textoSurte = 'cuando se genere la constancia de la consulta realizada o el acuse de manera automática, o en dos días de que se realice si no hay constancia de consulta ni acuse automático';
+              fundamentoSurte = 'artículo 747, fracciones III y IV de la Ley Federal del Trabajo';
+              break;
+            case 'buzon_electronico':
+              // Por buzón electrónico - artículo 739 Ter, fracción IV
+              const fechaTemporal2 = new Date(fechaNotif);
+              fechaTemporal2.setDate(fechaTemporal2.getDate() + 2);
+              fechaSurte = siguienteDiaHabil(fechaTemporal2, diasAdicionales, tipoUsuario);
+              textoSurte = 'cuando se genere la constancia de la consulta realizada o el acuse de manera automática, o en dos días de que se realice si no hay constancia de consulta ni acuse automático';
+              fundamentoSurte = 'artículo 747, fracciones III y IV de la Ley Federal del Trabajo';
+              break;
+            default:
+              // Regla general - al día siguiente
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de su publicación';
+              fundamentoSurte = 'artículo 747, fracción II de la Ley Federal del Trabajo';
+          }
+        } else if (formData.leyNotificacion === 'Ley Federal de los Trabajadores al Servicio del Estado, Reglamentaria del Apartado B) del Artículo 123 Constitucional') {
+          // Reglas específicas de la Ley Federal de los Trabajadores al Servicio del Estado
+          switch (formData.formaNotificacion) {
+            case 'personal':
+            case 'personal_domicilio':
+            case 'personal_organo':
+              // Personal - artículo 739 (supletorio) - En el momento de la notificación
+              fechaSurte = new Date(fechaNotif);
+              textoSurte = 'en el momento de la notificación';
+              fundamentoSurte = 'artículo 747, fracción I, de la Ley Federal del Trabajo, de aplicación supletoria conforme a lo previsto en el artículo 11 de la Ley Federal de los Trabajadores al Servicio del Estado, Reglamentaria del Apartado B) del Artículo 123 Constitucional';
+              break;
+            case 'boletin':
+            case 'boletin_jurisdiccional':
+              // Por boletín - artículo 739 (supletorio)
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de su publicación';
+              fundamentoSurte = 'artículo 747, fracción II, de la Ley Federal del Trabajo, de aplicación supletoria conforme a lo previsto en el artículo 11 de la Ley Federal de los Trabajadores al Servicio del Estado, Reglamentaria del Apartado B) del Artículo 123 Constitucional';
+              break;
+            case 'estrados':
+              // Por estrados - artículo 739 (supletorio) - Nota especial para litigantes sobre posible inaplicabilidad
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de su fijación';
+              fundamentoSurte = 'artículo 747, fracción II, de la Ley Federal del Trabajo, de aplicación supletoria conforme a lo previsto en el artículo 11 de la Ley Federal de los Trabajadores al Servicio del Estado, Reglamentaria del Apartado B) del Artículo 123 Constitucional';
+              break;
+            case 'circular':
+              // Por circular - artículo 739 (supletorio)
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de su publicación';
+              fundamentoSurte = 'artículo 747, fracción II, de la Ley Federal del Trabajo, de aplicación supletoria conforme a lo previsto en el artículo 11 de la Ley Federal de los Trabajadores al Servicio del Estado, Reglamentaria del Apartado B) del Artículo 123 Constitucional';
+              break;
+            default:
+              // Regla general - al día siguiente
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de su publicación';
+              fundamentoSurte = 'artículo 747, fracción II, de la Ley Federal del Trabajo, de aplicación supletoria conforme a lo previsto en el artículo 11 de la Ley Federal de los Trabajadores al Servicio del Estado, Reglamentaria del Apartado B) del Artículo 123 Constitucional';
+          }
+        } else if (formData.leyNotificacion === 'Ley General de Educación') {
+          // Reglas específicas de la Ley General de Educación
+          switch (formData.formaNotificacion) {
+            case 'visita_vigilancia':
+              // Mediante visita de vigilancia - artículo 152
+              fechaSurte = new Date(fechaNotif);
+              textoSurte = 'el mismo día en que se practique su visita';
+              fundamentoSurte = 'artículo 152 de la Ley General de Educación';
+              break;
+            case 'otra_lfpa':
+              // Usar las reglas de LFPA según formaNotificacionLFPA
+              const formaLFPA = formData.formaNotificacionLFPA;
+              switch (formaLFPA) {
+                case 'personal':
+                  fechaSurte = new Date(fechaNotif);
+                  textoSurte = 'el día en que hubieren sido realizadas';
+                  fundamentoSurte = 'artículo 38 de la Ley Federal de Procedimiento Administrativo';
+                  break;
+                case 'correo_certificado_acuse':
+                case 'mensajeria_acuse':
+                case 'oficio':
+                case 'estrados':
+                case 'correo_ordinario':
+                case 'telegrama':
+                case 'medios_electronicos':
+                  fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+                  textoSurte = 'al día siguiente de la notificación';
+                  fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+                  break;
+                case 'edictos':
+                  fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+                  textoSurte = 'al día siguiente de la última publicación';
+                  fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+                  break;
+                case 'medios_magneticos_digitales':
+                  fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+                  textoSurte = 'el día hábil siguiente a aquél en que sean realizadas';
+                  fundamentoSurte = 'artículo 40';
+                  break;
+                case 'buzon_imss':
+                  fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+                  textoSurte = 'al día hábil siguiente en que fueron hechas';
+                  fundamentoSurte = 'artículo 135, primer párrafo, del CFF de aplicación supletoria (en cuanto se actúe como ente fiscalizador)';
+                  break;
+                default:
+                  fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+                  textoSurte = 'al día siguiente de la notificación';
+                  fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+              }
+              break;
+            default:
+              // Regla general
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'Ley General de Educación';
+          }
+        } else if (formData.leyNotificacion === 'Ley Federal de Procedimiento Contencioso Administrativo') {
+          // Aplicar reglas específicas de la Ley Federal de Procedimiento Contencioso Administrativo
+          switch (formData.formaNotificacion) {
+            case 'boletin_jurisdiccional':
+              // Por Boletín Jurisdiccional - artículo 65
+              const fechaBase = new Date(fechaNotif);
+              let diasContados = 0;
+              let fechaActual = new Date(fechaBase);
+              
+              // Contar 3 días hábiles
+              while (diasContados < 3) {
+                fechaActual.setDate(fechaActual.getDate() + 1);
+                if (!esDiaInhabil(fechaActual, diasAdicionales, tipoUsuario)) {
+                  diasContados++;
+                }
+              }
+              
+              fechaSurte = fechaActual;
+              textoSurte = 'al tercer día hábil siguiente a aquél en que se haya realizado la publicación en el Boletín Jurisdiccional';
+              fundamentoSurte = 'artículo 65, cuarto párrafo, de la Ley Federal de Procedimiento Contencioso Administrativo';
+              break;
+              
+            case 'personales':
+              // Personales - artículo 67
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente a aquél en que las partes sean notificadas personalmente';
+              fundamentoSurte = 'artículo 67 de la Ley Federal de Procedimiento Contencioso Administrativo';
+              break;
+              
+            default:
+              // Para otras formas de notificación, usar reglas generales de la ley
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente';
+              fundamentoSurte = 'Ley Federal de Procedimiento Contencioso Administrativo';
+          }
+        } else if (formData.leyNotificacion === 'Ley del Seguro Social') {
+          // Aplicar reglas específicas de la Ley del Seguro Social
+          switch (formData.formaNotificacion) {
+            case 'medios_magneticos_digitales':
+              // a través de medios magnéticos, digitales, electrónicos, ópticos, magneto ópticos o de cualquier otra naturaleza - artículo 40
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'el día hábil siguiente a aquél en que sean realizadas';
+              fundamentoSurte = 'artículo 40 de la Ley del Seguro Social';
+              break;
+              
+            case 'buzon_imss':
+              // a través del Buzón IMSS - artículo 286
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente en que fueron hechas';
+              fundamentoSurte = 'artículo 135, primer párrafo, del CFF de aplicación supletoria (en cuanto se actúe como ente fiscalizador)';
+              break;
+              
+            default:
+              // Para otras formas de notificación, usar reglas generales de la LSS
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente';
+              fundamentoSurte = 'Ley del Seguro Social';
+          }
+        } else if (formData.leyNotificacion === 'Código Nacional de Procedimientos Civiles y Familiares') {
+          // Aplicar reglas específicas del Código Nacional de Procedimientos Civiles y Familiares
+          switch (formData.formaNotificacion) {
+            case 'personalmente':
+              // Personalmente - artículo 203, fracción I
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente';
+              fundamentoSurte = 'artículo 203, fracción I, del Código Nacional de Procedimientos Civiles y Familiares';
+              break;
+              
+            case 'comunicacion_judicial':
+              // Por medio de comunicación judicial - artículo 203, fracción II y 227, fracción III
+              fechaSurte = new Date(fechaNotif);
+              textoSurte = 'el mismo día en que por sistema se confirme que recibió el archivo electrónico correspondiente';
+              fundamentoSurte = 'artículo 227, fracción III, del Código Nacional de Procedimientos Civiles y Familiares';
+              break;
+              
+            case 'edictos':
+              // Por edictos - artículo 203, fracción III
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente';
+              fundamentoSurte = 'artículo 203, fracción III, del Código Nacional de Procedimientos Civiles y Familiares';
+              break;
+              
+            case 'correo_certificado':
+              // Por correo certificado - artículo 203, fracción IV
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente';
+              fundamentoSurte = 'artículo 203, fracción IV, del Código Nacional de Procedimientos Civiles y Familiares';
+              break;
+              
+            case 'telegrafo':
+              // Por telégrafo - artículo 203, fracción V
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente';
+              fundamentoSurte = 'artículo 203, fracción V, del Código Nacional de Procedimientos Civiles y Familiares';
+              break;
+              
+            case 'audiencia_juicio_oral':
+              // En audiencia en juicio oral - artículo 227, fracción V
+              fechaSurte = new Date(fechaNotif);
+              textoSurte = 'en el momento en que las emita, estén o no presentes las partes';
+              fundamentoSurte = 'artículo 227, fracción V, del Código Nacional de Procedimientos Civiles y Familiares';
+              break;
+              
+            case 'comunicacion_electronica':
+              // Por cualquier otro medio de comunicación electrónica - artículo 203, fracción VI
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente';
+              fundamentoSurte = 'artículo 203, fracción VI, del Código Nacional de Procedimientos Civiles y Familiares';
+              break;
+              
+            case 'adhesion':
+              // Por adhesión - artículo 199, fracción I, y 203, fracción I
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente';
+              fundamentoSurte = 'artículo 199, fracción I, y 203, fracción I, del Código Nacional de Procedimientos Civiles y Familiares';
+              break;
+              
+            case 'cedula':
+              // Por cédula - artículo 203, fracción I
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente';
+              fundamentoSurte = 'artículo 203, fracción I, del Código Nacional de Procedimientos Civiles y Familiares';
+              break;
+              
+            case 'instructivo':
+              // Por instructivo - artículo 203, fracción I
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente';
+              fundamentoSurte = 'artículo 203, fracción I, del Código Nacional de Procedimientos Civiles y Familiares';
+              break;
+              
+            case 'correo_electronico':
+              // Por correo electrónico - artículo 203, fracción I
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente';
+              fundamentoSurte = 'artículo 203, fracción I, del Código Nacional de Procedimientos Civiles y Familiares';
+              break;
+              
+            case 'boletin_judicial':
+              // Por boletín Judicial
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente';
+              fundamentoSurte = 'Código Nacional de Procedimientos Civiles y Familiares';
+              break;
+              
+            default:
+              // Para otras formas de notificación, usar reglas generales del CNPCF
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente';
+              fundamentoSurte = 'Código Nacional de Procedimientos Civiles y Familiares';
+          }
+        } else if (formData.leyNotificacion === 'Ley de Navegación y Comercio Marítimos') {
+          // Aplicar reglas específicas de la Ley de Navegación y Comercio Marítimos
+          switch (formData.formaNotificacion) {
+            case 'personal':
+              // Personal - artículo 287, segundo párrafo - Al día siguiente
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente';
+              fundamentoSurte = 'artículo 287, segundo párrafo, de la Ley de Navegación y Comercio Marítimos';
+              break;
+              
+            case 'correo_certificado':
+              // Por correo certificado - artículo 287, segundo párrafo - Al tercer día de recibida
+              const fechaBaseCertificado = new Date(fechaNotif);
+              fechaBaseCertificado.setDate(fechaBaseCertificado.getDate() + 3);
+              fechaSurte = fechaBaseCertificado;
+              textoSurte = 'al tercer día de recibida';
+              fundamentoSurte = 'artículo 327 de la Ley de Navegación y Comercio Marítimos';
+              break;
+              
+            case 'edictos':
+              // Por edictos - artículo 287, segundo párrafo - Al día siguiente de la última publicación
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la última publicación';
+              fundamentoSurte = 'artículo 327 de la Ley de Navegación y Comercio Marítimos';
+              break;
+              
+            case 'estrados':
+              // Por estrados - artículo 287, segundo párrafo
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente';
+              fundamentoSurte = 'artículo 287, segundo párrafo, de la Ley de Navegación y Comercio Marítimos';
+              break;
+              
+            // Opciones de LFPA aplicables
+            case 'personal_lfpa':
+              fechaSurte = new Date(fechaNotif);
+              textoSurte = 'el día en que hubieren sido realizadas';
+              fundamentoSurte = 'artículo 38 de la Ley Federal de Procedimiento Administrativo, aplicable a la Ley de Navegación y Comercio Marítimos';
+              break;
+              
+            case 'correo_certificado_acuse_lfpa':
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+              break;
+              
+            case 'mensajeria_acuse_lfpa':
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+              break;
+              
+            case 'estrados_lfpa':
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+              break;
+              
+            case 'edictos_lfpa':
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la última publicación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+              break;
+              
+            case 'electronica_lfpa':
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+              break;
+              
+            case 'oficio_lfpa':
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+              break;
+              
+            case 'correo_ordinario_lfpa':
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+              break;
+              
+            case 'telegrama_lfpa':
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente de la notificación';
+              fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
+              break;
+              
+            default:
+              // Para otras formas de notificación, usar reglas generales de LNCM
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día siguiente';
+              fundamentoSurte = 'Ley de Navegación y Comercio Marítimos';
+          }
+        } else if (formData.leyNotificacion === 'Ley Aduanera') {
+          // Aplicar reglas específicas de la Ley Aduanera
+          switch (formData.formaNotificacion) {
+            case 'notificaciones_electronicas':
+              // Notificaciones electrónicas - artículo 9A
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'a partir del día hábil siguiente a aquél en el que se generó el acuse de la notificación';
+              fundamentoSurte = 'artículo 9A, último párrafo, de la Ley Aduanera';
+              break;
+              
+            case 'estrados':
+              // Por estrados - artículo 9B - décimosexto día hábil contando como día 1 el de su publicación
+              const fechaBaseEstrados = new Date(fechaNotif);
+              let diasContadosEstrados = 1; // Empezamos contando el día de publicación como día 1
+              let fechaActualEstrados = new Date(fechaBaseEstrados);
+              
+              // Contar 16 días hábiles total (incluyendo el día 1 de publicación)
+              while (diasContadosEstrados < 16) {
+                fechaActualEstrados.setDate(fechaActualEstrados.getDate() + 1);
+                if (!esDiaInhabil(fechaActualEstrados, diasAdicionales, tipoUsuario)) {
+                  diasContadosEstrados++;
+                }
+              }
+              
+              fechaSurte = fechaActualEstrados;
+              textoSurte = 'el décimosexto día hábil contando como día 1 el de su publicación';
+              fundamentoSurte = 'artículo 9B, último párrafo, de la Ley Aduanera';
+              break;
+              
+            case 'avisos_autorizacion':
+              // Los avisos de autorización y de revocación - artículo 9C
+              fechaSurte = new Date(fechaNotif);
+              textoSurte = 'en la fecha y hora señalados en los acuses de recibo que para tal efecto emita el sistema electrónico aduanero';
+              fundamentoSurte = 'artículo 9C, segundo párrafo, de la Ley Aduanera';
+              break;
+              
+            default:
+              // Para otras formas de notificación, usar reglas generales de la Ley Aduanera
+              fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
+              textoSurte = 'al día hábil siguiente';
+              fundamentoSurte = 'Ley Aduanera';
+          }
+        } else if (reglaLey) {
+          // Si hay una regla de ley específica, úsala
           if (reglaLey.surteEfectos === 'dia_siguiente') {
             fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
             textoSurte = 'al siguiente día hábil';
@@ -1858,7 +2747,17 @@ export default function Page() {
         diasInhabiles: diasInhabilesSimplificadoInfo || diasInhabilesInfo.texto,
         diasInhabilesTexto: diasInhabilesTextoInfo.texto,
         notasAlPie: diasInhabilesInfo.notas,
-        notasAlPieTexto: diasInhabilesTextoInfo.notas,
+        notasAlPieTexto: (() => {
+          let notas = diasInhabilesTextoInfo.notas || [];
+          
+          // Agregar nota especial para LFTSE + estrados
+          if (formData.leyNotificacion === 'Ley Federal de los Trabajadores al Servicio del Estado, Reglamentaria del Apartado B) del Artículo 123 Constitucional' && formData.formaNotificacion === 'estrados') {
+            const notaEstrados = 'Nota para litigantes: Existe la posibilidad de que se considere inaplicable supletoriamente el citado precepto, conforme la tesis I.8o.T.1 L (11a.), con registro 2024351, y rubro: "NOTIFICACIONES POR ESTRADOS EN EL JUICIO LABORAL BUROCRÁTICO. CONFORME AL PÁRRAFO SEGUNDO DEL ARTÍCULO 142 DE LA LEY FEDERAL DE LOS TRABAJADORES AL SERVICIO DEL ESTADO, SURTEN EFECTOS EN EL MOMENTO EN QUE SE PRACTICAN (INAPLICABILIDAD SUPLETORIA DEL ARTÍCULO 747, FRACCIÓN II, DE LA LEY FEDERAL DEL TRABAJO)."';
+            notas = [...notas, notaEstrados];
+          }
+          
+          return notas;
+        })(),
         formaPresentacion: formasPresentacion[formData.formaPresentacion] || formData.formaPresentacion,
         resolucionImpugnada: resoluciones[formData.resolucionImpugnada] || formData.resolucionImpugnada,
         diasRestantes: diasRestantes > 0 ? diasRestantes : 0,
@@ -1873,7 +2772,6 @@ export default function Page() {
     const leyesPorActo: { [key: string]: string } = {
       // Actos penales
       'orden_aprehension': 'Código Nacional de Procedimientos Penales',
-      'auto_vinculacion': 'Código Nacional de Procedimientos Penales',
       'auto de formal prisión': 'Código Nacional de Procedimientos Penales',
       'sentencia penal': 'Código Nacional de Procedimientos Penales',
       'negativa de libertad caucional': 'Código Nacional de Procedimientos Penales',
@@ -1904,9 +2802,6 @@ export default function Page() {
       'sentencia mercantil': 'Código de Comercio',
       
       // Actos de pensión
-      'omision_negativa_pension': 'Ley del Instituto de Seguridad y Servicios Sociales de los Trabajadores del Estado',
-      'negativa_pension': 'Ley del Instituto de Seguridad y Servicios Sociales de los Trabajadores del Estado',
-      'descuentos_nomina_pension': 'Ley del Instituto de Seguridad y Servicios Sociales de los Trabajadores del Estado',
       
       // Actos de extradición - se debe buscar ley supletoria
       // 'procedimiento_extradicion': 'Ley de Extradición Internacional', // Removido: no tiene reglas de notificación
@@ -1915,13 +2810,10 @@ export default function Page() {
       'resolución de amparo': 'Ley de Amparo',
       'acuerdo de trámite': 'Ley de Amparo',
       'ley_entrada_vigor': 'Ley de Amparo',
-      'ley_acto_aplicacion': 'Ley de Amparo',
       'actos_22_constitucional': 'Ley de Amparo',
       'dilacion_excesiva': 'Ley de Amparo',
       'fecha_lejana_audiencia': 'Ley de Amparo',
       'omision_legislativa_absoluta': 'Ley de Amparo',
-      'omision_legislativa_relativa': 'Ley de Amparo',
-      'otros_actos': 'Ley de Amparo'
     };
     
     // Buscar coincidencia exacta primero
@@ -1991,6 +2883,17 @@ export default function Page() {
     
     // Determinar automáticamente la ley cuando se selecciona un acto reclamado
     if (e.target.name === 'resolucionImpugnada' && e.target.value) {
+      // Si se selecciona "Ley por su entrada en vigor", automáticamente asignar "quejoso"
+      if (e.target.value === 'ley_entrada_vigor') {
+        newFormData.parteRecurrente = 'quejoso';
+        newFormData.tipoFecha = 'entrada_vigor';
+      }
+      
+      // Si se selecciona "Actos del artículo 22 constitucional", automáticamente asignar "quejoso"
+      if (e.target.value === 'actos_22_constitucional') {
+        newFormData.parteRecurrente = 'quejoso';
+      }
+      
       const leyDeterminada = determinarLeyPorActo(e.target.value);
       console.log('Acto seleccionado:', e.target.value);
       console.log('Ley determinada:', leyDeterminada);
@@ -2107,7 +3010,7 @@ export default function Page() {
     if (!resultado) return '';
     
     // Determinar el género correcto según la parte recurrente
-    const esQuejoso = formData.parteRecurrente === 'quejoso';
+    const esQuejoso = formData.parteRecurrente === 'quejoso' || formData.parteRecurrente === 'representante_quejoso';
     const generoRecurrente = esQuejoso ? 'la recurrente' : 'el recurrente';
     const parteTexto = esQuejoso ? 'parte quejosa' : 'parte autoridad responsable';
     
@@ -2484,12 +3387,15 @@ export default function Page() {
       } else {
         // Caso 2: Actos específicos sin plazo
         const actosTexto = {
-          'actos_22_constitucional': 'actos que importen peligro de privación de la vida, u otros previstos en el artículo 22 constitucional',
+          'actos_22_constitucional': 'actos previstos en el artículo 22 constitucional',
           'dilacion_excesiva': 'dilación excesiva en el procedimiento'
         };
         
         const actoDescripcion = actosTexto[formData.resolucionImpugnada as keyof typeof actosTexto] || 'el acto reclamado';
-        texto = `\t\tLa presentación del amparo es oportuna, pues el promovente impugna ${actoDescripcion}, el cual puede impugnarse en cualquier tiempo de conformidad con el ${resultado.fundamento}.`;
+        // Determinar si es plural para concordancia
+        const esPluralActos = formData.resolucionImpugnada === 'actos_22_constitucional';
+        const articuloConcordancia = esPluralActos ? 'los cuales' : 'el cual';
+        texto = `\t\tLa presentación del amparo es oportuna, pues el promovente reclama ${actoDescripcion}, ${articuloConcordancia} puede${esPluralActos ? 'n' : ''} impugnarse en cualquier tiempo de conformidad con el ${resultado.fundamento}.`;
       }
       
       return texto;
@@ -2523,7 +3429,10 @@ export default function Page() {
             hayFinDeSemana = true;
           } else {
             const mesdia = `${String(fechaTemp.getMonth() + 1).padStart(2, '0')}-${String(fechaTemp.getDate()).padStart(2, '0')}`;
-            const diasAplicables = diasInhabilesData.filter(d => d.aplicaPara === 'todos' || d.aplicaPara === tipoUsuario);
+            const diasAplicables = diasInhabilesData.filter(d => 
+              (d.aplicaPara === 'todos' || d.aplicaPara === tipoUsuario) &&
+              !d.fundamento.includes('Ley Orgánica del Poder Judicial de la Federación')
+            );
             
             const diaFijo = diasAplicables.find(d => d.fecha === mesdia || d.fecha === fechaStr);
             if (diaFijo) {
@@ -2660,7 +3569,7 @@ export default function Page() {
     }
     
     // Caso especial: Ley con motivo de acto de aplicación
-    if (formData.resolucionImpugnada === 'ley_acto_aplicacion') {
+    if (false) { // Opción eliminada: ley_acto_aplicacion
       const oportunidadTexto = resultado.esOportuno ? 'oportuna' : 'extemporánea';
       
       // Verificar si se presentó antes de que iniciara el plazo
@@ -2688,14 +3597,12 @@ export default function Page() {
       const obtenerFraccionArticulo17 = () => {
         switch (formData.resolucionImpugnada) {
           case 'ley_entrada_vigor':
-          case 'ley_acto_aplicacion':
+          // case 'ley_acto_aplicacion': // Opción eliminada
           case 'procedimiento_extradicion':
             return 'I';
           case 'actos_22_constitucional':
             return 'IV';
-          case 'acto_restrictivo_libertad':
           case 'fecha_lejana_audiencia':
-          case 'omision_legislativa_relativa':
           default:
             return 'I'; // Por defecto fracción I para actos ordinarios
         }
@@ -2774,7 +3681,7 @@ export default function Page() {
     })();
     
     // Texto estándar para casos con plazo específico
-    let texto = `\t\tLa presentación del recurso de revisión ${formData.tipoRecurso} es ${resultado.esOportuno ? 'oportuna' : 'extemporánea'}, dado que la notificación ${formData.resolucionImpugnada === 'auto' ? 'del acuerdo impugnado' : formData.resolucionImpugnada === 'sentencia' ? 'de la sentencia impugnada' : 'de la interlocutoria dictada en el incidente de suspensión'} se realizó ${formData.formaNotificacion === 'personal' ? 'personalmente' : formData.formaNotificacion === 'oficio' ? 'por oficio' : formData.formaNotificacion === 'lista' ? 'por lista' : 'en forma electrónica'} a ${generoRecurrente}, ${parteTexto} en el juicio de amparo, el ${resultado.fechaNotificacionTexto}, y surtió efectos ${efectosTextoRevision}, de conformidad con el ${resultado.fundamentoSurte}, por lo que el plazo de ${resultado.plazoTexto} días que prevé el diverso artículo 86, párrafo primero, de esa ley, transcurrió del ${extraerDiaMes(resultado.fechaInicioTexto)} al ${extraerDiaMes(resultado.fechaFinTexto)}, todos del referido año, con exclusión de los días ${resultado.diasInhabilesTexto}.
+    let texto = `\t\tLa presentación de la demanda es ${resultado.esOportuno ? 'oportuna' : 'extemporánea'}, dado que la notificación del acto reclamado se realizó ${formData.formaNotificacion === 'personal' ? 'personalmente' : formData.formaNotificacion === 'oficio' ? 'por oficio' : formData.formaNotificacion === 'lista' ? 'por lista' : 'en forma electrónica'} a ${generoRecurrente}, ${parteTexto} en el juicio, el ${resultado.fechaNotificacionTexto}, y surtió efectos ${efectosTextoRevision}, de conformidad con el ${resultado.fundamentoSurte}, por lo que el plazo de ${resultado.plazoTexto} días que prevé el diverso artículo 17 de la Ley de Amparo, transcurrió del ${extraerDiaMes(resultado.fechaInicioTexto)} al ${extraerDiaMes(resultado.fechaFinTexto)}, todos del referido año, con exclusión de los días ${resultado.diasInhabilesTexto}.
 
 \t\tPor ende, si el referido medio de impugnación se interpuso el ${resultado.fechaPresentacionTexto}, como se aprecia ${resultado.formaPresentacion}, es inconcuso que su presentación es ${resultado.esOportuno ? 'oportuna' : 'extemporánea'}.`;
     
@@ -2790,34 +3697,153 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen">
-      <nav className="k-law-nav">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <Link href="/" className="text-2xl font-bold" style={{ color: '#808080' }}>
-                K-LAW
-              </Link>
-              <span className="k-law-badge">
+    <div className="min-h-screen" style={{ backgroundColor: '#F4EFE8', position: 'relative' }}>
+      {/* Patrón diagonal de fondo */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        opacity: 0.03,
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231C1C1C' fill-opacity='1'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`,
+        pointerEvents: 'none',
+        zIndex: 0
+      }} />
+      
+      {/* Franja dorada superior */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '122px',
+        backgroundColor: '#C5A770',
+        zIndex: 0,
+        pointerEvents: 'none'
+      }}></div>
+      
+      {/* Línea negra */}
+      <div style={{
+        position: 'absolute',
+        top: '122px',
+        left: 0,
+        right: 0,
+        height: '1.5px',
+        backgroundColor: '#1C1C1C',
+        zIndex: 1
+      }}></div>
+      
+      {/* Logo K-LAW en la parte izquierda */}
+      <div style={{ 
+        position: 'absolute',
+        top: '-43px',
+        left: '20px',
+        zIndex: 15
+      }}>
+        <Link href="/">
+          <img 
+            src="/LOGO-KLAW.gif" 
+            alt="K-LAW Logo" 
+            style={{ 
+              display: 'block',
+              width: 'auto',
+              height: 'auto',
+              maxWidth: '599px',
+              maxHeight: '240px',
+              cursor: 'pointer'
+            }}
+          />
+        </Link>
+      </div>
+      
+      {/* Contenido principal */}
+      <div style={{ position: 'relative', zIndex: 10, paddingTop: '122px' }}>
+        
+        {/* Nav minimalista */}
+        <nav style={{ padding: '1rem 0' }}>
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="flex justify-between items-center">
+              <span style={{ 
+                backgroundColor: 'transparent', 
+                color: '#1C1C1C', 
+                fontWeight: '500', 
+                fontSize: '0.875rem', 
+                fontFamily: 'Inter, sans-serif',
+                border: '1.5px solid #C5A770',
+                padding: '6px 16px',
+                borderRadius: '20px'
+              }}>
                 Modo: {tipoUsuario === 'litigante' ? 'Litigante' : 'Servidor Público'}
               </span>
+              <Link 
+                href="/calculadoras" 
+                className="text-sm px-4 py-2" 
+                style={{ 
+                  backgroundColor: '#1C1C1C', 
+                  color: '#FFFFFF', 
+                  borderRadius: '6px', 
+                  transition: 'all 0.3s ease', 
+                  cursor: 'pointer', 
+                  fontFamily: 'Inter, sans-serif' 
+                }} 
+                onMouseEnter={(e) => { 
+                  e.currentTarget.style.backgroundColor = '#C5A770'; 
+                  e.currentTarget.style.color = '#1C1C1C'; 
+                }} 
+                onMouseLeave={(e) => { 
+                  e.currentTarget.style.backgroundColor = '#1C1C1C'; 
+                  e.currentTarget.style.color = '#FFFFFF'; 
+                }}
+              >
+                Volver
+              </Link>
             </div>
-            <Link href="/calculadoras" className="k-law-button-secondary text-sm px-4 py-2">
-              Volver
-            </Link>
           </div>
-        </div>
-      </nav>
+        </nav>
+      </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <h1 className="k-law-title">Calculadora de Amparo Indirecto</h1>
+      <main className="max-w-7xl mx-auto px-4 py-8" style={{ position: 'relative', zIndex: 10 }}>
+        <div className="text-center mb-8">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl mb-2" style={{ 
+            fontFamily: 'Playfair Display, serif', 
+            fontWeight: '800',
+            color: '#1C1C1C',
+            letterSpacing: '-0.02em'
+          }}>
+            Amparo Indirecto
+          </h1>
+          <p className="text-sm md:text-base" style={{ 
+            fontFamily: 'Inter, sans-serif',
+            color: '#3D3D3D',
+            fontWeight: '300',
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase'
+          }}>
+            Sistema profesional de cálculo de plazos legales
+          </p>
+        </div>
         
-        <div className="grid lg:grid-cols-3 gap-6">
+        <section className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="k-law-card">
+            <form onSubmit={handleSubmit} style={{ 
+              backgroundColor: '#FFFFFF', 
+              borderRadius: '12px', 
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.08)', 
+              padding: '2.5rem', 
+              border: '1.5px solid #C5A770' 
+            }}>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Tipo de Demanda</label>
+                  <label className="block" style={{ 
+                    color: '#1C1C1C', 
+                    fontWeight: '600', 
+                    marginBottom: '0.5rem', 
+                    fontSize: '0.95rem', 
+                    fontFamily: 'Inter, sans-serif' 
+                  }}>
+                    Tipo de Demanda
+                  </label>
                   <input 
                     type="text" 
                     value="Amparo Indirecto" 
@@ -2825,42 +3851,208 @@ export default function Page() {
                     style={{ 
                       width: '100%', 
                       padding: '0.75rem', 
-                      border: '2px solid #E0E0E0', 
-                      borderRadius: '12px', 
-                      fontSize: '0.95rem', 
+                      border: '1.5px solid #1C1C1C', 
+                      borderRadius: '8px', 
+                      fontSize: '1rem', 
                       fontFamily: 'Inter, sans-serif', 
-                      color: '#333333', 
-                      backgroundColor: '#F3F4F6', 
-                      cursor: 'not-allowed',
-                      opacity: 0.6 
+                      color: '#3D3D3D', 
+                      backgroundColor: 'transparent', 
+                      cursor: 'not-allowed' 
                     }} 
                   />
                 </div>
                 
                 <div>
-                  <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Acto Reclamado</label>
-                  <select name="resolucionImpugnada" value={formData.resolucionImpugnada} onChange={handleChange} style={{ width: '100%', padding: '0.75rem', border: '2px solid #E0E0E0', borderRadius: '12px', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif', color: '#333333', backgroundColor: '#FFFFFF', transition: 'all 0.3s ease' }} onFocus={(e) => e.currentTarget.style.borderColor = '#C9A961'} onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} required>
-                    <option value="">Seleccione...</option>
-                    <option value="ley_entrada_vigor">Ley por su entrada en vigor</option>
-                    <option value="ley_acto_aplicacion">Ley, con motivo de un acto concreto de aplicación</option>
-                    <option value="actos_22_constitucional">Actos que importen peligro de privación de la vida, u otros previstos en el 22 constitucional</option>
-                    <option value="procedimiento_extradicion">Procedimiento de extradición</option>
-                    <option value="dilacion_excesiva">Dilación excesiva (considere el lapso que debe transcurrir para que se considere excesiva, conforme la ley la jurisprudencia)</option>
-                    <option value="fecha_lejana_audiencia">Señalamiento de una fecha lejana para la celebración de una audiencia</option>
-                    <option value="omision_legislativa_absoluta">Omisión legislativa absoluta</option>
-                    <option value="omision_legislativa_relativa">Omisión legislativa relativa</option>
-                    <option value="orden_aprehension">Orden de aprehensión</option>
-                    <option value="falta_emplazamiento">Falta de emplazamiento</option>
-                    <option value="omision_negativa_pension">Omisión o negativa a recibir trámite de pensión</option>
-                    <option value="negativa_pension">Negativa de pensión</option>
-                    <option value="descuentos_nomina_pension">Descuentos en el recibo de nómina o pensión</option>
-                    <option value="auto_vinculacion">Auto de vinculación o resolución que lo confirma</option>
-                    <option value="otros_actos">Otros actos</option>
-                  </select>
+                  <label className="block" style={{ 
+                    color: '#1C1C1C', 
+                    fontWeight: '600', 
+                    marginBottom: '0.5rem', 
+                    fontSize: '0.95rem', 
+                    fontFamily: 'Inter, sans-serif' 
+                  }}>
+                    Acto Reclamado
+                  </label>
+                  <div style={{ marginTop: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
+                      <span style={{ 
+                        color: '#1C1C1C', 
+                        fontWeight: '600', 
+                        fontSize: '0.95rem', 
+                        fontFamily: 'Inter, sans-serif', 
+                        marginTop: '0.5rem' 
+                      }}>
+                        El acto reclamado se ubica en alguno de los siguientes supuestos:
+                      </span>
+                      <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                          <input 
+                            type="radio" 
+                            name="tieneActoEspecial" 
+                            value="si" 
+                            checked={formData.tieneActoEspecial === 'si'} 
+                            onChange={handleChange} 
+                            style={{ marginRight: '0.5rem' }}
+                          />
+                          <span style={{ color: '#1C1C1C', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>SÍ</span>
+                        </label>
+                        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                          <input 
+                            type="radio" 
+                            name="tieneActoEspecial" 
+                            value="no" 
+                            checked={formData.tieneActoEspecial === 'no'} 
+                            onChange={handleChange} 
+                            style={{ marginRight: '0.5rem' }}
+                          />
+                          <span style={{ color: '#1C1C1C', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>NO</span>
+                        </label>
+                      </div>
+                    </div>
+                    <div style={{ marginTop: '0.75rem', paddingLeft: formData.tieneActoEspecial === 'si' ? '1rem' : '0' }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                        {formData.tieneActoEspecial === 'si' && (
+                          <input 
+                            type="checkbox" 
+                            name="resolucionImpugnada" 
+                            value="ley_entrada_vigor"
+                            checked={formData.resolucionImpugnada === 'ley_entrada_vigor'} 
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setFormData({ ...formData, resolucionImpugnada: 'ley_entrada_vigor' });
+                              }
+                            }}
+                            style={{ marginRight: '0.5rem', marginTop: '0.125rem' }}
+                          />
+                        )}
+                        <span style={{ 
+                          fontSize: '0.875rem', 
+                          color: formData.resolucionImpugnada && formData.resolucionImpugnada !== 'ley_entrada_vigor' ? '#A0A0A0' : '#3D3D3D', 
+                          fontFamily: 'Inter, sans-serif' 
+                        }}>
+                          {formData.tieneActoEspecial !== 'si' && '• '}Ley por su entrada en vigor
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                        {formData.tieneActoEspecial === 'si' && (
+                          <input 
+                            type="checkbox" 
+                            name="resolucionImpugnada" 
+                            value="actos_22_constitucional"
+                            checked={formData.resolucionImpugnada === 'actos_22_constitucional'} 
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setFormData({ ...formData, resolucionImpugnada: 'actos_22_constitucional' });
+                              }
+                            }}
+                            style={{ marginRight: '0.5rem', marginTop: '0.125rem' }}
+                          />
+                        )}
+                        <span style={{ 
+                          fontSize: '0.875rem', 
+                          color: formData.resolucionImpugnada && formData.resolucionImpugnada !== 'actos_22_constitucional' ? '#A0A0A0' : '#3D3D3D', 
+                          fontFamily: 'Inter, sans-serif' 
+                        }}>
+                          {formData.tieneActoEspecial !== 'si' && '• '}Actos que importen peligro de privación de la vida u otros previstos en el artículo 22 constitucional
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                        {formData.tieneActoEspecial === 'si' && (
+                          <input 
+                            type="checkbox" 
+                            name="resolucionImpugnada" 
+                            value="procedimiento_extradicion"
+                            checked={formData.resolucionImpugnada === 'procedimiento_extradicion'} 
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setFormData({ ...formData, resolucionImpugnada: 'procedimiento_extradicion' });
+                              }
+                            }}
+                            style={{ marginRight: '0.5rem', marginTop: '0.125rem' }}
+                          />
+                        )}
+                        <span style={{ 
+                          fontSize: '0.875rem', 
+                          color: formData.resolucionImpugnada && formData.resolucionImpugnada !== 'procedimiento_extradicion' ? '#A0A0A0' : '#3D3D3D', 
+                          fontFamily: 'Inter, sans-serif' 
+                        }}>
+                          {formData.tieneActoEspecial !== 'si' && '• '}Procedimiento de extradición
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                        {formData.tieneActoEspecial === 'si' && (
+                          <input 
+                            type="checkbox" 
+                            name="resolucionImpugnada" 
+                            value="omision_legislativa_absoluta"
+                            checked={formData.resolucionImpugnada === 'omision_legislativa_absoluta'} 
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setFormData({ ...formData, resolucionImpugnada: 'omision_legislativa_absoluta' });
+                              }
+                            }}
+                            style={{ marginRight: '0.5rem', marginTop: '0.125rem' }}
+                          />
+                        )}
+                        <span style={{ 
+                          fontSize: '0.875rem', 
+                          color: formData.resolucionImpugnada && formData.resolucionImpugnada !== 'omision_legislativa_absoluta' ? '#A0A0A0' : '#3D3D3D', 
+                          fontFamily: 'Inter, sans-serif' 
+                        }}>
+                          {formData.tieneActoEspecial !== 'si' && '• '}Omisión legislativa absoluta
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                        {formData.tieneActoEspecial === 'si' && (
+                          <input 
+                            type="checkbox" 
+                            name="resolucionImpugnada" 
+                            value="dilacion_excesiva"
+                            checked={formData.resolucionImpugnada === 'dilacion_excesiva'} 
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setFormData({ ...formData, resolucionImpugnada: 'dilacion_excesiva' });
+                              }
+                            }}
+                            style={{ marginRight: '0.5rem', marginTop: '0.125rem' }}
+                          />
+                        )}
+                        <span style={{ 
+                          fontSize: '0.875rem', 
+                          color: formData.resolucionImpugnada && formData.resolucionImpugnada !== 'dilacion_excesiva' ? '#A0A0A0' : '#3D3D3D', 
+                          fontFamily: 'Inter, sans-serif' 
+                        }}>
+                          {formData.tieneActoEspecial !== 'si' && '• '}Dilación excesiva
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                        {formData.tieneActoEspecial === 'si' && (
+                          <input 
+                            type="checkbox" 
+                            name="resolucionImpugnada" 
+                            value="fecha_lejana_audiencia"
+                            checked={formData.resolucionImpugnada === 'fecha_lejana_audiencia'} 
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setFormData({ ...formData, resolucionImpugnada: 'fecha_lejana_audiencia' });
+                              }
+                            }}
+                            style={{ marginRight: '0.5rem', marginTop: '0.125rem' }}
+                          />
+                        )}
+                        <span style={{ 
+                          fontSize: '0.875rem', 
+                          color: formData.resolucionImpugnada && formData.resolucionImpugnada !== 'fecha_lejana_audiencia' ? '#A0A0A0' : '#3D3D3D', 
+                          fontFamily: 'Inter, sans-serif' 
+                        }}>
+                          {formData.tieneActoEspecial !== 'si' && '• '}Señalamiento de una fecha lejana para audiencia
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 
                 {/* Campo condicional para acto concreto de aplicación */}
-                {formData.resolucionImpugnada === 'ley_acto_aplicacion' && (
+                {false && ( // Opción eliminada: ley_acto_aplicacion
                   <div className="k-law-alert">
                     <label className="k-law-label block">
                       Especifique el acto concreto de aplicación:
@@ -2871,11 +4063,16 @@ export default function Page() {
                       value={formData.actoConcreto}
                       onChange={handleChange}
                       placeholder="Ej: Multa por infracción de tránsito, Clausura de establecimiento, etc."
-                      style={{ width: '100%', padding: '0.75rem', border: '2px solid #E0E0E0', borderRadius: '12px', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif', color: '#333333', backgroundColor: '#FFFFFF', transition: 'all 0.3s ease' }} onFocus={(e) => e.currentTarget.style.borderColor = '#C9A961'} onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'}
+                      style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '0', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }} onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'}
                       required
                     />
                     {formData.leyActoConcreto && (
-                      <div className="mt-2 k-law-alert-success">
+                      <div className="mt-2" style={{
+                        backgroundColor: '#F0F9F0',
+                        border: '1.5px solid #C5A770',
+                        padding: '0.75rem',
+                        marginTop: '0.5rem'
+                      }}>
                         <p className="text-sm font-medium">Ley aplicable detectada:</p>
                         <p className="text-sm">{formData.leyActoConcreto}</p>
                       </div>
@@ -2909,17 +4106,46 @@ export default function Page() {
                   </div>
                 )}
                 
-                <div>
-                  <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Promovente</label>
-                  <select name="parteRecurrente" value={formData.parteRecurrente} onChange={handleChange} style={{ width: '100%', padding: '0.75rem', border: '2px solid #E0E0E0', borderRadius: '12px', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif', color: '#333333', backgroundColor: '#FFFFFF', transition: 'all 0.3s ease' }} onFocus={(e) => e.currentTarget.style.borderColor = '#C9A961'} onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} required>
-                    <option value="">Seleccione...</option>
-                    <option value="quejoso">Quejoso</option>
-                  </select>
-                </div>
+                {formData.resolucionImpugnada !== 'ley_entrada_vigor' && formData.resolucionImpugnada !== 'actos_22_constitucional' && (
+                  <div>
+                    <label className="block" style={{ 
+                      color: '#1C1C1C', 
+                      fontWeight: '600', 
+                      marginBottom: '0.5rem', 
+                      fontSize: '0.95rem', 
+                      fontFamily: 'Inter, sans-serif' 
+                    }}>
+                      Promovente
+                    </label>
+                    <select 
+                      name="parteRecurrente" 
+                      value={formData.parteRecurrente} 
+                      onChange={handleChange} 
+                      style={{ 
+                        border: '1.5px solid #1C1C1C', 
+                        borderRadius: '8px', 
+                        fontSize: '0.95rem', 
+                        transition: 'border-color 0.3s ease', 
+                        backgroundColor: 'transparent', 
+                        fontFamily: 'Inter, sans-serif', 
+                        color: '#1C1C1C', 
+                        width: '100%', 
+                        padding: '0.75rem' 
+                      }} 
+                      onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} 
+                      onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} 
+                      required>
+                      <option value="">Seleccione...</option>
+                      <option value="quejoso">Quejoso</option>
+                      <option value="representante_quejoso">Representante de la parte quejosa</option>
+                      <option value="tercero_extrano">Tercero extraño</option>
+                    </select>
+                  </div>
+                )}
                 
                 {formData.resolucionImpugnada === 'ley_entrada_vigor' ? (
                   <div>
-                    <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Fecha de entrada en vigor</label>
+                    <label className="block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Fecha en que entró en vigor la norma reclamada</label>
                     <input 
                       type="date" 
                       name="fechaNotificacion" 
@@ -2928,14 +4154,19 @@ export default function Page() {
                         const newFormData = { ...formData, fechaNotificacion: e.target.value, tipoFecha: 'entrada_vigor' };
                         setFormData(newFormData);
                       }} 
-                      style={{ width: '100%', padding: '0.75rem', border: '2px solid #E0E0E0', borderRadius: '12px', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif', color: '#333333', backgroundColor: '#FFFFFF', transition: 'all 0.3s ease' }} 
-                      onFocus={(e) => e.currentTarget.style.borderColor = '#C9A961'} 
-                      onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} 
+                      style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '0', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }} 
+                      onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} 
+                      onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} 
                       required 
                     />
                   </div>
                 ) : formData.resolucionImpugnada === 'actos_22_constitucional' ? (
-                  <div className="k-law-alert-warning">
+                  <div style={{
+                    backgroundColor: '#FFF9F0',
+                    border: '1.5px solid #C5A770',
+                    padding: '1rem',
+                    marginTop: '1rem'
+                  }}>
                     <p className="text-sm">
                       <strong>Acto reclamable en cualquier tiempo</strong><br/>
                       Los actos que importen peligro de privación de la vida pueden reclamarse en cualquier tiempo conforme al artículo 17, fracción IV, de la Ley de Amparo.
@@ -2943,9 +4174,18 @@ export default function Page() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {formData.resolucionImpugnada !== 'ley_acto_aplicacion' && (
-                      <div className={formData.tipoFecha !== '' && formData.tipoFecha !== 'desconoce' ? 'opacity-50' : ''}>
-                        <label className="flex items-center">
+                    <div style={{ 
+                      color: '#1C1C1C', 
+                      fontWeight: '600', 
+                      marginBottom: '0.5rem', 
+                      fontSize: '0.95rem', 
+                      fontFamily: 'Inter, sans-serif' 
+                    }}>
+                      Seleccione:
+                    </div>
+                    {formData.tipoFecha !== 'fecha' && (
+                      <div style={{ opacity: formData.tipoFecha === 'fecha' ? '0.5' : '1' }}>
+                        <label className="flex items-center" style={{ cursor: 'pointer' }}>
                           <input 
                             type="radio" 
                             name="tipoFecha" 
@@ -2954,12 +4194,17 @@ export default function Page() {
                             onChange={handleChange} 
                             className="mr-2"
                           />
-                          Se desconoce el acto reclamado
+                          <span style={{ 
+                            fontWeight: formData.tipoFecha === 'desconoce' ? '600' : 'normal',
+                            color: formData.tipoFecha === 'fecha' ? '#999' : '#1C1C1C'
+                          }}>
+                            Se desconoce el acto reclamado
+                          </span>
                         </label>
                       </div>
                     )}
-                    <div className={formData.tipoFecha !== '' && formData.tipoFecha !== 'fecha' ? 'opacity-50' : ''}>
-                      <label className="flex items-center">
+                    <div>
+                      <label className="flex items-center" style={{ cursor: 'pointer' }}>
                         <input 
                           type="radio" 
                           name="tipoFecha" 
@@ -2968,130 +4213,400 @@ export default function Page() {
                           onChange={handleChange} 
                           className="mr-2"
                         />
-                        {formData.resolucionImpugnada === 'ley_acto_aplicacion' ? 'Fecha de notificación del acto concreto de aplicación de la norma' : 'Fecha de notificación'}
+                        <span style={{ 
+                          fontWeight: formData.tipoFecha === 'fecha' ? '600' : 'normal',
+                          color: '#1C1C1C'
+                        }}>
+                          Fecha de notificación
+                        </span>
                       </label>
                       {formData.tipoFecha === 'fecha' && (
-                        <input 
-                          type="date" 
-                          name="fechaNotificacion" 
-                          value={formData.fechaNotificacion} 
-                          onChange={handleChange} 
-                          style={{ width: '100%', padding: '0.75rem', border: '2px solid #E0E0E0', borderRadius: '12px', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif', color: '#333333', backgroundColor: '#FFFFFF', transition: 'all 0.3s ease', marginTop: '0.25rem' }} 
-                          onFocus={(e) => e.currentTarget.style.borderColor = '#C9A961'} 
-                          onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} 
-                          required 
-                        />
+                        <>
+                          <input 
+                            type="date" 
+                            name="fechaNotificacion" 
+                            value={formData.fechaNotificacion} 
+                            onChange={handleChange} 
+                            style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '0', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease', marginTop: '0.25rem' }} 
+                            onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} 
+                            onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} 
+                            required 
+                          />
+                          {formData.resolucionImpugnada !== 'ley_entrada_vigor' && (
+                            <div style={{ marginTop: '1rem' }}>
+                              <SelectorLeyNotificacion 
+                                tipoNotificacion={formData.formaNotificacion}
+                                leySeleccionada={formData.leyNotificacion}
+                                onLeySeleccionada={(ley) => {
+                                  setFormData(prev => ({...prev, leyNotificacion: ley}));
+                                }}
+                              />
+                            </div>
+                          )}
+                          {formData.resolucionImpugnada !== 'ley_entrada_vigor' && formData.resolucionImpugnada !== 'actos_22_constitucional' && (
+                            <div style={{ marginTop: '1rem' }}>
+                              <label className="block" style={{ 
+                                color: '#1C1C1C', 
+                                fontWeight: '600', 
+                                marginBottom: '0.5rem', 
+                                fontSize: '0.95rem', 
+                                fontFamily: 'Inter, sans-serif' 
+                              }}>
+                                Forma de Notificación
+                              </label>
+                              <select 
+                                name="formaNotificacion" 
+                                value={formData.formaNotificacion} 
+                                onChange={handleChange} 
+                                style={{ 
+                                  border: '1.5px solid #1C1C1C', 
+                                  borderRadius: '8px', 
+                                  fontSize: '0.95rem', 
+                                  transition: 'border-color 0.3s ease', 
+                                  backgroundColor: 'transparent', 
+                                  fontFamily: 'Inter, sans-serif', 
+                                  color: '#1C1C1C', 
+                                  width: '100%', 
+                                  padding: '0.75rem' 
+                                }} 
+                                onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} 
+                                onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} 
+                                required>
+                                <option value="">Seleccione...</option>
+                                {formData.leyNotificacion === 'Código Nacional de Procedimientos Penales' ? (
+                                  <>
+                                    <option value="personal_audiencia">Personalmente, en audiencia</option>
+                                    <option value="personal_correo_electronico">Personalmente, por correo electrónico</option>
+                                    <option value="personal_telefono">Personalmente, por teléfono</option>
+                                    <option value="personal_domicilio">Personalmente, en su domicilio</option>
+                                    <option value="personal_instructivo">Por instructivo en su domicilio</option>
+                                    <option value="personal_instalaciones">Personalmente, en las instalaciones del órgano jurisdiccional</option>
+                                    <option value="personal_detencion">Personalmente, en el lugar de la detención</option>
+                                    <option value="correo_certificado">Por correo certificado (poner fecha de recepción)</option>
+                                    <option value="edictos">Por edictos</option>
+                                    <option value="boletin_jurisdiccional">Por Boletín Jurisdiccional</option>
+                                    <option value="estrados">Por estrados</option>
+                                    <option value="lista">Por lista</option>
+                                    <option value="electronica">Por medios electrónicos (poner fecha en que por sistema se confirmó la recepción)</option>
+                                  </>
+                                ) : formData.leyNotificacion === 'Código Federal de Procedimientos Penales' ? (
+                                  <>
+                                    <option value="personal">Personal</option>
+                                    <option value="cedula">Por cédula</option>
+                                    <option value="estrados">Por estrados</option>
+                                    <option value="lista">Por lista</option>
+                                    <option value="boletin_federacion">Por Boletín Judicial de la Federación</option>
+                                    <option value="edictos">Por edictos</option>
+                                  </>
+                                ) : formData.leyNotificacion === 'Código Federal de Procedimientos Civiles' ? (
+                                  <>
+                                    <option value="personal">Personal</option>
+                                    <option value="cedula">Por cédula</option>
+                                    <option value="estrados">Por estrados</option>
+                                    <option value="boletin_judicial">Por boletín judicial</option>
+                                    <option value="edictos">Por edictos</option>
+                                    <option value="correo_certificado">Por correo certificado</option>
+                                    <option value="telegrama">Por telegrama</option>
+                                    <option value="rotulon">Por rotulón</option>
+                                    <option value="instructivo">Por instructivo</option>
+                                  </>
+                                ) : formData.leyNotificacion === 'Código de Comercio' ? (
+                                  <>
+                                    <option value="personal">Notificaciones personales</option>
+                                    <option value="boletin_judicial">Por Boletín Judicial</option>
+                                    <option value="gaceta_judicial">Por Gaceta Judicial</option>
+                                    <option value="periodico_judicial">Por Periódico Judicial</option>
+                                    <option value="estrados">Por estrados</option>
+                                    <option value="correo">Por correo</option>
+                                    <option value="telegrafo">Por telégrafo</option>
+                                    <option value="edictos">Por edictos</option>
+                                    <option value="audiencia">En audiencia</option>
+                                  </>
+                                ) : formData.leyNotificacion === 'Ley Federal de Procedimiento Administrativo' ? (
+                                  <>
+                                    <option value="personal">Personal</option>
+                                    <option value="correo_certificado_acuse">Por correo certificado con acuse de recibo</option>
+                                    <option value="mensajeria_acuse">Por mensajería, con acuse de recibo</option>
+                                    <option value="estrados">Por estrados</option>
+                                    <option value="edictos">Por edictos</option>
+                                    <option value="medios_electronicos">Por medios electrónicos</option>
+                                    <option value="oficio">Por oficio</option>
+                                    <option value="correo_ordinario">Por correo ordinario</option>
+                                    <option value="telegrama">Por telegrama</option>
+                                    <option value="medios_magneticos_digitales">a través de medios magnéticos, digitales, electrónicos, ópticos, magneto ópticos o de cualquier otra naturaleza en los términos del Código</option>
+                                    <option value="buzon_imss">a través del Buzón IMSS</option>
+                                  </>
+                                ) : formData.leyNotificacion === 'Código Fiscal de la Federación' ? (
+                                  <>
+                                    <option value="personal">Personal</option>
+                                    <option value="correo_certificado">Por correo certificado</option>
+                                    <option value="estrados">Por estrados (en la fecha de notificación ponga la del decimoprimer día contado a partir del día siguiente a aquél en el que se hubiera publicado el documento)</option>
+                                    <option value="edictos">Por edictos</option>
+                                    <option value="buzon_tributario">Por buzón tributario</option>
+                                    <option value="correo_ordinario">Por correo ordinario</option>
+                                    <option value="telegrama">Por telegrama</option>
+                                  </>
+                                ) : formData.leyNotificacion === 'Ley Federal del Trabajo' ? (
+                                  <>
+                                    <option value="personal">Personal</option>
+                                    <option value="boletin">Por boletín</option>
+                                    <option value="estrados">Por estrados</option>
+                                    <option value="lista">Por lista</option>
+                                    <option value="via_electronica">Por vía electrónica</option>
+                                    <option value="oficio">Por oficio</option>
+                                    <option value="buzon_electronico">Por buzón electrónico</option>
+                                  </>
+                                ) : formData.leyNotificacion === 'Ley Federal de los Trabajadores al Servicio del Estado, Reglamentaria del Apartado B) del Artículo 123 Constitucional' ? (
+                                  <>
+                                    <option value="personal">Personal</option>
+                                    <option value="boletin">Por boletín</option>
+                                    <option value="estrados">Por estrados</option>
+                                    <option value="circular">Por circular</option>
+                                  </>
+                                ) : formData.leyNotificacion === 'Ley General de Educación' ? (
+                                  <>
+                                    <option value="visita_vigilancia">Mediante visita de vigilancia</option>
+                                    <option value="otra_lfpa">Otra forma de notificación de las previstas en la LFPA</option>
+                                  </>
+                                ) : formData.leyNotificacion === 'Ley del Seguro Social' ? (
+                                  <>
+                                    <option value="medios_magneticos_digitales">a través de medios magnéticos, digitales, electrónicos, ópticos, magneto ópticos o de cualquier otra naturaleza</option>
+                                    <option value="buzon_imss">a través del Buzón IMSS</option>
+                                    <option value="forma_distinta">Si la notificación se le practicó en forma distinta, entonces la ley que rige el acto puede ser alguna que lo haga en forma supletoria, considere lo siguiente: a) el CFF es supletorio en cuanto se trate de actos emitidos como ente fiscalizador, b) la LFPA es aplicable supletoriamente si se trata de actos emitidos como ente asegurador, c) en lo restante es aplicable la LFT</option>
+                                  </>
+                                ) : formData.leyNotificacion === 'Ley de Navegación y Comercio Marítimos' ? (
+                                  <>
+                                    {/* Opciones específicas de LNCM */}
+                                    <option value="personal">Personal</option>
+                                    <option value="correo_certificado">Por correo certificado</option>
+                                    <option value="edictos">Por edictos</option>
+                                    <option value="estrados">Por estrados</option>
+                                    
+                                    {/* Separador visual */}
+                                    <option disabled>--- Otras previstas en la LFPA ---</option>
+                                    
+                                    {/* Catálogo completo de LFPA */}
+                                    <option value="personal_lfpa">Personal (LFPA)</option>
+                                    <option value="correo_certificado_acuse_lfpa">Por correo certificado con acuse de recibo (LFPA)</option>
+                                    <option value="mensajeria_acuse_lfpa">Por mensajería, con acuse de recibo (LFPA)</option>
+                                    <option value="estrados_lfpa">Por estrados (LFPA)</option>
+                                    <option value="edictos_lfpa">Por edictos (LFPA)</option>
+                                    <option value="electronica_lfpa">Por medios electrónicos (LFPA)</option>
+                                    <option value="oficio_lfpa">Por oficio (LFPA)</option>
+                                    <option value="correo_ordinario_lfpa">Por correo ordinario (LFPA)</option>
+                                    <option value="telegrama_lfpa">Por telegrama (LFPA)</option>
+                                    
+                                    <option value="forma_distinta_navegacion">Si la notificación se le practicó en forma distinta, considere la aplicabilidad de la LFPA conforme lo previsto en el artículo 6, fracción VI, de la Ley de Navegación y Comercio Marítimos</option>
+                                  </>
+                                ) : formData.leyNotificacion === 'Código Nacional de Procedimientos Civiles y Familiares' ? (
+                                  <>
+                                    <option value="personalmente">Personalmente</option>
+                                    <option value="comunicacion_judicial">Por medio de comunicación judicial, según corresponda</option>
+                                    <option value="edictos">Por edictos</option>
+                                    <option value="correo_certificado">Por correo certificado</option>
+                                    <option value="telegrafo">Por telégrafo</option>
+                                    <option value="audiencia_oral">En audiencia en juicio oral</option>
+                                    <option value="medio_electronico">Por cualquier otro medio de comunicación electrónica o sistema de justicia digital, mediante dispositivos físicos o móviles, autorizados en los lineamientos aprobados por el Consejo de la Judicatura conforme a la Ley Orgánica del Poder Judicial correspondiente</option>
+                                    <option value="adhesion">Por adhesión</option>
+                                    <option value="cedula">Por cédula</option>
+                                    <option value="instructivo">Por instructivo</option>
+                                    <option value="correo_electronico">Por correo electrónico</option>
+                                  </>
+                                ) : formData.leyNotificacion === 'Ley Federal de Procedimiento Contencioso Administrativo' ? (
+                                  <>
+                                    <option value="boletin_jurisdiccional">Por Boletín Jurisdiccional</option>
+                                    <option value="personales">Personales</option>
+                                  </>
+                                ) : formData.leyNotificacion === 'Ley Aduanera' ? (
+                                  <>
+                                    <option value="notificaciones_electronicas">notificaciones electrónicas</option>
+                                    <option value="estrados">Por estrados</option>
+                                    <option value="avisos_autorizacion">Los avisos de autorización y de revocación</option>
+                                    <option value="forma_distinta_aduanera">Si la notificación se le practicó en forma distinta, considere la aplicabilidad del CFF conforme lo previsto en el artículo 1 de la Ley Aduanera</option>
+                                  </>
+                                ) : (
+                                  <>
+                                    <option value="personal">Personal</option>
+                                    <option value="oficio">Oficio</option>
+                                    <option value="lista">Lista</option>
+                                    <option value="estrados">Estrados</option>
+                                    <option value="electronica">Electrónica (Buzón electrónico o sistema de seguridad)</option>
+                                    <option value="otros_medios_tics">Otros medios electrónicos</option>
+                                  </>
+                                )}
+                              </select>
+                              
+                              {/* Dropdown cascada para LFPA cuando se selecciona "otra_lfpa" en LGE */}
+                              {formData.leyNotificacion === 'Ley General de Educación' && formData.formaNotificacion === 'otra_lfpa' && (
+                                <div style={{ marginTop: '1rem' }}>
+                                  {/* Advertencia LFPA */}
+                                  <div style={{
+                                    backgroundColor: '#FEE2E2',
+                                    border: '2px solid #DC2626',
+                                    borderRadius: '8px',
+                                    padding: '1rem',
+                                    marginBottom: '1rem'
+                                  }}>
+                                    <p style={{
+                                      color: '#DC2626',
+                                      fontSize: '0.875rem',
+                                      fontFamily: 'Inter, sans-serif',
+                                      fontWeight: '600',
+                                      margin: 0,
+                                      lineHeight: '1.4'
+                                    }}>
+                                      ⚠️ <strong>IMPORTANTE:</strong> El CFPC se aplica supletoriamente para determinar cuándo surten efectos las notificaciones, pero se recomienda tomar en cuenta que a pesar de que no existe declaratoria de vigencia del CNPCF a nivel federal existen tribunales que lo toman en cuenta en lo que ve a las reglas de notificación.
+                                    </p>
+                                  </div>
+                                  
+                                  {/* Selector específico de LFPA */}
+                                  <label className="block" style={{ 
+                                    color: '#1C1C1C', 
+                                    fontWeight: '600', 
+                                    marginBottom: '0.5rem', 
+                                    fontSize: '0.95rem', 
+                                    fontFamily: 'Inter, sans-serif' 
+                                  }}>
+                                    Forma específica de notificación (LFPA)
+                                  </label>
+                                  <select
+                                    name="formaNotificacionLFPA"
+                                    value={formData.formaNotificacionLFPA || ''}
+                                    onChange={handleChange}
+                                    style={{
+                                      border: '1.5px solid #1C1C1C',
+                                      borderRadius: '8px',
+                                      fontSize: '0.95rem',
+                                      transition: 'border-color 0.3s ease',
+                                      backgroundColor: 'transparent',
+                                      fontFamily: 'Inter, sans-serif',
+                                      color: '#1C1C1C',
+                                      width: '100%',
+                                      padding: '0.75rem'
+                                    }}
+                                    onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'}
+                                    onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'}
+                                  >
+                                    <option value="">Seleccione...</option>
+                                    <option value="personal">Personal</option>
+                                    <option value="correo_certificado_acuse">Por correo certificado con acuse de recibo</option>
+                                    <option value="mensajeria_acuse">Por mensajería, con acuse de recibo</option>
+                                    <option value="estrados">Por estrados</option>
+                                    <option value="edictos">Por edictos</option>
+                                    <option value="medios_electronicos">Por medios electrónicos</option>
+                                    <option value="oficio">Por oficio</option>
+                                    <option value="correo_ordinario">Por correo ordinario</option>
+                                    <option value="telegrama">Por telegrama</option>
+                                    <option value="medios_magneticos_digitales">a través de medios magnéticos, digitales, electrónicos, ópticos, magneto ópticos o de cualquier otra naturaleza en los términos del Código</option>
+                                    <option value="buzon_imss">a través del Buzón IMSS</option>
+                                  </select>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
-                    <div className={formData.tipoFecha !== '' && formData.tipoFecha !== 'conocimiento' ? 'opacity-50' : ''}>
-                      <label className="flex items-center">
-                        <input 
-                          type="radio" 
-                          name="tipoFecha" 
-                          value="conocimiento" 
-                          checked={formData.tipoFecha === 'conocimiento'} 
-                          onChange={handleChange} 
-                          className="mr-2"
-                        />
-                        {formData.resolucionImpugnada === 'ley_acto_aplicacion' ? 'Fecha de conocimiento completo del acto de aplicación de la norma' : 'Fecha en que se tuvo conocimiento completo (no hubo notificación)'}
-                      </label>
-                      {formData.tipoFecha === 'conocimiento' && (
-                        <input 
-                          type="date" 
-                          name="fechaNotificacion" 
-                          value={formData.fechaNotificacion} 
-                          onChange={handleChange} 
-                          style={{ width: '100%', padding: '0.75rem', border: '2px solid #E0E0E0', borderRadius: '12px', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif', color: '#333333', backgroundColor: '#FFFFFF', transition: 'all 0.3s ease', marginTop: '0.25rem' }} 
-                          onFocus={(e) => e.currentTarget.style.borderColor = '#C9A961'} 
-                          onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} 
-                          required 
-                        />
-                      )}
-                    </div>
+                    {formData.tipoFecha !== 'fecha' && (
+                      <div style={{ opacity: formData.tipoFecha === 'fecha' ? '0.5' : '1' }}>
+                        <label className="flex items-center" style={{ cursor: 'pointer' }}>
+                          <input 
+                            type="radio" 
+                            name="tipoFecha" 
+                            value="conocimiento" 
+                            checked={formData.tipoFecha === 'conocimiento'} 
+                            onChange={handleChange} 
+                            className="mr-2"
+                          />
+                          <span style={{ 
+                            fontWeight: formData.tipoFecha === 'conocimiento' ? '600' : 'normal',
+                            color: formData.tipoFecha === 'fecha' ? '#999' : '#1C1C1C'
+                          }}>
+                            Fecha en que se tuvo conocimiento
+                          </span>
+                        </label>
+                        {formData.tipoFecha === 'conocimiento' && (
+                          <input 
+                            type="date" 
+                            name="fechaNotificacion" 
+                            value={formData.fechaNotificacion} 
+                            onChange={handleChange} 
+                            style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '0', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease', marginTop: '0.25rem' }} 
+                            onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} 
+                            onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} 
+                            required 
+                          />
+                        )}
+                      </div>
+                    )}
+                    {formData.tipoFecha === 'fecha' && (
+                      <>
+                        <div style={{ opacity: '0.5' }}>
+                          <label className="flex items-center" style={{ cursor: 'pointer' }}>
+                            <input 
+                              type="radio" 
+                              name="tipoFecha" 
+                              value="desconoce" 
+                              checked={formData.tipoFecha === 'desconoce'} 
+                              onChange={handleChange} 
+                              className="mr-2"
+                            />
+                            <span style={{ color: '#999' }}>
+                              Se desconoce el acto reclamado
+                            </span>
+                          </label>
+                        </div>
+                        <div style={{ opacity: '0.5' }}>
+                          <label className="flex items-center" style={{ cursor: 'pointer' }}>
+                            <input 
+                              type="radio" 
+                              name="tipoFecha" 
+                              value="conocimiento" 
+                              checked={formData.tipoFecha === 'conocimiento'} 
+                              onChange={handleChange} 
+                              className="mr-2"
+                            />
+                            <span style={{ color: '#999' }}>
+                              Fecha en que se tuvo conocimiento
+                            </span>
+                          </label>
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
-                
-                
-                {formData.resolucionImpugnada !== 'ley_entrada_vigor' && formData.resolucionImpugnada !== 'actos_22_constitucional' && (
-                  <div>
-                    <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Forma de Notificación</label>
-                    {(formData.tipoFecha === 'desconoce' || formData.tipoFecha === 'conocimiento') ? (
-                    <select 
-                      name="formaNotificacion" 
-                      value="no_aplica"
-                      style={{ width: '100%', padding: '0.75rem', border: '2px solid #e5e7eb', borderRadius: '12px', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif', color: '#6b7280', backgroundColor: '#f3f4f6', cursor: 'not-allowed' }}
-                      disabled
-                    >
-                      <option value="no_aplica">No aplica</option>
-                    </select>
-                  ) : (
-                    <select 
-                      name="formaNotificacion" 
-                      value={formData.formaNotificacion} 
-                      onChange={handleChange} 
-                      style={{ width: '100%', padding: '0.75rem', border: '2px solid #E0E0E0', borderRadius: '12px', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif', color: '#333333', backgroundColor: '#FFFFFF', transition: 'all 0.3s ease' }}
-                      onFocus={(e) => e.currentTarget.style.borderColor = '#C9A961'}
-                      onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'}
-                      required
-                    >
-                      <option value="">Seleccione...</option>
-                      <option value="personal">Personalmente</option>
-                      <option value="oficio">Por oficio</option>
-                      <option value="lista">Por lista</option>
-                      <option value="electronica">En forma electrónica</option>
-                    </select>
-                  )}
-                  </div>
-                )}
-                
-                <SelectorLeyNotificacion 
-                  tipoNotificacion={formData.formaNotificacion}
-                  leySeleccionada={formData.leyNotificacion}
-                  onLeySeleccionada={(regla) => setReglaLey(regla)}
-                />
-                
-                <BuscadorLeyNotificacion 
-                  onLeyEncontrada={(ley) => {
-                    setFormData(prev => ({
-                      ...prev,
-                      leyNotificacion: ley
-                    }))
-                  }}
-                />
                 
                 {tipoUsuario === 'servidor' && (
                   <>
-                    <div>
-                      <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Fecha de Presentación</label>
-                      <input 
-                        type="date" 
-                        name="fechaPresentacion" 
-                        value={formData.fechaPresentacion} 
-                        onChange={handleChange} 
-                        style={{ width: '100%', padding: '0.75rem', border: '2px solid #E0E0E0', borderRadius: '12px', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif', color: '#333333', backgroundColor: '#FFFFFF', transition: 'all 0.3s ease' }}
-                        onFocus={(e) => e.currentTarget.style.borderColor = '#C9A961'}
-                        onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'}
-                        required={tipoUsuario === 'servidor'} 
-                      />
-                    </div>
+                    {formData.resolucionImpugnada !== 'actos_22_constitucional' && (
+                      <div>
+                        <label className="block" style={{ color: '#1C1C1C', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>Fecha de Presentación</label>
+                        <input 
+                          type="date" 
+                          name="fechaPresentacion" 
+                          value={formData.fechaPresentacion} 
+                          onChange={handleChange} 
+                          style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '0', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }}
+                          onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'}
+                          onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'}
+                          required={tipoUsuario === 'servidor' && formData.resolucionImpugnada !== 'actos_22_constitucional'} 
+                        />
+                      </div>
+                    )}
                     
                     {(formData.tipoFecha === 'fecha' || formData.resolucionImpugnada === 'ley_entrada_vigor') && (
                       <div className="md:col-span-2">
-                        <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Forma de Presentación</label>
+                        <label className="block" style={{ color: '#1C1C1C', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>Forma de Presentación</label>
                         <select 
                           name="formaPresentacion" 
                           value={formData.formaPresentacion} 
                           onChange={handleChange} 
-                          style={{ width: '100%', padding: '0.75rem', border: '2px solid #E0E0E0', borderRadius: '12px', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif', color: '#333333', backgroundColor: '#FFFFFF', transition: 'all 0.3s ease' }}
-                          onFocus={(e) => e.currentTarget.style.borderColor = '#C9A961'}
-                          onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'}
+                          style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '0', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }}
+                          onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'}
+                          onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'}
                           required={tipoUsuario === 'servidor'}>
                           <option value="">Seleccione...</option>
                           <option value="escrito">Por escrito</option>
-                          <option value="correo">Por correo</option>
-                          {formData.resolucionImpugnada !== 'ley_entrada_vigor' && formData.resolucionImpugnada !== 'actos_22_constitucional' && (
-                            <option value="momento">Al momento de ser notificado</option>
-                          )}
                           {formData.resolucionImpugnada === 'actos_22_constitucional' && (
                             <option value="personal">Personalmente</option>
                           )}
@@ -3103,39 +4618,112 @@ export default function Page() {
                 )}
               </div>
               
-              <button type="submit" disabled={calculando} className="mt-6 w-full k-law-button">
-                {calculando ? 'Calculando...' : 'Calcular Plazo'}
-              </button>
+              <div className="mt-8 text-center">
+                <button 
+                  type="submit" 
+                  disabled={calculando} 
+                  style={{ 
+                    width: '100%', 
+                    backgroundColor: calculando ? '#E5E5E5' : '#1C1C1C', 
+                    color: calculando ? '#999' : '#F4EFE8', 
+                    padding: '1rem 2rem', 
+                    borderRadius: '25px', 
+                    fontSize: '1rem', 
+                    fontWeight: '500', 
+                    transition: 'all 0.3s ease', 
+                    cursor: calculando ? 'not-allowed' : 'pointer', 
+                    border: '1.5px solid #1C1C1C', 
+                    fontFamily: 'Inter, sans-serif',
+                    letterSpacing: '0.02em' 
+                  }} 
+                  onMouseEnter={(e) => { 
+                    if (!calculando) { 
+                      e.currentTarget.style.backgroundColor = '#C5A770'; 
+                      e.currentTarget.style.borderColor = '#C5A770';
+                      e.currentTarget.style.color = '#1C1C1C';
+                    } 
+                  }} 
+                  onMouseLeave={(e) => { 
+                    if (!calculando) { 
+                      e.currentTarget.style.backgroundColor = '#1C1C1C'; 
+                      e.currentTarget.style.borderColor = '#1C1C1C';
+                      e.currentTarget.style.color = '#F4EFE8';
+                    } 
+                  }}
+                >
+                  {calculando ? 'Calculando...' : 'Calcular Plazo'}
+                </button>
+              </div>
             </form>
           </div>
           
           <div className="lg:col-span-1">
-            <div className="k-law-card">
-              <h3 className="k-law-subtitle">Días Inhábiles Adicionales</h3>
+            <div style={{ backgroundColor: 'transparent', borderRadius: '30px', padding: '2rem', border: '2px solid #C5A770' }}>
+              <h3 style={{ color: '#1C1C1C', fontSize: '1.25rem', fontWeight: '700', fontFamily: 'Playfair Display, serif', marginBottom: '1rem' }}>Días Inhábiles Adicionales</h3>
               <div className="space-y-3">
                 <div>
-                  <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Agregar día inhábil</label>
+                  <label className="label block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>Agregar día inhábil</label>
                   <div className="flex gap-2">
-                    <input type="date" value={nuevoDiaInhabil} onChange={(e) => setNuevoDiaInhabil(e.target.value)} style={{ flex: 1, padding: '0.5rem', border: '2px solid #E0E0E0', borderRadius: '12px', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif', color: '#333333', backgroundColor: '#FFFFFF', transition: 'all 0.3s ease' }} onFocus={(e) => e.currentTarget.style.borderColor = '#C9A961'} onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} />
-                    <button type="button" onClick={agregarDiaInhabil} className="k-law-button-small">
+                    <input type="date" value={nuevoDiaInhabil} onChange={(e) => setNuevoDiaInhabil(e.target.value)} style={{ flex: 1, padding: '0.5rem', border: '1.5px solid #1C1C1C', borderRadius: '10px', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }} onFocus={(e) => e.target.style.borderColor = '#C5A770'} onBlur={(e) => e.target.style.borderColor = '#1C1C1C'} />
+                    <button type="button" onClick={agregarDiaInhabil} style={{ backgroundColor: '#1C1C1C', color: '#F4EFE8', padding: '0.5rem 1rem', borderRadius: '25px', fontSize: '0.875rem', fontWeight: '500', border: '1.5px solid #1C1C1C', cursor: 'pointer', transition: 'all 0.3s ease', fontFamily: 'Inter, sans-serif' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#C5A770'; e.currentTarget.style.borderColor = '#C5A770'; e.currentTarget.style.color = '#1C1C1C'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#1C1C1C'; e.currentTarget.style.borderColor = '#1C1C1C'; e.currentTarget.style.color = '#F4EFE8'; }}>
                       Agregar
                     </button>
                   </div>
                 </div>
                 
                 <div>
-                  <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Fundamento legal</label>
-                  <input type="text" value={fundamentoAdicional} onChange={(e) => setFundamentoAdicional(e.target.value)} placeholder="Ej: Circular CCNO/1/2024" style={{ width: '100%', padding: '0.5rem', border: '2px solid #E0E0E0', borderRadius: '12px', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif', color: '#333333', backgroundColor: '#FFFFFF', transition: 'all 0.3s ease' }} onFocus={(e) => e.currentTarget.style.borderColor = '#C9A961'} onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} />
+                  <label className="block" style={{ 
+                    color: '#1C1C1C', 
+                    fontWeight: '600', 
+                    marginBottom: '0.5rem', 
+                    fontSize: '0.875rem', 
+                    fontFamily: 'Inter, sans-serif' 
+                  }}>
+                    Fundamento legal
+                  </label>
+                  <input 
+                    type="text" 
+                    value={fundamentoAdicional} 
+                    onChange={(e) => setFundamentoAdicional(e.target.value)} 
+                    placeholder="Ej: Circular CCNO/1/2024" 
+                    style={{ 
+                      width: '100%', 
+                      padding: '0.5rem', 
+                      border: '1.5px solid #1C1C1C', 
+                      borderRadius: '10px', 
+                      fontSize: '0.875rem', 
+                      fontFamily: 'Inter, sans-serif', 
+                      color: '#1C1C1C', 
+                      backgroundColor: 'transparent', 
+                      transition: 'all 0.3s ease' 
+                    }} 
+                    onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} 
+                    onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} 
+                  />
                 </div>
                 
                 {diasAdicionales.length > 0 && (
                   <div className="mt-4">
-                    <p className="text-sm font-medium mb-2 k-law-text">Días agregados:</p>
+                    <p className="text-sm font-medium mb-2" style={{ color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}>Días agregados:</p>
                     <div className="space-y-1">
                       {diasAdicionales.map((dia) => (
-                        <div key={dia} className="flex justify-between items-center k-law-result-box p-2 text-sm">
-                          <span className="k-law-text">{tipoUsuario === 'litigante' ? fechaParaLitigante(dia) : fechaATexto(dia)}</span>
-                          <button type="button" onClick={() => setDiasAdicionales(diasAdicionales.filter(d => d !== dia))} className="text-red-400 hover:text-red-300">
+                        <div key={dia} className="flex justify-between items-center p-2 text-sm" style={{
+                          backgroundColor: '#F4EFE8',
+                          border: '1.5px solid #C5A770',
+                          marginBottom: '0.25rem'
+                        }}>
+                          <span style={{ color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}>{tipoUsuario === 'litigante' ? fechaParaLitigante(dia) : fechaATexto(dia)}</span>
+                          <button type="button" onClick={() => setDiasAdicionales(diasAdicionales.filter(d => d !== dia))} style={{
+                            color: '#dc2626',
+                            fontSize: '0.875rem',
+                            fontFamily: 'Inter, sans-serif',
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            transition: 'color 0.3s ease'
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.color = '#ef4444'}
+                          onMouseLeave={(e) => e.currentTarget.style.color = '#dc2626'}>
                             Eliminar
                           </button>
                         </div>
@@ -3145,24 +4733,36 @@ export default function Page() {
                 )}
               </div>
               
-                         </div>
+            </div>
           </div>
-        </div>
+        </section>
         
         {resultado && (
           <>
-            <div className="mt-6 k-law-card">
-              <h2 className="k-law-subtitle">Resultado del Cálculo</h2>
+            <div className="mt-8" style={{ 
+              backgroundColor: '#FFFFFF', 
+              borderRadius: '12px', 
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.08)', 
+              padding: '2.5rem', 
+              border: '1.5px solid #C5A770' 
+            }}>
+              <h2 className="text-2xl md:text-3xl mb-6" style={{ 
+                fontFamily: 'Playfair Display, serif', 
+                fontWeight: '700',
+                color: '#1C1C1C'
+              }}>
+                Resultado del Cálculo
+              </h2>
               
               <div 
                 style={{
                   background: resultado.esOportuno 
-                    ? 'linear-gradient(135deg, #f0fdf4 0%, #e6f7ed 100%)' 
-                    : 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
-                  border: `2px solid ${resultado.esOportuno ? '#86efac' : '#fde047'}`,
+                    ? 'rgba(197, 167, 112, 0.1)' 
+                    : 'rgba(220, 38, 38, 0.1)',
+                  border: `2px solid ${resultado.esOportuno ? '#C5A770' : '#dc2626'}`,
                   padding: '1.5rem',
-                  borderRadius: '12px',
-                  marginBottom: '1rem'
+                  borderRadius: '10px',
+                  marginBottom: '1.5rem'
                 }}
               >
                 {tipoUsuario === 'servidor' ? (
@@ -3170,7 +4770,7 @@ export default function Page() {
                     fontSize: '1.125rem',
                     fontWeight: '600',
                     fontFamily: 'Inter, sans-serif',
-                    color: '#333333'
+                    color: '#1C1C1C'
                   }}>
                     El recurso se presentó de forma: {' '}
                     <span style={{
@@ -3185,7 +4785,7 @@ export default function Page() {
                       fontSize: '1.125rem',
                       fontWeight: '600',
                       fontFamily: 'Inter, sans-serif',
-                      color: '#333333'
+                      color: '#1C1C1C'
                     }}>
                       El plazo para presentar el recurso vence el: {' '}
                       <span style={{ color: '#16a34a' }}>
@@ -3196,7 +4796,7 @@ export default function Page() {
                       <p style={{
                         marginTop: '0.5rem',
                         fontSize: '0.875rem',
-                        color: '#666666'
+                        color: '#3D3D3D'
                       }}>
                         Quedan <strong>{resultado.diasRestantes}</strong> días hábiles para el vencimiento
                       </p>
@@ -3215,13 +4815,19 @@ export default function Page() {
                 )}
               </div>
               
-              <div className="k-law-result-box">
-                <h3 className="k-law-text font-semibold mb-2">Detalles del Cómputo:</h3>
-                <div className="space-y-1 text-sm k-law-text">
+              <div style={{
+                backgroundColor: 'rgba(197, 167, 112, 0.05)',
+                border: '1.5px solid #C5A770',
+                padding: '1.5rem',
+                borderRadius: '10px',
+                marginTop: '1.5rem'
+              }}>
+                <h3 style={{ fontWeight: '700', marginBottom: '1rem', color: '#1C1C1C', fontFamily: 'Playfair Display, serif', fontSize: '1.125rem' }}>Detalles del Cómputo</h3>
+                <div className="space-y-1 text-sm" style={{ color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}>
                   <p><strong>Plazo legal:</strong> {typeof resultado.plazo === 'number' ? `${resultado.plazo} días` : resultado.plazo}</p>
                   <p><strong>Fundamento:</strong> {formData.tipoFecha === 'desconoce' ? 'Artículos 17 de la Ley de Amparo, en relación con el 18, pues este último prevé que los plazos a que alude el primero de ellos se computarán a partir del día siguiente a aquél en que surta efectos, conforme a la ley del acto, la notificación a la persona quejosa del acto o resolución que reclame o a aquella en que haya tenido conocimiento o se ostente sabedora del acto reclamado o de su ejecución, salvo el caso de la fracción I del artículo anterior en el que se computará a partir del día de su entrada en vigor; y en el caso se eligió la opción relativa a que se desconoce el acto reclamado, por lo cual se entiende que éste no fue notificado ni se hizo del conocimiento de quien pretende reclamarlo.' : resultado.fundamento}</p>
                   {formData.resolucionImpugnada !== 'actos_22_constitucional' && (
-                    <p><strong>{formData.resolucionImpugnada === 'ley_entrada_vigor' ? 'Fecha en que la norma reclamada entró en vigor:' : formData.tipoFecha === 'conocimiento' ? (formData.resolucionImpugnada === 'ley_acto_aplicacion' ? 'Fecha de conocimiento completo del acto de aplicación de la norma:' : 'Fecha en que se tuvo conocimiento completo:') : formData.resolucionImpugnada === 'ley_acto_aplicacion' ? 'Fecha de notificación del acto concreto de aplicación de la norma:' : 'Fecha de notificación:'}</strong> {formData.tipoFecha === 'desconoce' ? 'Se desconoce el acto reclamado' : fechaParaLitigante(formData.fechaNotificacion)}</p>
+                    <p><strong>{formData.resolucionImpugnada === 'ley_entrada_vigor' ? 'Fecha en que la norma reclamada entró en vigor:' : formData.tipoFecha === 'conocimiento' ? 'Fecha en que se tuvo conocimiento completo:' : 'Fecha de notificación:'}</strong> {formData.tipoFecha === 'desconoce' ? 'Se desconoce el acto reclamado' : fechaParaLitigante(formData.fechaNotificacion)}</p>
                   )}
                   {formData.tipoFecha !== 'desconoce' && formData.resolucionImpugnada !== 'ley_entrada_vigor' && formData.resolucionImpugnada !== 'actos_22_constitucional' && (
                     <p><strong>Surte efectos:</strong> {fechaParaLitigante(resultado.fechaSurte.toISOString().split('T')[0])}</p>
@@ -3250,10 +4856,12 @@ export default function Page() {
                       }
                     })()}</p>
                   )}
-                  {tipoUsuario === 'servidor' && (
+                  {tipoUsuario === 'servidor' && formData.resolucionImpugnada !== 'actos_22_constitucional' && (
                     <p><strong>Fecha de presentación:</strong> {formData.fechaPresentacion ? fechaParaLitigante(formData.fechaPresentacion) : ''}</p>
                   )}
-                  <p><strong>Días inhábiles excluidos:</strong> {resultado.diasInhabiles}</p>
+                  {formData.resolucionImpugnada !== 'actos_22_constitucional' && (
+                    <p><strong>Días inhábiles excluidos:</strong> {resultado.diasInhabiles}</p>
+                  )}
                   {/* Mostrar notas al pie de los días inhábiles si existen */}
                   {/* (obtenerDiasInhabilesSimplificado as any).notasAlPie && (obtenerDiasInhabilesSimplificado as any).notasAlPie.length > 0 && (
                     <div className="mt-2 text-xs text-gray-600">
@@ -3268,8 +4876,12 @@ export default function Page() {
               {/* Calendario visual - solo para servidores y cuando el plazo no es "en cualquier tiempo" */}
               {tipoUsuario === 'servidor' && resultado.plazo !== 'En cualquier tiempo' && formData.tipoFecha !== 'desconoce' && (
                 <div id="calendario-visual" className="mt-6">
-                  <h3 className="k-law-text font-semibold mb-4">Calendario Visual</h3>
-                  <div className="k-law-result-box p-4">
+                  <h3 style={{ fontWeight: '600', marginBottom: '1rem', color: '#1C1C1C', fontFamily: 'Inter, sans-serif', fontSize: '1.125rem' }}>Calendario Visual</h3>
+                  <div style={{
+                    backgroundColor: '#F4EFE8',
+                    border: '1.5px solid #C5A770',
+                    padding: '1rem'
+                  }}>
                     <div id="calendario-solo">
                       <Calendario 
                         fechaNotificacion={resultado.fechaNotificacion}
@@ -3285,8 +4897,12 @@ export default function Page() {
               )}
               
               {tipoUsuario === 'servidor' && (
-                <div className="k-law-result-box mt-6">
-                  <h3 className="k-law-text font-semibold mb-2">Texto para Resolución:</h3>
+                <div className="mt-6" style={{
+                  backgroundColor: '#F4EFE8',
+                  border: '1.5px solid #C5A770',
+                  padding: '1.5rem'
+                }}>
+                  <h3 style={{ fontWeight: '600', marginBottom: '0.5rem', color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}>Texto para Resolución:</h3>
                   <div className="text-sm font-['Arial'] leading-relaxed whitespace-pre-wrap text-justify" style={{textIndent: '2em'}}>
                     {generarTexto()}
                   </div>
@@ -3296,17 +4912,50 @@ export default function Page() {
               <div className="mt-6 flex gap-4">
                 {tipoUsuario === 'servidor' && (
                   <>
-                    <button onClick={() => { navigator.clipboard.writeText(generarTexto()); alert('Texto copiado al portapapeles'); }} className="k-law-button-small">
+                    <button onClick={() => { navigator.clipboard.writeText(generarTexto()); alert('Texto copiado al portapapeles'); }} style={{
+                      backgroundColor: '#1C1C1C',
+                      color: 'white',
+                      padding: '0.5rem 1rem',
+                      border: 'none',
+                      fontSize: '0.875rem',
+                      fontFamily: 'Inter, sans-serif',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#C5A770'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1C1C1C'}>
                       Copiar Texto
                     </button>
                     {resultado.plazo !== 'En cualquier tiempo' && formData.tipoFecha !== 'desconoce' && (
-                      <button onClick={copiarCalendario} className="k-law-button-small">
+                      <button onClick={copiarCalendario} style={{
+                        backgroundColor: '#1C1C1C',
+                        color: 'white',
+                        padding: '0.5rem 1rem',
+                        border: 'none',
+                        fontSize: '0.875rem',
+                        fontFamily: 'Inter, sans-serif',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#C5A770'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1C1C1C'}>
                         Copiar Calendario
                       </button>
                     )}
                   </>
                 )}
-                <button onClick={() => { setResultado(null); setFormData({ tipoRecurso: 'principal', resolucionImpugnada: '', parteRecurrente: '', fechaNotificacion: '', tipoFecha: '', formaNotificacion: '', fechaPresentacion: '', formaPresentacion: '', leyNotificacion: '', actoConcreto: '', leyActoConcreto: '' }); }} className="k-law-button-small">
+                <button onClick={() => { setResultado(null); setFormData({ tipoRecurso: 'principal', resolucionImpugnada: '', parteRecurrente: '', fechaNotificacion: '', tipoFecha: '', formaNotificacion: '', fechaPresentacion: '', formaPresentacion: '', leyNotificacion: '', actoConcreto: '', leyActoConcreto: '' }); }} style={{
+                  backgroundColor: '#1C1C1C',
+                  color: 'white',
+                  padding: '0.5rem 1rem',
+                  border: 'none',
+                  fontSize: '0.875rem',
+                  fontFamily: 'Inter, sans-serif',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#C5A770'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1C1C1C'}>
                   Nuevo Cálculo
                 </button>
               </div>
@@ -3314,29 +4963,45 @@ export default function Page() {
             
             {/* Sección para litigantes */}
             {tipoUsuario === 'litigante' && (
-              <div className="mt-6 k-law-card">
-                <h3 className="k-law-subtitle">Guardar Cálculo y Notificaciones</h3>
+              <div className="mt-6" style={{
+                backgroundColor: 'white',
+                border: '1.5px solid #1C1C1C',
+                borderRadius: '0',
+                padding: '2rem',
+                boxShadow: 'none'
+              }}>
+                <h3 style={{
+                  fontSize: '1.5rem',
+                  fontFamily: 'Playfair Display, serif',
+                  color: '#1C1C1C',
+                  marginBottom: '1rem',
+                  fontWeight: '400'
+                }}>Guardar Cálculo y Notificaciones</h3>
                 
                 <div className="grid md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label className="k-law-label block">Número de Expediente</label>
+                    <label className="block" style={{ color: '#1C1C1C', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>Número de Expediente</label>
                     <input 
                       type="text" 
                       value={numeroExpediente} 
                       onChange={(e) => setNumeroExpediente(e.target.value)}
                       placeholder="Ej: 123/2024"
-                      className="k-law-select"
+                      style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '0', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }}
+                      onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'}
+                      onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'}
                     />
                   </div>
                   
                   <div>
-                    <label className="k-law-label block">WhatsApp (opcional)</label>
+                    <label className="block" style={{ color: '#1C1C1C', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>WhatsApp (opcional)</label>
                     <input 
                       type="tel" 
                       value={telefonoWhatsApp} 
                       onChange={(e) => setTelefonoWhatsApp(e.target.value)}
                       placeholder="Ej: +52 1234567890"
-                      className="k-law-select"
+                      style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '0', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }}
+                      onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'}
+                      onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'}
                     />
                   </div>
                 </div>
@@ -3344,13 +5009,25 @@ export default function Page() {
                 <button 
                   onClick={guardarCalculo}
                   disabled={!numeroExpediente}
-                  className="k-law-button-small disabled:opacity-50"
+                  style={{
+                    backgroundColor: numeroExpediente ? '#1C1C1C' : '#999999',
+                    color: 'white',
+                    padding: '0.5rem 1rem',
+                    border: 'none',
+                    fontSize: '0.875rem',
+                    fontFamily: 'Inter, sans-serif',
+                    cursor: numeroExpediente ? 'pointer' : 'not-allowed',
+                    opacity: numeroExpediente ? 1 : 0.5,
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => { if (numeroExpediente) e.currentTarget.style.backgroundColor = '#C5A770' }}
+                  onMouseLeave={(e) => { if (numeroExpediente) e.currentTarget.style.backgroundColor = '#1C1C1C' }}
                 >
                   Guardar Cálculo
                 </button>
                 
                 {telefonoWhatsApp && (
-                  <p className="mt-2 text-sm k-law-text">
+                  <p className="mt-2 text-sm" style={{ color: '#3D3D3D', fontFamily: 'Inter, sans-serif' }}>
                     Recibirás recordatorios 3, 2 y 1 día antes del vencimiento, y el día del vencimiento.
                   </p>
                 )}
@@ -3361,14 +5038,31 @@ export default function Page() {
         
         {/* Lista de cálculos guardados para litigantes */}
         {tipoUsuario === 'litigante' && calculos.length > 0 && (
-          <div className="mt-6 k-law-card">
-            <h3 className="k-law-subtitle">Cálculos Guardados</h3>
+          <div className="mt-8" style={{ 
+            backgroundColor: '#FFFFFF', 
+            borderRadius: '12px', 
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.08)', 
+            padding: '2.5rem', 
+            border: '1.5px solid #C5A770' 
+          }}>
+            <h3 className="text-xl md:text-2xl mb-4" style={{ 
+              fontFamily: 'Playfair Display, serif', 
+              fontWeight: '700',
+              color: '#1C1C1C'
+            }}>
+              Cálculos Guardados
+            </h3>
             <div className="space-y-2">
               {calculos.map((calc) => (
-                <div key={calc.id} className="flex justify-between items-center p-3 k-law-result-box">
+                <div key={calc.id} className="flex justify-between items-center p-4" style={{
+                  backgroundColor: 'rgba(197, 167, 112, 0.05)',
+                  border: '1.5px solid #C5A770',
+                  borderRadius: '8px',
+                  marginBottom: '0.5rem'
+                }}>
                   <div>
-                    <p className="font-semibold k-law-text">Expediente: {calc.expediente}</p>
-                    <p className="text-sm k-law-text opacity-70">
+                    <p className="font-semibold" style={{ color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}>Expediente: {calc.expediente}</p>
+                    <p className="text-sm" style={{ color: '#3D3D3D', fontFamily: 'Inter, sans-serif', opacity: '0.7' }}>
                       Vence: {new Date(calc.fechaVencimiento).toLocaleDateString()}
                     </p>
                   </div>
@@ -3379,7 +5073,17 @@ export default function Page() {
                         JSON.stringify(calculos.filter(c => c.id !== calc.id))
                       );
                     }}
-                    className="text-red-400 hover:text-red-300"
+                    style={{
+                      color: '#dc2626',
+                      fontSize: '0.875rem',
+                      fontFamily: 'Inter, sans-serif',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'color 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = '#ef4444'}
+                    onMouseLeave={(e) => e.currentTarget.style.color = '#dc2626'}
                   >
                     Eliminar
                   </button>
@@ -3388,7 +5092,7 @@ export default function Page() {
             </div>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

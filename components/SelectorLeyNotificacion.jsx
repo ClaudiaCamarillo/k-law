@@ -1,13 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { analizarLeyNotificacion } from '@/lib/ia-legal'
 
 export function SelectorLeyNotificacion({ onLeySeleccionada, tipoNotificacion, leySeleccionada = '' }) {
   const [leyAplicable, setLeyAplicable] = useState(leySeleccionada)
-  const [cargando, setCargando] = useState(false)
-  const [reglaSurteEfectos, setReglaSurteEfectos] = useState(null)
-  const [error, setError] = useState(null)
   
   // Actualizar el campo cuando cambie la prop leySeleccionada
   useEffect(() => {
@@ -15,101 +11,81 @@ export function SelectorLeyNotificacion({ onLeySeleccionada, tipoNotificacion, l
   }, [leySeleccionada])
   
   const leyesComunes = [
-    "Ley de Amparo",
-    "Codigo Federal de Procedimientos Civiles",
-    "Codigo de Comercio",
+    "Código Nacional de Procedimientos Penales",
+    "Código Federal de Procedimientos Civiles",
+    "Código de Comercio",
+    "Ley Federal de Procedimiento Administrativo",
+    "Código Fiscal de la Federación",
+    "Ley Federal del Trabajo",
+    "Ley Federal de los Trabajadores al Servicio del Estado, Reglamentaria del Apartado B) del Artículo 123 Constitucional",
+    "Ley General de Educación",
+    "Ley del Seguro Social",
+    "Ley de Navegación y Comercio Marítimos",
+    "Código Nacional de Procedimientos Civiles y Familiares",
     "Ley Federal de Procedimiento Contencioso Administrativo",
-    "Codigo Fiscal de la Federacion",
-    "Codigo Nacional de Procedimientos Penales",
-    "Ley Federal del Trabajo"
+    "Ley Aduanera"
   ];
   
-  const buscarReglaNotificacion = async () => {
-    if (!leyAplicable || !tipoNotificacion) return;
-    
-    setCargando(true);
-    setError(null);
-    try {
-      console.log('Buscando regla para:', { leyAplicable, tipoNotificacion });
-      const resultado = await analizarLeyNotificacion(leyAplicable, tipoNotificacion);
-      console.log('Resultado recibido:', resultado);
-      
-      if (resultado) {
-        setReglaSurteEfectos(resultado);
-        onLeySeleccionada(resultado);
-      } else {
-        setError('No se pudo obtener la informacion de la ley');
-      }
-    } catch (error) {
-      console.error('Error al buscar:', error);
-      setError(`Error: ${error.message}`);
-    } finally {
-      setCargando(false);
+  // Notificar cambios al componente padre
+  const handleLeyChange = (e) => {
+    const nuevaLey = e.target.value;
+    setLeyAplicable(nuevaLey);
+    if (nuevaLey) {
+      onLeySeleccionada(nuevaLey);
     }
   };
   
   return (
-    <div className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-white mb-2">
-          Ley que rige la notificación del acto reclamado
-        </label>
-        <input
-          type="text"
-          list="leyes-comunes"
-          value={leyAplicable}
-          onChange={(e) => setLeyAplicable(e.target.value)}
-          placeholder="Ej: Ley de Amparo"
-          className="k-law-input"
-        />
-        <datalist id="leyes-comunes">
-          {leyesComunes.map(ley => (
-            <option key={ley} value={ley} />
-          ))}
-        </datalist>
-      </div>
-      
-      <button
-        onClick={buscarReglaNotificacion}
-        disabled={!leyAplicable || !tipoNotificacion || cargando}
-        className="k-law-button-primary w-full py-2 px-4 disabled:bg-gray-500 disabled:cursor-not-allowed"
+    <div>
+      <label className="block" style={{ 
+        color: '#1C1C1C', 
+        fontWeight: '600', 
+        marginBottom: '0.5rem', 
+        fontSize: '0.95rem', 
+        fontFamily: 'Inter, sans-serif' 
+      }}>
+        Ley que rige la notificación del acto reclamado
+      </label>
+      <select
+        value={leyAplicable}
+        onChange={handleLeyChange}
+        style={{ 
+          border: '1.5px solid #1C1C1C', 
+          borderRadius: '8px', 
+          fontSize: '0.95rem', 
+          transition: 'border-color 0.3s ease', 
+          backgroundColor: 'transparent', 
+          fontFamily: 'Inter, sans-serif', 
+          color: '#1C1C1C', 
+          width: '100%', 
+          padding: '0.75rem' 
+        }}
+        onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'}
+        onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'}
       >
-        {cargando ? 'Buscando...' : 'Buscar regla en la ley'}
-      </button>
-      
-      {error && (
-        <div className="mt-4 k-law-alert-error">
-          <h4 className="font-semibold text-red-100">Error:</h4>
-          <p className="text-sm text-red-100 mt-2">{error}</p>
-        </div>
-      )}
-      
-      {reglaSurteEfectos && (
-        <div className="mt-4 k-law-alert-success">
-          <h4 className="font-semibold text-green-100">
-            Regla encontrada en: {reglaSurteEfectos.fuente === 'jurisprudencia' ? '⚖️ Jurisprudencia' : '📖 Ley'}
-          </h4>
-          <p className="text-sm mt-2 text-green-100">
-            <strong>Surte efectos:</strong> {
-              reglaSurteEfectos.surteEfectos === 'dia_siguiente' ? 'Al día siguiente' :
-              reglaSurteEfectos.surteEfectos === 'mismo_dia' ? 'El mismo día' :
-              reglaSurteEfectos.surteEfectos === 'tercer_dia' ? 'Al tercer día' :
-              reglaSurteEfectos.surteEfectos
-            }
+        <option value="">Seleccione...</option>
+        {leyesComunes.map(ley => (
+          <option key={ley} value={ley}>{ley}</option>
+        ))}
+      </select>
+      {leyAplicable === 'Ley Federal de Procedimiento Administrativo' && (
+        <div style={{
+          backgroundColor: '#FEE2E2',
+          border: '2px solid #DC2626',
+          borderRadius: '8px',
+          padding: '1rem',
+          marginTop: '0.75rem'
+        }}>
+          <p style={{
+            color: '#DC2626',
+            fontSize: '0.875rem',
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: '600',
+            margin: 0,
+            lineHeight: '1.4'
+          }}>
+            ⚠️ <strong>IMPORTANTE:</strong> El CFPC se aplica supletoriamente para determinar cuándo surten efectos las notificaciones, pero se recomienda tomar en cuenta que a pesar de que no existe declaratoria de vigencia del CNPCF a nivel federal existen tribunales que lo toman en cuenta en lo que ve a las reglas de notificación.
           </p>
-          <p className="text-sm text-green-100">
-            <strong>
-              {reglaSurteEfectos.fuente === 'jurisprudencia' ? 'Tesis' : 'Artículo'}:
-            </strong> {reglaSurteEfectos.articulo || reglaSurteEfectos.tesis}
-          </p>
-          {reglaSurteEfectos.epoca && (
-            <p className="text-sm text-green-100">
-              <strong>Época:</strong> {reglaSurteEfectos.epoca}
-            </p>
-          )}
-          <blockquote className="text-xs italic mt-2 border-l-4 border-white/30 pl-4 text-green-100">
-            {reglaSurteEfectos.textoLegal}
-          </blockquote>
         </div>
       )}
     </div>

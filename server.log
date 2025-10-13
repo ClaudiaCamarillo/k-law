@@ -1,6 +1,6 @@
 
 > mi-app-juridica@0.1.0 dev
-> next dev --port 3002 --port 3002
+> next dev --port 3002
 
    ▲ Next.js 15.3.3
    - Local:        http://localhost:3002
@@ -8,505 +8,65 @@
    - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 18.9s
- ○ Compiling /calculadoras/recurso-de-queja ...
+ ✓ Ready in 43.6s
+ ○ Compiling / ...
+
+
+Retrying 1/3...
+
+
+Retrying 1/3...
+
+
+Retrying 2/3...
+
+
+Retrying 2/3...
+
+
+Retrying 3/3...
+
+
+Retrying 3/3...
+Request timed out after 3000ms
+
+Retrying 1/3...
+Request timed out after 3000ms
+
+Retrying 1/3...
 [Error: Cannot apply unknown utility class `bg-black/20`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive]
- ✓ Compiled /calculadoras/recurso-de-queja in 8s (781 modules)
- GET / 200 in 9010ms
- GET /calculadoras/recurso-de-queja 200 in 2136ms
- GET / 200 in 290ms
+ ✓ Compiled / in 24.1s (817 modules)
+ HEAD / 200 in 27869ms
  ○ Compiling /api/auth/[auth0] ...
- ✓ Compiled /api/auth/[auth0] in 1988ms (1076 modules)
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 2574ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 10627ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 124ms
- GET /api/auth/login?returnTo=/seleccionar-usuario?plan=premium 302 in 6653ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/callback?code=TkE4v3H7p4XDMCaIVLKENbPWvBGbaOJlucF259zfTXZ6s&state=eyJyZXR1cm5UbyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMi9zZWxlY2Npb25hci11c3VhcmlvP3BsYW49cHJlbWl1bSJ9 302 in 518ms
- ○ Compiling /seleccionar-usuario ...
- ✓ Compiled /seleccionar-usuario in 586ms (1084 modules)
- GET /seleccionar-usuario?plan=premium 200 in 920ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 257ms
- ○ Compiling /api/create-checkout-session ...
- ✓ Compiled /api/create-checkout-session in 1175ms (1281 modules)
- POST /api/create-checkout-session 200 in 2326ms
- GET /calculadoras/recurso-de-queja 200 in 293ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 74ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 273ms
- GET /calculadoras/recurso-de-queja 200 in 510ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 168ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 252ms
- GET /calculadoras/recurso-de-queja 200 in 531ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 183ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 297ms
- GET /calculadoras/recurso-de-queja 200 in 498ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 175ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 208ms
- GET /calculadoras/recurso-de-queja 200 in 441ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 112ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 163ms
- GET /calculadoras/recurso-de-queja 200 in 358ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 117ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 202ms
- GET /calculadoras/recurso-de-queja 200 in 506ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 142ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 197ms
- GET /calculadoras/recurso-de-queja 200 in 285ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 73ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 163ms
- GET /calculadoras/recurso-de-queja 200 in 533ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 110ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 192ms
- GET /calculadoras/recurso-de-queja 200 in 376ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 103ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 235ms
- GET / 200 in 295ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 199ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/login?returnTo=/seleccionar-usuario?plan=premium 302 in 746ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/callback?code=eRoL6JUBfGWT0WjDP28nCytmevsTEcL_4IbOJvrk-m5L6&state=eyJyZXR1cm5UbyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMi9zZWxlY2Npb25hci11c3VhcmlvP3BsYW49cHJlbWl1bSJ9 302 in 590ms
- GET /seleccionar-usuario?plan=premium 200 in 259ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 226ms
- POST /api/create-checkout-session 200 in 704ms
- GET /seleccionar-usuario?payment=success&session_id=cs_test_a1aoCio0O7sRsC5VrjQCb7ijh1ix9SIxRrDfZyoYyLZ0Z0OooJZdcpWPqK 200 in 352ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 170ms
- ○ Compiling /calculadoras ...
- ✓ Compiled /calculadoras in 1273ms (1288 modules)
- GET /calculadoras 200 in 1841ms
- GET /calculadoras/recurso-de-queja 200 in 351ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 136ms
- GET /calculadoras/recurso-de-queja 200 in 618ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 165ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 584ms
- GET /calculadoras/recurso-de-queja 200 in 479ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 135ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 197ms
- GET /calculadoras/recurso-de-queja 200 in 392ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 98ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 247ms
- GET /calculadoras/recurso-de-queja 200 in 315ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 88ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 167ms
- GET /calculadoras/recurso-de-queja 200 in 214ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 82ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 169ms
- GET /calculadoras/recurso-de-queja 200 in 414ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 114ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 197ms
- GET /calculadoras/recurso-de-queja 200 in 470ms
- GET /seleccionar-usuario?payment=success&session_id=cs_test_a1jn6YnvAdTmgTGUhrAFqRpPKAJhqlXyEOicw9ZKpWzFRgPnVOMNfqzWvT 200 in 469ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 335ms
- GET /calculadoras 200 in 187ms
- GET /calculadoras/recurso-de-queja 200 in 311ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 92ms
- GET /calculadoras/recurso-de-queja 200 in 326ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 138ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 180ms
- GET /calculadoras/recurso-de-queja 200 in 409ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 110ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 181ms
- GET /calculadoras 200 in 261ms
- GET /calculadoras/recurso-de-queja 200 in 303ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 89ms
- GET /calculadoras/recurso-de-queja 200 in 299ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 113ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 219ms
- GET /calculadoras 200 in 279ms
- GET /seleccionar-usuario?payment=success&session_id=cs_test_a1jn6YnvAdTmgTGUhrAFqRpPKAJhqlXyEOicw9ZKpWzFRgPnVOMNfqzWvT 200 in 266ms
- GET /calculadoras/recurso-de-queja 200 in 296ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 82ms
- ○ Compiling /calculadoras/recurso-de-reclamacion ...
- ✓ Compiled /calculadoras/recurso-de-reclamacion in 1681ms (1098 modules)
- GET /calculadoras/recurso-de-reclamacion 200 in 2349ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 147ms
- GET /calculadoras/recurso-de-reclamacion 200 in 385ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 93ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 364ms
- GET /calculadoras/recurso-de-reclamacion 200 in 409ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 116ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 240ms
- GET /calculadoras/recurso-de-reclamacion 200 in 343ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 118ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 189ms
- GET /calculadoras/recurso-de-reclamacion 200 in 446ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 138ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 207ms
- GET /calculadoras/recurso-de-reclamacion 200 in 407ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 124ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 223ms
- GET /calculadoras 200 in 427ms
- ○ Compiling /calculadoras/amparo-indirecto ...
- ✓ Compiled /calculadoras/amparo-indirecto in 1711ms (1113 modules)
- GET /calculadoras/amparo-indirecto 200 in 2336ms
- GET /calculadoras/recurso-de-queja 200 in 402ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 189ms
- GET /calculadoras/recurso-de-queja 200 in 613ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 123ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 558ms
- GET /calculadoras/recurso-de-queja 200 in 450ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 123ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 268ms
- GET /calculadoras/recurso-de-queja 200 in 414ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 98ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 214ms
- GET /calculadoras/recurso-de-queja 200 in 307ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 142ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 204ms
- GET /calculadoras/recurso-de-queja 200 in 307ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 124ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 204ms
- GET /calculadoras/recurso-de-queja 200 in 289ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 136ms
- ○ Compiling /favicon.ico ...
- ✓ Compiled /favicon.ico in 714ms (763 modules)
- GET /favicon.ico 200 in 1533ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 1632ms
- GET /calculadoras 200 in 493ms
- ○ Compiling /perfil ...
- ✓ Compiled /perfil in 2.6s (1117 modules)
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 2375ms
- GET /perfil 200 in 3192ms
- ○ Compiling / ...
- ✓ Compiled / in 964ms (773 modules)
- GET / 200 in 1441ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 325ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/login?returnTo=/seleccionar-usuario?plan=premium 302 in 673ms
- GET / 200 in 380ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/login?returnTo=/seleccionar-usuario?plan=premium 302 in 319ms
- GET /calculadoras/recurso-de-queja 200 in 757ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 171ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 314ms
- GET /calculadoras/recurso-de-queja 200 in 525ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 151ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 415ms
- GET /calculadoras/recurso-de-queja 200 in 496ms
- GET /calculadoras/recurso-de-queja 200 in 581ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 107ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 268ms
- GET / 200 in 170ms
- GET /calculadoras/recurso-de-queja 200 in 202ms
- GET /calculadoras/recurso-de-queja 200 in 340ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 176ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 233ms
- GET /calculadoras 200 in 341ms
- GET /calculadoras/recurso-de-queja 200 in 280ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 72ms
- GET / 200 in 258ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 283ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/login?returnTo=/seleccionar-usuario?plan=premium 302 in 206ms
- GET / 200 in 253ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/login?returnTo=/seleccionar-usuario?plan=free 302 in 195ms
- GET /calculadoras 200 in 318ms
- GET /seleccionar-usuario?payment=success&session_id=cs_test_a1jn6YnvAdTmgTGUhrAFqRpPKAJhqlXyEOicw9ZKpWzFRgPnVOMNfqzWvT 200 in 353ms
- GET /seleccionar-usuario?payment=success&session_id=cs_test_a1jn6YnvAdTmgTGUhrAFqRpPKAJhqlXyEOicw9ZKpWzFRgPnVOMNfqzWvT 200 in 411ms
- GET /calculadoras 200 in 349ms
- GET /calculadoras/recurso-de-queja 200 in 396ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 106ms
- GET /calculadoras/recurso-de-queja 200 in 537ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 165ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 283ms
- GET /calculadoras 200 in 227ms
- GET /seleccionar-usuario?payment=success&session_id=cs_test_a1jn6YnvAdTmgTGUhrAFqRpPKAJhqlXyEOicw9ZKpWzFRgPnVOMNfqzWvT 200 in 244ms
- GET /calculadoras 200 in 241ms
- GET /calculadoras/recurso-de-queja 200 in 247ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 90ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/callback?code=3kAQDlWpKPkb39acCMITLsLB8DnIHOJAT_AiwIlpur2lW&state=eyJyZXR1cm5UbyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMi9zZWxlY2Npb25hci11c3VhcmlvP3BsYW49ZnJlZSJ9 302 in 1164ms
- GET /seleccionar-usuario?plan=free 200 in 399ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 209ms
- GET /calculadoras 200 in 246ms
- GET / 200 in 324ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/login?returnTo=/seleccionar-usuario?plan=premium 302 in 263ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/callback?code=jxU_EbJN-deXo0HXMfZgr0t25MJPkWt7j3jgZS5FUhIBM&state=eyJyZXR1cm5UbyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMi9zZWxlY2Npb25hci11c3VhcmlvP3BsYW49cHJlbWl1bSJ9 302 in 448ms
- GET /seleccionar-usuario?plan=premium 200 in 225ms
- ○ Compiling /api/create-checkout-session ...
- ✓ Compiled /api/create-checkout-session in 1125ms (957 modules)
- ✓ Compiled in 1ms (957 modules)
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 2535ms
- ✓ Compiled in 2ms (957 modules)
- ✓ Compiled in 1ms (957 modules)
- POST /api/create-checkout-session 200 in 5378ms
- GET /calculadoras 200 in 4070ms
- GET /calculadoras 200 in 172ms
- GET /seleccionar-usuario?payment=success&session_id=cs_test_a1SciKvMAzrOlvcfsOKcnG2xbdcagjOPyBUinpWzPt2vqABALAAHC6bEzr 200 in 385ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 452ms
- GET /calculadoras 200 in 196ms
- GET /calculadoras/recurso-de-queja 200 in 364ms
- ○ Compiling /_not-found ...
- ✓ Compiled /_not-found in 1200ms (1110 modules)
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 1481ms
- GET /calculadoras/recurso-de-queja 200 in 580ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 121ms
- ○ Compiling /api/auth/[auth0] ...
- ✓ Compiled /api/auth/[auth0] in 798ms (489 modules)
- ✓ Compiled (763 modules)
- GET /favicon.ico 200 in 1937ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 2310ms
- GET /calculadoras/recurso-de-queja 200 in 636ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 162ms
- GET /favicon.ico 200 in 146ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 213ms
- GET /calculadoras/recurso-de-queja 200 in 362ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 119ms
- GET /favicon.ico 200 in 184ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 223ms
- GET /calculadoras/recurso-de-queja 200 in 404ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 114ms
- GET /favicon.ico 200 in 197ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 251ms
- GET /calculadoras/recurso-de-queja 200 in 372ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 115ms
- GET /favicon.ico 200 in 198ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 221ms
- GET /calculadoras/recurso-de-queja 200 in 354ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 107ms
- GET /favicon.ico 200 in 236ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 271ms
- GET /calculadoras/recurso-de-queja 200 in 471ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 129ms
- GET /favicon.ico 200 in 228ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 263ms
- GET /calculadoras/recurso-de-queja 200 in 274ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 117ms
- GET /favicon.ico 200 in 166ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 228ms
- GET /calculadoras/recurso-de-queja 200 in 415ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 90ms
- GET /favicon.ico 200 in 198ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 194ms
- GET /calculadoras/recurso-de-queja 200 in 304ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 117ms
- GET /favicon.ico 200 in 157ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 170ms
- GET /calculadoras/recurso-de-queja 200 in 341ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 105ms
- GET /favicon.ico 200 in 200ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 228ms
- GET /calculadoras/recurso-de-queja 200 in 415ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 99ms
- GET /favicon.ico 200 in 186ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 230ms
- GET /calculadoras/recurso-de-queja 200 in 323ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 96ms
- GET /favicon.ico 200 in 184ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 219ms
- GET /calculadoras/recurso-de-queja 200 in 537ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 136ms
- GET /favicon.ico 200 in 200ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 293ms
- GET /calculadoras 200 in 345ms
- GET /calculadoras/recurso-de-queja 200 in 392ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 116ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 107ms
- ○ Compiling /calculadoras/revision ...
- ✓ Compiled /calculadoras/revision in 1886ms (829 modules)
- GET /calculadoras/revision 200 in 3181ms
- GET /calculadoras/revision 200 in 244ms
- GET /calculadoras/revision 200 in 162ms
- GET /calculadoras/revision 200 in 164ms
- ○ Compiling /calculadoras/revision-fiscal ...
- ✓ Compiled /calculadoras/revision-fiscal in 2.4s (825 modules)
- GET /calculadoras/revision-fiscal 200 in 3152ms
- GET /calculadoras/revision-fiscal 200 in 204ms
- ○ Compiling /_not-found ...
- ✓ Compiled /_not-found in 887ms (829 modules)
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 1191ms
- GET /calculadoras/revision-fiscal 200 in 619ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 143ms
- ○ Compiling /api/auth/[auth0] ...
- ✓ Compiled /api/auth/[auth0] in 934ms (486 modules)
- ✓ Compiled (760 modules)
- GET /favicon.ico 200 in 3608ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 4614ms
- GET /calculadoras/revision-fiscal 200 in 643ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 220ms
- GET /favicon.ico 200 in 228ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 301ms
- GET /calculadoras/recurso-de-queja 200 in 437ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 157ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 231ms
- GET /calculadoras 200 in 316ms
- GET /calculadoras/revision-fiscal 200 in 302ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 137ms
- GET /calculadoras 200 in 237ms
- ○ Compiling /perfil ...
- ✓ Compiled /perfil in 1334ms (765 modules)
- GET /perfil 200 in 1993ms
- GET /perfil 200 in 341ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 467ms
- GET /perfil 200 in 263ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 187ms
- ○ Compiling / ...
- ✓ Compiled / in 750ms (768 modules)
- GET / 200 in 1194ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 295ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/login?returnTo=/seleccionar-usuario?plan=premium 302 in 718ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/callback?code=I3KNDTvBnFehu9WRIlOJmCgnrTun5-Iygbdb7-ib_4Ybp&state=eyJyZXR1cm5UbyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMi9zZWxlY2Npb25hci11c3VhcmlvP3BsYW49cHJlbWl1bSJ9 302 in 766ms
- GET /seleccionar-usuario?plan=premium 200 in 338ms
- ○ Compiling /api/create-checkout-session ...
- ✓ Compiled /api/create-checkout-session in 1394ms (965 modules)
- ✓ Compiled in 0ms (965 modules)
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 2949ms
- ✓ Compiled in 1ms (965 modules)
- ✓ Compiled in 0ms (965 modules)
- POST /api/create-checkout-session 200 in 5952ms
- GET /calculadoras 200 in 5229ms
- GET /seleccionar-usuario?payment=success&session_id=cs_test_a139f02QUm9kc8HeY3PsXnkYmuZep1w3AxrFQQpZIsmCWpGFxROrZF45Qu 200 in 376ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 370ms
- GET /calculadoras 200 in 149ms
- GET /calculadoras/revision 200 in 266ms
- GET /calculadoras 200 in 157ms
- GET /calculadoras 200 in 164ms
- GET /calculadoras/revision 200 in 214ms
- GET /calculadoras 200 in 147ms
- GET /perfil 200 in 208ms
- GET /calculadoras 200 in 160ms
- GET /calculadoras/revision 200 in 192ms
- GET /calculadoras 200 in 161ms
- GET /calculadoras/revision-fiscal 200 in 252ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 109ms
- GET /calculadoras/revision-fiscal 200 in 275ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 97ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 201ms
- GET /calculadoras/revision-fiscal 200 in 226ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 95ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 172ms
- GET /calculadoras/revision-fiscal 200 in 209ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 98ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 213ms
- GET /calculadoras 200 in 295ms
- GET /perfil 200 in 253ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 177ms
- GET /calculadoras 200 in 317ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 238ms
- GET / 200 in 286ms
- GET / 200 in 279ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 204 in 221ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/login?returnTo=/seleccionar-usuario?plan=premium 302 in 696ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/callback?code=Uux_kuLxvTeJt6nDJ0Keu4dCv9xaIzDLKtu0lvhEOlPgl&state=eyJyZXR1cm5UbyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMi9zZWxlY2Npb25hci11c3VhcmlvP3BsYW49cHJlbWl1bSJ9 302 in 731ms
- GET /seleccionar-usuario?plan=premium 200 in 308ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 269ms
- POST /api/create-checkout-session 200 in 855ms
- GET /calculadoras 200 in 231ms
- GET /seleccionar-usuario?payment=success&session_id=cs_test_a1jujSnIcVmSvhDuB6lcESDrAoUTR1XJd5IdXYopFrkrkmlIBKt3DrVC8P 200 in 293ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 244ms
- GET /calculadoras 200 in 225ms
- GET /calculadoras/revision-fiscal 200 in 323ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 91ms
- GET /calculadoras/revision-fiscal 200 in 311ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 126ms
- ○ Compiling /favicon.ico ...
- ✓ Compiled /favicon.ico in 952ms (759 modules)
- ✓ Compiled in 1ms (759 modules)
- ✓ Compiled in 1ms (759 modules)
- ✓ Compiled in 0ms (759 modules)
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /favicon.ico 200 in 4350ms
- GET /api/auth/me 200 in 4276ms
- GET /calculadoras/revision-fiscal 200 in 4123ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 164ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 298ms
- GET /calculadoras/revision-fiscal 200 in 392ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 172ms
- GET /favicon.ico 200 in 224ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 310ms
- GET /calculadoras/revision-fiscal 200 in 376ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 180ms
- GET /favicon.ico 200 in 208ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 248ms
- GET /calculadoras/revision-fiscal 200 in 352ms
- GET /mnt/c/Users/Neo%2014/Desktop/Logo.jpg 404 in 141ms
- GET /favicon.ico 200 in 250ms
-[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
- GET /api/auth/me 200 in 265ms
+ ✓ Compiled /api/auth/[auth0] in 2.6s (1073 modules)
+[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
+[Error [CallbackHandlerError]: Callback handler failed. CAUSE: Missing state cookie from login request (check login URL, callback URL and cookie config).] {
+  code: 'ERR_CALLBACK_HANDLER_FAILURE',
+  status: 400,
+  [cause]: [Error: Missing state cookie from login request (check login URL, callback URL and cookie config).] {
+    status: 400,
+    statusCode: 400
+  }
+}
+ GET /api/auth/callback?code=5CzHywITKoPloeQks6UKRdTJYqUlzjC9b-DMKYM43UtOB&state=eyJyZXR1cm5UbyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMi9jYWxjdWxhZG9yYXMvYW1wYXJvLWluZGlyZWN0byJ9 400 in 20599ms
+[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
+[Error [CallbackHandlerError]: Callback handler failed. CAUSE: Missing state cookie from login request (check login URL, callback URL and cookie config).] {
+  code: 'ERR_CALLBACK_HANDLER_FAILURE',
+  status: 400,
+  [cause]: [Error: Missing state cookie from login request (check login URL, callback URL and cookie config).] {
+    status: 400,
+    statusCode: 400
+  }
+}
+ GET /api/auth/callback?code=5CzHywITKoPloeQks6UKRdTJYqUlzjC9b-DMKYM43UtOB&state=eyJyZXR1cm5UbyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMi9jYWxjdWxhZG9yYXMvYW1wYXJvLWluZGlyZWN0byJ9 400 in 374ms
+[Error: Route "/api/auth/[auth0]" used `params.auth0`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis]
+[Error [CallbackHandlerError]: Callback handler failed. CAUSE: Missing state cookie from login request (check login URL, callback URL and cookie config).] {
+  code: 'ERR_CALLBACK_HANDLER_FAILURE',
+  status: 400,
+  [cause]: [Error: Missing state cookie from login request (check login URL, callback URL and cookie config).] {
+    status: 400,
+    statusCode: 400
+  }
+}
+ GET /api/auth/callback?code=5CzHywITKoPloeQks6UKRdTJYqUlzjC9b-DMKYM43UtOB&state=eyJyZXR1cm5UbyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMi9jYWxjdWxhZG9yYXMvYW1wYXJvLWluZGlyZWN0byJ9 400 in 352ms
+[?25h

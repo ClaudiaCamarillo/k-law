@@ -16,7 +16,7 @@ export default function PagoExitoso() {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer)
-          router.push('/seleccionar-usuario')
+          router.push('/seleccionar-usuario?from=pago-exitoso')
           return 0
         }
         return prev - 1

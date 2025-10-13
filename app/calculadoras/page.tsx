@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-// import { useUser } from '@auth0/nextjs-auth0/client'
 
 interface Calculadora {
   id: string
@@ -17,10 +16,9 @@ interface Calculadora {
 
 export default function CalculadorasPage() {
   const router = useRouter()
-  // const { user, error, isLoading } = useUser()
   const [tipoUsuario, setTipoUsuario] = useState<string | null>(null)
   const [plan, setPlan] = useState<'free' | 'premium'>('free')
-  const [calculosHoy, setCalculosHoy] = useState(2)
+  const [calculosHoy, setCalculosHoy] = useState(0)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [selectedCalculadora, setSelectedCalculadora] = useState<Calculadora | null>(null)
 
@@ -57,74 +55,126 @@ export default function CalculadorasPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: '#f8f9fa' }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#F4EFE8' }}>
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
       `}</style>
       
-      {/* Navigation */}
-      <nav style={{ backgroundColor: '#1A1A2E', padding: '1rem 0', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between">
-            <div style={{ height: '50px', display: 'flex', alignItems: 'center' }}>
-              <span style={{ fontSize: '1.75rem', fontWeight: '800', color: '#c9a961', fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.05em' }}>K-LAW</span>
-            </div>
-            <button 
-              onClick={() => router.push('/perfil')}
-              className="text-white hover:text-gray-300 transition-colors"
-              style={{ padding: '0.5rem 1rem', fontSize: '1rem', fontFamily: 'Inter, sans-serif' }}
-            >
-              Mi Perfil
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Header Section */}
-      <div className="px-6 py-8 text-center">
-        <h1 style={{ fontSize: '2.5rem', fontWeight: '700', marginBottom: '1rem', color: '#1A1A2E', fontFamily: 'Montserrat, sans-serif', letterSpacing: '-0.02em' }}>
-          Calculadoras Jurídicas
-        </h1>
-        <p style={{ color: '#666', fontSize: '1.125rem', fontFamily: 'Inter, sans-serif', fontWeight: '400', marginBottom: '2rem' }}>
-          Calcula plazos y términos legales con precisión
-        </p>
+      {/* Golden Top Bar */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '122px',
+        backgroundColor: '#C5A770',
+        zIndex: 0,
+        pointerEvents: 'none'
+      }} />
+      
+      {/* Thin Black Line */}
+      <div style={{
+        position: 'absolute',
+        top: '122px',
+        left: 0,
+        right: 0,
+        height: '1.5px',
+        backgroundColor: '#1C1C1C',
+        zIndex: 0,
+        pointerEvents: 'none'
+      }} />
+      
+      {/* Elegant Header */}
+      <div className="relative py-8 md:py-12" style={{ zIndex: 2 }}>
+        {/* Subtle pattern overlay */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          opacity: 0.03,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231C1C1C' fill-opacity='1'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`
+        }} />
         
+        <div className="relative z-10 text-center px-6">
+          <div className="mb-4" style={{ position: 'relative', zIndex: 10, marginTop: '-47px' }}>
+            <img 
+              src="/LOGO-KLAW.gif" 
+              alt="K-LAW Logo" 
+              className="mx-auto cursor-pointer"
+              style={{ 
+                display: 'block',
+                width: 'auto',
+                height: 'auto',
+                maxWidth: '599px',
+                maxHeight: '240px',
+                position: 'relative',
+                zIndex: 10
+              }}
+              onClick={() => router.push('/')}
+            />
+          </div>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl mb-2" style={{ 
+            fontFamily: 'Playfair Display, serif', 
+            fontWeight: '800',
+            color: '#1C1C1C',
+            letterSpacing: '-0.02em'
+          }}>
+            Calculadoras Jurídicas
+          </h1>
+          <p className="text-sm md:text-base" style={{ 
+            fontFamily: 'Inter, sans-serif',
+            color: '#3D3D3D',
+            fontWeight: '300',
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase'
+          }}>
+            Calcula plazos y términos legales con precisión
+          </p>
+        </div>
+      </div>
+
+      {/* Navigation and Status */}
+      <div className="px-6 pb-6 text-center" style={{ position: 'relative', zIndex: 5 }}>
         {/* Navigation Tabs */}
-        <div className="flex justify-center gap-3 mb-4 flex-wrap">
+        <div className="flex justify-center gap-4 md:gap-6 mb-6 flex-wrap">
           <button
-            className="px-5 py-2 rounded-full transition-all duration-300"
+            className="px-5 py-2 transition-all duration-300"
             style={{
-              backgroundColor: '#0A1628',
-              color: '#C9A961',
-              fontWeight: '600',
+              backgroundColor: '#1C1C1C',
+              color: '#F4EFE8',
+              fontWeight: '500',
               fontFamily: 'Inter, sans-serif',
               fontSize: '0.875rem',
-              border: '2px solid #0A1628',
-              cursor: 'pointer'
+              border: '1.5px solid #1C1C1C',
+              letterSpacing: '0.02em',
+              borderRadius: '30px'
             }}
           >
             📊 Calculadoras
           </button>
           <button
             onClick={() => router.push('/documentos')}
-            className="px-5 py-2 rounded-full transition-all duration-300"
+            className="px-5 py-2 transition-all duration-300"
             style={{
               backgroundColor: 'transparent',
-              color: '#0A1628',
-              fontWeight: '600',
+              color: '#1C1C1C',
+              fontWeight: '500',
               fontFamily: 'Inter, sans-serif',
               fontSize: '0.875rem',
-              border: '2px solid #e5e7eb',
-              cursor: 'pointer',
+              border: '1.5px solid #1C1C1C',
+              letterSpacing: '0.02em',
+              borderRadius: '30px',
               position: 'relative'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = '#C9A961';
-              e.currentTarget.style.color = '#C9A961';
+              e.currentTarget.style.backgroundColor = '#1C1C1C';
+              e.currentTarget.style.color = '#F4EFE8';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = '#e5e7eb';
-              e.currentTarget.style.color = '#0A1628';
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = '#1C1C1C';
             }}
           >
             📄 Documentos
@@ -132,8 +182,8 @@ export default function CalculadorasPage() {
               position: 'absolute',
               top: '-6px',
               right: '-6px',
-              backgroundColor: '#ef4444',
-              color: '#FFFFFF',
+              backgroundColor: '#C5A770',
+              color: '#1C1C1C',
               fontSize: '0.6rem',
               fontWeight: '700',
               padding: '0.15rem 0.4rem',
@@ -145,57 +195,90 @@ export default function CalculadorasPage() {
           </button>
           <button
             onClick={() => router.push('/tienda')}
-            className="px-5 py-2 rounded-full transition-all duration-300"
+            className="px-5 py-2 transition-all duration-300"
             style={{
               backgroundColor: 'transparent',
-              color: '#0A1628',
-              fontWeight: '600',
+              color: '#1C1C1C',
+              fontWeight: '500',
               fontFamily: 'Inter, sans-serif',
               fontSize: '0.875rem',
-              border: '2px solid #e5e7eb',
-              cursor: 'pointer',
+              border: '1.5px solid #1C1C1C',
+              letterSpacing: '0.02em',
+              borderRadius: '30px',
               position: 'relative'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = '#C9A961';
-              e.currentTarget.style.color = '#C9A961';
+              e.currentTarget.style.backgroundColor = '#1C1C1C';
+              e.currentTarget.style.color = '#F4EFE8';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = '#e5e7eb';
-              e.currentTarget.style.color = '#0A1628';
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = '#1C1C1C';
             }}
           >
             🛍️ Tienda
-            <span style={{
-              position: 'absolute',
-              top: '-6px',
-              right: '-6px',
-              backgroundColor: '#16a34a',
-              color: '#FFFFFF',
-              fontSize: '0.6rem',
-              fontWeight: '700',
-              padding: '0.15rem 0.4rem',
-              borderRadius: '8px',
-              fontFamily: 'Inter, sans-serif'
-            }}>
-              HOT
-            </span>
+          </button>
+          <button
+            onClick={() => router.push('/legislacion')}
+            className="px-5 py-2 transition-all duration-300"
+            style={{
+              backgroundColor: 'transparent',
+              color: '#1C1C1C',
+              fontWeight: '500',
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '0.875rem',
+              border: '1.5px solid #1C1C1C',
+              letterSpacing: '0.02em',
+              borderRadius: '30px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#1C1C1C';
+              e.currentTarget.style.color = '#F4EFE8';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = '#1C1C1C';
+            }}
+          >
+            📖 Legislación
           </button>
         </div>
         
         {/* Plan Status */}
-        <div className="flex items-center justify-center gap-4">
+        <div className="flex items-center justify-center gap-4 mt-4">
           {plan === 'free' ? (
             <>
-              <span style={{ backgroundColor: '#f3f4f6', color: '#374151', padding: '0.5rem 1.5rem', borderRadius: '20px', fontSize: '0.875rem', fontWeight: '600', fontFamily: 'Inter, sans-serif' }}>
+              <span style={{ 
+                backgroundColor: 'transparent',
+                color: '#1C1C1C',
+                border: '1px solid #1C1C1C',
+                padding: '0.5rem 1.5rem', 
+                borderRadius: '20px', 
+                fontSize: '0.875rem', 
+                fontWeight: '500', 
+                fontFamily: 'Inter, sans-serif' 
+              }}>
                 Plan Gratuito
               </span>
-              <span style={{ color: '#6b7280', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>
+              <span style={{ 
+                color: '#3D3D3D', 
+                fontSize: '0.875rem', 
+                fontFamily: 'Inter, sans-serif' 
+              }}>
                 {calculosHoy}/3 cálculos usados hoy
               </span>
             </>
           ) : (
-            <span style={{ backgroundColor: '#c9a961', color: '#1A1A2E', padding: '0.5rem 1.5rem', borderRadius: '20px', fontSize: '0.875rem', fontWeight: '700', fontFamily: 'Inter, sans-serif', boxShadow: '0 2px 8px rgba(201, 169, 97, 0.3)' }}>
+            <span style={{ 
+              backgroundColor: '#C5A770', 
+              color: '#1C1C1C', 
+              padding: '0.5rem 1.5rem', 
+              borderRadius: '20px', 
+              fontSize: '0.875rem', 
+              fontWeight: '600', 
+              fontFamily: 'Inter, sans-serif', 
+              letterSpacing: '0.02em'
+            }}>
               CUENTA PREMIUM
             </span>
           )}
@@ -203,52 +286,63 @@ export default function CalculadorasPage() {
       </div>
 
       {/* Calculators Grid */}
-      <div className="flex-1 px-6 pb-8">
+      <div className="flex-1 px-6 pb-8" style={{ position: 'relative', zIndex: 5 }}>
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {calculadoras.map((calc) => (
             <button
               key={calc.id}
               onClick={() => handleCalculadoraClick(calc)}
-              className="relative group transition-all duration-300 hover:scale-105 text-left"
+              className="relative group transition-all duration-300 transform hover:scale-[1.02] text-left"
               style={{ minHeight: '200px' }}
             >
               <div 
-                className="h-full p-6 rounded-2xl transition-all duration-300"
+                className="h-full p-6 transition-all duration-300"
                 style={{ 
-                  backgroundColor: calc.premium && plan === 'free' ? '#f9fafb' : '#ffffff',
-                  border: calc.premium && plan === 'free' ? '2px solid #e5e7eb' : '2px solid transparent',
-                  boxShadow: calc.premium && plan === 'free' ? '0 4px 20px rgba(0,0,0,0.05)' : '0 8px 30px rgba(0,0,0,0.08)',
-                }}
-                onMouseEnter={(e) => {
-                  if (!(calc.premium && plan === 'free')) {
-                    e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.12)';
-                    e.currentTarget.style.border = '2px solid #c9a961';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!(calc.premium && plan === 'free')) {
-                    e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.08)';
-                    e.currentTarget.style.border = '2px solid transparent';
-                  }
+                  backgroundColor: 'transparent',
+                  border: '2px solid #C5A770',
+                  cursor: 'pointer',
+                  borderRadius: '30px'
                 }}
               >
                 <div className="flex flex-col h-full">
                   <div className="text-4xl mb-4">{calc.icono}</div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: '700', color: '#1A1A2E', marginBottom: '0.5rem', fontFamily: 'Montserrat, sans-serif' }}>
+                  <h3 style={{ 
+                    fontSize: '1.25rem', 
+                    fontWeight: '700', 
+                    color: '#1C1C1C', 
+                    marginBottom: '0.5rem', 
+                    fontFamily: 'Playfair Display, serif' 
+                  }}>
                     {calc.nombre}
                   </h3>
-                  <p style={{ color: '#6b7280', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif', flex: 1 }}>
+                  <p style={{ 
+                    color: '#3D3D3D', 
+                    fontSize: '0.875rem', 
+                    fontFamily: 'Inter, sans-serif', 
+                    flex: 1,
+                    fontWeight: '300'
+                  }}>
                     {calc.descripcion}
                   </p>
                   
                   {calc.premium && plan === 'free' ? (
                     <div className="mt-4 flex items-center gap-2">
                       <span style={{ fontSize: '1rem' }}>🔒</span>
-                      <span style={{ color: '#c9a961', fontSize: '0.875rem', fontWeight: '600', fontFamily: 'Inter, sans-serif' }}>Premium</span>
+                      <span style={{ 
+                        color: '#C5A770', 
+                        fontSize: '0.875rem', 
+                        fontWeight: '600', 
+                        fontFamily: 'Inter, sans-serif' 
+                      }}>Premium</span>
                     </div>
                   ) : (
                     <div className="mt-4 flex items-center gap-2">
-                      <span style={{ color: '#16a34a', fontSize: '0.875rem', fontWeight: '600', fontFamily: 'Inter, sans-serif' }}>Disponible →</span>
+                      <span style={{ 
+                        color: '#1C1C1C', 
+                        fontSize: '0.875rem', 
+                        fontWeight: '500', 
+                        fontFamily: 'Inter, sans-serif' 
+                      }}>Disponible →</span>
                     </div>
                   )}
                 </div>
@@ -258,14 +352,58 @@ export default function CalculadorasPage() {
         </div>
       </div>
 
+      {/* Profile Button */}
+      <div className="absolute top-6 right-6">
+        <button 
+          onClick={() => router.push('/perfil')}
+          className="transition-all duration-300"
+          style={{
+            backgroundColor: 'transparent',
+            color: '#1C1C1C',
+            border: '1.5px solid #1C1C1C',
+            padding: '0.5rem 1.5rem',
+            borderRadius: '25px',
+            fontSize: '0.875rem',
+            fontWeight: '500',
+            fontFamily: 'Inter, sans-serif',
+            letterSpacing: '0.02em',
+            cursor: 'pointer'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#1C1C1C';
+            e.currentTarget.style.color = '#F4EFE8';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.color = '#1C1C1C';
+          }}
+        >
+          Mi Perfil
+        </button>
+      </div>
+
       {/* Footer */}
-      <footer style={{ backgroundColor: '#f9fafb', padding: '2rem 0', marginTop: '4rem' }}>
+      <footer style={{ 
+        backgroundColor: 'transparent', 
+        padding: '2rem 0', 
+        borderTop: '1px solid #E5E5E5' 
+      }}>
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <p style={{ color: '#6b7280', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>
+          <p style={{ 
+            color: '#3D3D3D', 
+            fontSize: '0.875rem', 
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: '300'
+          }}>
             {plan === 'free' && '¿Necesitas más cálculos? '}
             <button 
               onClick={() => router.push('/')}
-              style={{ color: '#c9a961', fontWeight: '600', textDecoration: 'underline', cursor: 'pointer' }}
+              style={{ 
+                color: '#C5A770', 
+                fontWeight: '500', 
+                textDecoration: 'underline', 
+                cursor: 'pointer' 
+              }}
             >
               {plan === 'free' ? 'Actualiza a Premium' : 'Gestionar suscripción'}
             </button>
@@ -283,10 +421,20 @@ export default function CalculadorasPage() {
           >
             <div className="text-center">
               <div className="text-6xl mb-4">🌟</div>
-              <h2 className="text-xl md:text-2xl" style={{ fontWeight: '700', color: '#1A1A2E', marginBottom: '1rem', fontFamily: 'Montserrat, sans-serif' }}>
+              <h2 className="text-xl md:text-2xl" style={{ 
+                fontWeight: '700', 
+                color: '#1C1C1C', 
+                marginBottom: '1rem', 
+                fontFamily: 'Playfair Display, serif' 
+              }}>
                 {selectedCalculadora ? 'Calculadora Premium' : 'Límite Alcanzado'}
               </h2>
-              <p className="text-sm md:text-base" style={{ color: '#6b7280', marginBottom: '2rem', fontFamily: 'Inter, sans-serif' }}>
+              <p className="text-sm md:text-base" style={{ 
+                color: '#3D3D3D', 
+                marginBottom: '2rem', 
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: '300'
+              }}>
                 {selectedCalculadora 
                   ? `La calculadora "${selectedCalculadora.nombre}" requiere una cuenta Premium.`
                   : 'Has alcanzado el límite diario de 3 cálculos gratuitos.'
@@ -298,14 +446,15 @@ export default function CalculadorasPage() {
                   style={{ 
                     flex: 1,
                     padding: '0.75rem 1.5rem', 
-                    backgroundColor: '#f3f4f6', 
-                    color: '#374151', 
-                    borderRadius: '12px', 
+                    backgroundColor: 'transparent', 
+                    color: '#1C1C1C', 
+                    borderRadius: '25px', 
                     fontSize: '1rem', 
-                    fontWeight: '600', 
+                    fontWeight: '500', 
                     fontFamily: 'Inter, sans-serif',
-                    border: 'none',
-                    cursor: 'pointer'
+                    border: '1.5px solid #1C1C1C',
+                    cursor: 'pointer',
+                    letterSpacing: '0.02em'
                   }}
                 >
                   Cancelar
@@ -315,18 +464,26 @@ export default function CalculadorasPage() {
                   style={{ 
                     flex: 1,
                     padding: '0.75rem 1.5rem', 
-                    backgroundColor: '#c9a961', 
-                    color: '#1A1A2E', 
-                    borderRadius: '12px', 
+                    backgroundColor: '#1C1C1C', 
+                    color: '#F4EFE8', 
+                    borderRadius: '25px', 
                     fontSize: '1rem', 
-                    fontWeight: '700', 
+                    fontWeight: '500', 
                     fontFamily: 'Inter, sans-serif',
-                    border: 'none',
+                    border: '1.5px solid #1C1C1C',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 12px rgba(201, 169, 97, 0.3)'
+                    letterSpacing: '0.02em'
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#b8975a'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#c9a961'; }}
+                  onMouseEnter={(e) => { 
+                    e.currentTarget.style.backgroundColor = '#C5A770';
+                    e.currentTarget.style.borderColor = '#C5A770';
+                    e.currentTarget.style.color = '#1C1C1C';
+                  }}
+                  onMouseLeave={(e) => { 
+                    e.currentTarget.style.backgroundColor = '#1C1C1C';
+                    e.currentTarget.style.borderColor = '#1C1C1C';
+                    e.currentTarget.style.color = '#F4EFE8';
+                  }}
                 >
                   Ver Planes
                 </button>

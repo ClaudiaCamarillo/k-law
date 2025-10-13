@@ -1,17 +1,61 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 export default function PlanesPage() {
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const seleccionarPlan = (plan: 'free' | 'premium') => {
+  const seleccionarPlan = async (plan: 'free' | 'premium') => {
     if (plan === 'free') {
       // Ir directo a selección de tipo de usuario
       router.push('/')
     } else {
-      // En el futuro, aquí iría a la página de pago
-      alert('Próximamente: Integración con pasarela de pago')
+      // Procesar pago con Stripe
+      setLoading(true)
+      setError(null)
+      
+      try {
+        // Llamar al endpoint para crear sesión de Stripe
+        const response = await fetch('/api/create-checkout-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID_MONTHLY || 'price_1RlToNFmPABul6hgT2sCt5EC'
+          }),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Error al procesar el pago')
+        }
+
+        // Redirigir a Stripe Checkout
+        const { loadStripe } = await import('@stripe/stripe-js')
+        const stripe = await loadStripe(
+          process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+        )
+        
+        if (stripe) {
+          const { error } = await stripe.redirectToCheckout({
+            sessionId: data.sessionId,
+          })
+          
+          if (error) {
+            throw new Error(error.message)
+          }
+        }
+      } catch (err: any) {
+        setError(err.message || 'Error al procesar el pago')
+        console.error('Error:', err)
+      } finally {
+        setLoading(false)
+      }
     }
   }
 
@@ -57,7 +101,8 @@ export default function PlanesPage() {
                 </ul>
                 <button
                   onClick={() => seleccionarPlan('free')}
-                  className="w-full py-4 border-2 border-white text-white font-medium rounded-full text-lg hover:bg-white/10 transition-all"
+                  disabled={loading}
+                  className="w-full py-4 border-2 border-white text-white font-medium rounded-full text-lg hover:bg-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Comenzar Gratis
                 </button>
@@ -104,14 +149,22 @@ export default function PlanesPage() {
                 </ul>
                 <button
                   onClick={() => seleccionarPlan('premium')}
-                  className="w-full py-4 text-white font-medium rounded-full text-lg transition-all hover:opacity-90"
+                  disabled={loading}
+                  className="w-full py-4 text-white font-medium rounded-full text-lg transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ background: '#4a90e2' }}
                 >
-                  Comenzar Prueba
+                  {loading ? 'Procesando...' : 'Comenzar Prueba'}
                 </button>
               </div>
             </div>
           </div>
+
+          {/* Error message */}
+          {error && (
+            <div className="mt-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-center">
+              <p className="text-red-300 text-sm">{error}</p>
+            </div>
+          )}
 
           {/* Footer */}
           <p className="text-center text-gray-400 text-xs mt-8">

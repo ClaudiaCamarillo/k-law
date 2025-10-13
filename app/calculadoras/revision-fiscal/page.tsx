@@ -760,70 +760,184 @@ export default function CalculadoraRevisionFiscal() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#ffffff' }} suppressHydrationWarning>
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Source+Code+Pro:wght@400;500&display=swap');
+    <div className="min-h-screen" style={{ backgroundColor: '#F4EFE8', position: 'relative' }}>
+      <style jsx>{`
+        .texto-resolucion sup {
+          font-size: 0.6em;
+          vertical-align: super;
+          line-height: 0;
+        }
       `}</style>
-      <nav className="k-law-nav" style={{ backgroundColor: '#1A1A2E', boxShadow: '0 2px 8px rgba(26, 26, 46, 0.15)' }}>
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <Link href="/" className="flex items-center">
-                <img src="/mnt/c/Users/Neo 14/Desktop/Logo.jpg" alt="K-LAW Logo" style={{ height: '48px', width: 'auto', filter: 'brightness(1.1)' }} />
-              </Link>
-              <span className="k-law-badge" style={{ backgroundColor: '#c9a961', color: '#1A1A2E', fontWeight: '600', padding: '6px 16px', borderRadius: '20px', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+      `}</style>
+      
+      {/* Subtle pattern overlay */}
+      <div style={{
+        position: 'absolute',
+        top: '122px',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        opacity: 0.03,
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231C1C1C' fill-opacity='1'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`,
+        pointerEvents: 'none',
+        zIndex: 0
+      }} />
+      
+      {/* Franja dorada superior */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '122px',
+        backgroundColor: '#C5A770',
+        zIndex: 0,
+        pointerEvents: 'none'
+      }}></div>
+      
+      {/* Línea negra */}
+      <div style={{
+        position: 'absolute',
+        top: '122px',
+        left: 0,
+        right: 0,
+        height: '1.5px',
+        backgroundColor: '#1C1C1C',
+        zIndex: 1
+      }}></div>
+      
+      {/* Logo K-LAW en la parte izquierda */}
+      <div style={{ 
+        position: 'absolute',
+        top: '-43px',
+        left: '20px',
+        zIndex: 15
+      }}>
+        <Link href="/">
+          <img 
+            src="/LOGO-KLAW.gif" 
+            alt="K-LAW Logo" 
+            style={{ 
+              display: 'block',
+              width: 'auto',
+              height: 'auto',
+              maxWidth: '599px',
+              maxHeight: '240px',
+              cursor: 'pointer'
+            }}
+          />
+        </Link>
+      </div>
+      
+      {/* Contenido principal */}
+      <div style={{ position: 'relative', zIndex: 10, paddingTop: '122px' }}>
+        
+        {/* Nav minimalista */}
+        <nav style={{ padding: '1rem 0' }}>
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="flex justify-between items-center">
+              <span style={{ 
+                backgroundColor: 'transparent', 
+                color: '#1C1C1C', 
+                fontWeight: '500', 
+                fontSize: '0.875rem', 
+                fontFamily: 'Inter, sans-serif',
+                border: '1.5px solid #C5A770',
+                padding: '6px 16px',
+                borderRadius: '20px'
+              }}>
                 Modo: {tipoUsuario === 'litigante' ? 'Litigante' : 'Servidor Público'}
               </span>
+              <Link 
+                href="/calculadoras" 
+                className="text-sm px-4 py-2" 
+                style={{ 
+                  backgroundColor: '#1C1C1C', 
+                  color: '#FFFFFF', 
+                  borderRadius: '6px', 
+                  transition: 'all 0.3s ease', 
+                  cursor: 'pointer', 
+                  fontFamily: 'Inter, sans-serif' 
+                }} 
+                onMouseEnter={(e) => { 
+                  e.currentTarget.style.backgroundColor = '#C5A770'; 
+                  e.currentTarget.style.color = '#1C1C1C'; 
+                }} 
+                onMouseLeave={(e) => { 
+                  e.currentTarget.style.backgroundColor = '#1C1C1C'; 
+                  e.currentTarget.style.color = '#FFFFFF'; 
+                }}
+              >
+                Volver
+              </Link>
             </div>
-            <Link href="/calculadoras" className="text-sm px-4 py-2" style={{ backgroundColor: 'transparent', color: '#FFFFFF', border: '1px solid #c9a961', borderRadius: '6px', transition: 'all 0.3s ease', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#c9a961'; e.currentTarget.style.color = '#1A1A2E'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#FFFFFF'; }}>
-              Volver
-            </Link>
           </div>
-        </div>
-      </nav>
+        </nav>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8" style={{ position: 'relative', zIndex: 10 }}>
         <div className="text-center mb-8">
-          <h1 className="k-law-title" style={{ color: '#1A1A2E', fontSize: '2.5rem', fontWeight: '700', marginBottom: '0.5rem', fontFamily: 'Montserrat, sans-serif' }}>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl mb-2" style={{ 
+            fontFamily: 'Playfair Display, serif', 
+            fontWeight: '800',
+            color: '#1C1C1C',
+            letterSpacing: '-0.02em'
+          }}>
             Revisión Fiscal (TFJA)
           </h1>
-          <p style={{ color: '#666', fontSize: '1.125rem', fontFamily: 'Inter, sans-serif' }}>Sistema profesional de cálculo de plazos legales</p>
+          <p className="text-sm md:text-base" style={{ 
+            fontFamily: 'Inter, sans-serif',
+            color: '#3D3D3D',
+            fontWeight: '300',
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase'
+          }}>
+            Sistema profesional de cálculo de plazos legales
+          </p>
         </div>
         
         <section className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="k-law-card" style={{ backgroundColor: '#FFFFFF', borderRadius: '20px', boxShadow: '0 4px 20px rgba(26, 26, 46, 0.08)', padding: '2.5rem', border: '1px solid #f0f0f0' }}>
+            <form onSubmit={handleSubmit} style={{ 
+              backgroundColor: '#FFFFFF', 
+              borderRadius: '12px', 
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.08)', 
+              padding: '2.5rem', 
+              border: '1.5px solid #C5A770' 
+            }}>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Resolución Impugnada</label>
+                  <label className="block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Resolución Impugnada</label>
                   <input 
                     type="text" 
                     value="Sentencia dictada en el procedimiento contencioso administrativo" 
                     disabled 
-                    style={{ width: '100%', padding: '0.75rem', border: '2px solid #e5e7eb', borderRadius: '12px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#666', backgroundColor: '#f8f9fa' }}
+                    style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '8px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#3D3D3D', backgroundColor: 'transparent', cursor: 'not-allowed' }}
                   />
                 </div>
                 
                 <div>
-                  <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Parte Recurrente</label>
+                  <label className="block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Parte Recurrente</label>
                   <input 
                     type="text" 
                     value="Autoridad demandada (TFJA)" 
                     disabled 
-                    style={{ width: '100%', padding: '0.75rem', border: '2px solid #e5e7eb', borderRadius: '12px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#666', backgroundColor: '#f8f9fa' }}
+                    style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '8px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#3D3D3D', backgroundColor: 'transparent', cursor: 'not-allowed' }}
                   />
                 </div>
                 
                 <div>
-                  <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Forma de Notificación</label>
+                  <label className="block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Forma de Notificación</label>
                   <select 
                     name="formaNotificacion" 
                     value={formData.formaNotificacion} 
                     onChange={handleChange} 
                     className="k-law-select" 
-                    style={{ borderColor: '#E0E0E0', borderRadius: '12px', fontSize: '0.95rem', transition: 'border-color 0.3s ease', backgroundColor: '#FFFFFF', fontFamily: 'Inter, sans-serif', color: '#333333', width: '100%', padding: '0.75rem' }} 
-                    onFocus={(e) => e.currentTarget.style.borderColor = '#c9a961'} 
-                    onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} 
+                    style={{ border: '1.5px solid #1C1C1C', borderRadius: '8px', fontSize: '0.95rem', transition: 'all 0.3s ease', backgroundColor: 'transparent', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', width: '100%', padding: '0.75rem' }} 
+                    onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} 
+                    onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} 
                     required 
                   >
                     <option value="">Seleccione...</option>
@@ -833,15 +947,15 @@ export default function CalculadoraRevisionFiscal() {
                 </div>
                 
                 <div>
-                  <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Fecha de Notificación</label>
+                  <label className="block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Fecha de Notificación</label>
                   <input 
                     type="date" 
                     name="fechaNotificacion" 
                     value={formData.fechaNotificacion} 
                     onChange={handleChange} 
-                    style={{ width: '100%', padding: '0.75rem', border: '2px solid #e5e7eb', borderRadius: '12px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#333333', backgroundColor: '#FFFFFF', transition: 'all 0.3s ease' }} 
-                    onFocus={(e) => e.target.style.borderColor = '#c9a961'} 
-                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'} 
+                    style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '8px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }} 
+                    onFocus={(e) => e.target.style.borderColor = '#C5A770'} 
+                    onBlur={(e) => e.target.style.borderColor = '#1C1C1C'} 
                     required 
                   />
                 </div>
@@ -849,23 +963,29 @@ export default function CalculadoraRevisionFiscal() {
                 {tipoUsuario === 'servidor' && (
                   <>
                     <div>
-                      <label className="block text-sm font-medium mb-2">Fecha de Presentación</label>
+                      <label className="block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Fecha de Presentación</label>
                       <input 
                         type="date" 
                         name="fechaPresentacion" 
                         value={formData.fechaPresentacion} 
                         onChange={handleChange} 
-                        className="w-full p-2 border rounded-lg" 
+                        style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '8px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }} 
+                        onFocus={(e) => e.target.style.borderColor = '#C5A770'} 
+                        onBlur={(e) => e.target.style.borderColor = '#1C1C1C'} 
+                        suppressHydrationWarning={true}
                       />
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium mb-2">Forma de Presentación</label>
+                      <label className="block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Forma de Presentación</label>
                       <select 
                         name="formaPresentacion" 
                         value={formData.formaPresentacion} 
                         onChange={handleChange} 
-                        className="w-full p-2 border rounded-lg" 
+                        style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '8px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }} 
+                        onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} 
+                        onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} 
+                        suppressHydrationWarning={true}
                       >
                         <option value="">Seleccione...</option>
                         <option value="escrito">Por escrito</option>
@@ -877,13 +997,44 @@ export default function CalculadoraRevisionFiscal() {
                 )}
               </div>
               
-              <button 
-                type="submit" 
-                disabled={calculando} 
-                className="mt-6 w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400" 
-              >
-                {calculando ? 'Calculando...' : 'Calcular Plazo'}
-              </button>
+              <div className="mt-8 text-center">
+                <button 
+                  type="submit" 
+                  disabled={calculando} 
+                  className="w-full" 
+                  style={{ 
+                    width: '100%',
+                    backgroundColor: calculando ? '#E5E5E5' : '#1C1C1C', 
+                    color: calculando ? '#999' : '#F4EFE8', 
+                    padding: '1rem 2rem', 
+                    borderRadius: '25px', 
+                    fontSize: '1rem', 
+                    fontWeight: '500', 
+                    transition: 'all 0.3s ease', 
+                    cursor: calculando ? 'not-allowed' : 'pointer', 
+                    border: '1.5px solid #1C1C1C', 
+                    fontFamily: 'Inter, sans-serif',
+                    letterSpacing: '0.02em' 
+                  }} 
+                  onMouseEnter={(e) => { 
+                    if (!calculando) { 
+                      e.currentTarget.style.backgroundColor = '#C5A770'; 
+                      e.currentTarget.style.borderColor = '#C5A770';
+                      e.currentTarget.style.color = '#1C1C1C';
+                    } 
+                  }} 
+                  onMouseLeave={(e) => { 
+                    if (!calculando) { 
+                      e.currentTarget.style.backgroundColor = '#1C1C1C'; 
+                      e.currentTarget.style.borderColor = '#1C1C1C';
+                      e.currentTarget.style.color = '#F4EFE8';
+                    } 
+                  }} 
+                  suppressHydrationWarning={true}
+                >
+                  {calculando ? 'Calculando...' : 'Calcular Plazo'}
+                </button>
+              </div>
             </form>
           </div>
           
@@ -892,60 +1043,85 @@ export default function CalculadoraRevisionFiscal() {
         </section>
         
         {resultado && (
-          <div className="mt-6 bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold mb-4">Resultado del Cálculo</h2>
+          <div style={{ 
+            marginTop: '1.5rem',
+            backgroundColor: '#FFFFFF',
+            borderRadius: '12px',
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.08)',
+            padding: '2rem',
+            border: '1.5px solid #C5A770'
+          }}>
+            <h2 style={{ 
+              fontSize: '2rem',
+              fontWeight: '700',
+              marginBottom: '1rem',
+              color: '#1C1C1C',
+              fontFamily: 'Playfair Display, serif'
+            }}>Resultado del Cálculo</h2>
             
             <div style={{ 
               padding: '1.5rem', 
-              borderRadius: '12px', 
+              borderRadius: '8px', 
               marginBottom: '1rem', 
               background: tipoUsuario === 'servidor' 
-                ? (resultado.esOportuno ? 'linear-gradient(135deg, #f0fdf4 0%, #e6f7ed 100%)' : 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)') 
-                : 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', 
+                ? (resultado.esOportuno ? 'linear-gradient(135deg, #f0fdf4 0%, #e6f7ed 100%)' : 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)') 
+                : '#F9F7F5', 
               border: tipoUsuario === 'servidor' 
-                ? `1px solid ${resultado.esOportuno ? '#86efac' : '#fca5a5'}` 
-                : '1px solid #93c5fd' 
+                ? `1.5px solid ${resultado.esOportuno ? '#C5A770' : '#dc2626'}` 
+                : '1.5px solid #C5A770' 
             }}>
               {tipoUsuario === 'servidor' ? (
-                <p style={{ fontSize: '1.125rem', fontWeight: '600', fontFamily: 'Inter, sans-serif', color: '#333333' }}>
+                <p style={{ fontSize: '1.125rem', fontWeight: '600', fontFamily: 'Inter, sans-serif', color: '#1C1C1C' }}>
                   El recurso se presentó de forma: {' '}
-                  <span style={{ color: resultado.esOportuno ? '#16a34a' : '#dc2626' }}>
+                  <span className={resultado.esOportuno ? 'text-green-700' : 'text-red-600 font-bold'}>
                     {resultado.esOportuno ? 'OPORTUNA' : 'EXTEMPORÁNEA'}
                   </span>
                 </p>
               ) : (
                 <div>
-                  <p style={{ fontSize: '1.125rem', fontWeight: '600', fontFamily: 'Inter, sans-serif', color: '#333333', marginBottom: '0.5rem' }}>
-                    Plazo legal: <span style={{ color: '#1e40af' }}>{resultado.plazo} días hábiles</span>
+                  <p style={{ fontSize: '1.125rem', fontWeight: '600', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', marginBottom: '0.5rem' }}>
+                    Plazo legal: <span style={{ color: '#C5A770' }}>{resultado.plazo} días hábiles</span>
                   </p>
-                  <p style={{ fontSize: '0.95rem', color: '#666666', marginBottom: '0.5rem' }}>
+                  <p style={{ fontSize: '0.95rem', color: '#3D3D3D', marginBottom: '0.5rem' }}>
                     <strong>Fundamento:</strong> {resultado.fundamento}
                   </p>
-                  <p style={{ fontSize: '0.95rem', color: '#666666', marginBottom: '0.5rem' }}>
+                  <p style={{ fontSize: '0.95rem', color: '#3D3D3D', marginBottom: '0.5rem' }}>
                     <strong>Fecha de notificación:</strong> {resultado.fechaNotificacion?.toLocaleDateString()}
                   </p>
-                  <p style={{ fontSize: '0.95rem', color: '#666666', marginBottom: '0.5rem' }}>
+                  <p style={{ fontSize: '0.95rem', color: '#3D3D3D', marginBottom: '0.5rem' }}>
                     <strong>Surte efectos:</strong> {resultado.fechaSurte?.toLocaleDateString()}
                   </p>
-                  <p style={{ fontSize: '0.95rem', color: '#666666' }}>
+                  <p style={{ fontSize: '0.95rem', color: '#3D3D3D' }}>
                     <strong>Período del cómputo:</strong> Del {resultado.fechaInicio?.toLocaleDateString()} al {resultado.fechaFin?.toLocaleDateString()}
                   </p>
                 </div>
               )}
             </div>
             
-            <div className="bg-gray-50 p-4 rounded-lg mb-4">
-              <h3 className="font-semibold mb-2">Detalles del Cómputo:</h3>
-              <div className="space-y-1 text-sm">
-                <p><strong>Plazo legal:</strong> {resultado.plazo} días hábiles</p>
-                <p><strong>Fundamento:</strong> {resultado.fundamento}</p>
-                <p><strong>Fecha de notificación:</strong> {fechaATexto(resultado.fechaNotificacion?.toISOString().split('T')[0])}</p>
-                <p><strong>Surte efectos:</strong> {fechaATexto(resultado.fechaSurte?.toISOString().split('T')[0])}</p>
-                <p><strong>Período del cómputo:</strong> Del {fechaATexto(resultado.fechaInicio?.toISOString().split('T')[0])} al {fechaATexto(resultado.fechaFin?.toISOString().split('T')[0])}</p>
+            <div style={{ 
+              backgroundColor: 'transparent',
+              padding: '1rem',
+              borderRadius: '30px',
+              marginBottom: '1rem',
+              border: '2px solid #C5A770'
+            }}>
+              <h3 style={{ 
+                fontWeight: '600',
+                marginBottom: '0.5rem',
+                color: '#1C1C1C',
+                fontFamily: 'Playfair Display, serif',
+                fontSize: '1.125rem'
+              }}>Detalles del Cómputo:</h3>
+              <div className="space-y-1" style={{ fontSize: '0.875rem', color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}>
+                <p><strong style={{ color: '#1C1C1C' }}>Plazo legal:</strong> {resultado.plazo} días hábiles</p>
+                <p><strong style={{ color: '#1C1C1C' }}>Fundamento:</strong> {resultado.fundamento}</p>
+                <p><strong style={{ color: '#1C1C1C' }}>Fecha de notificación:</strong> {fechaATexto(resultado.fechaNotificacion?.toISOString().split('T')[0])}</p>
+                <p><strong style={{ color: '#1C1C1C' }}>Surte efectos:</strong> {fechaATexto(resultado.fechaSurte?.toISOString().split('T')[0])}</p>
+                <p><strong style={{ color: '#1C1C1C' }}>Período del cómputo:</strong> Del {fechaATexto(resultado.fechaInicio?.toISOString().split('T')[0])} al {fechaATexto(resultado.fechaFin?.toISOString().split('T')[0])}</p>
                 {tipoUsuario === 'servidor' && (
-                  <p><strong>Fecha de presentación:</strong> {formData.fechaPresentacion ? fechaATexto(formData.fechaPresentacion) : ''}</p>
+                  <p><strong style={{ color: '#1C1C1C' }}>Fecha de presentación:</strong> {formData.fechaPresentacion ? fechaATexto(formData.fechaPresentacion) : ''}</p>
                 )}
-                <p><strong>Días inhábiles excluidos:</strong> {formatearDiasInhabilesParaDetalles(generarTextoDiasInhabiles())}</p>
+                <p><strong style={{ color: '#1C1C1C' }}>Días inhábiles excluidos:</strong> {formatearDiasInhabilesParaDetalles(generarTextoDiasInhabiles())}</p>
               </div>
             </div>
             

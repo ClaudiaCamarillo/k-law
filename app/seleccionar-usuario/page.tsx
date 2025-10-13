@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect, Suspense } from 'react'
 import { loadStripe } from '@stripe/stripe-js'
+import Image from 'next/image'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -49,7 +50,7 @@ function SeleccionarUsuarioContent() {
     }
     
     // Verificar si viene de un pago exitoso
-    if (searchParams.get('payment') === 'success') {
+    if (searchParams.get('payment') === 'success' || searchParams.get('from') === 'pago-exitoso') {
       setShowSuccess(true)
       localStorage.setItem('userPlan', 'premium')
       // Ocultar el mensaje después de 5 segundos
@@ -58,13 +59,34 @@ function SeleccionarUsuarioContent() {
   }, [searchParams])
 
   const handleSelectUser = (tipo: 'litigante' | 'servidor') => {
-    setSelectedType(tipo)
-    // Guardar en localStorage
-    localStorage.setItem('tipoUsuario', tipo)
-    // Pequeño delay para mostrar la selección antes de navegar
-    setTimeout(() => {
-      router.push('/calculadoras')
-    }, 200)
+    try {
+      console.log('=== INICIO handleSelectUser ===')
+      console.log('Usuario seleccionado:', tipo)
+      console.log('Plan actual:', localStorage.getItem('userPlan'))
+      
+      setSelectedType(tipo)
+      
+      // Guardar en localStorage
+      localStorage.setItem('tipoUsuario', tipo)
+      console.log('Tipo de usuario guardado:', localStorage.getItem('tipoUsuario'))
+      
+      // Navegar directamente sin delay para probar
+      console.log('Intentando navegar a /calculadoras...')
+      
+      // Intentar múltiples métodos de navegación
+      try {
+        router.push('/calculadoras')
+      } catch (routerError) {
+        console.error('Error con router.push:', routerError)
+        // Fallback: usar window.location
+        window.location.href = '/calculadoras'
+      }
+      
+      console.log('=== FIN handleSelectUser ===')
+    } catch (error) {
+      console.error('Error en handleSelectUser:', error)
+      alert('Error al seleccionar usuario: ' + error)
+    }
   }
 
   const handleBack = () => {
@@ -72,125 +94,326 @@ function SeleccionarUsuarioContent() {
   }
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: '#FFFFFF' }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#F4EFE8' }}>
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
       `}</style>
       
       {/* Success Message */}
       {showSuccess && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, backgroundColor: '#C9A961', padding: '1.5rem', textAlign: 'center', zIndex: 50, boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{ 
+          position: 'fixed', 
+          top: '140px', 
+          left: 0, 
+          right: 0, 
+          backgroundColor: 'transparent', 
+          padding: '1.5rem', 
+          textAlign: 'center', 
+          zIndex: 50 
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            gap: '1rem', 
+            maxWidth: '1200px', 
+            margin: '0 auto' 
+          }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#0A1628"/>
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" fill="#C5A770"/>
             </svg>
-            <span style={{ fontWeight: '600', fontSize: '1.125rem', color: '#0A1628', fontFamily: 'Inter, sans-serif' }}>¡Pago exitoso! Ahora eres usuario Premium</span>
+            <span style={{ 
+              fontWeight: '600', 
+              fontSize: '1.125rem', 
+              color: '#C5A770', 
+              fontFamily: 'Inter, sans-serif',
+              textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}>¡Pago exitoso! Ahora eres usuario Premium</span>
           </div>
         </div>
       )}
       
-      {/* Navigation */}
-      <nav className="flex-shrink-0" style={{ backgroundColor: '#0A1628', padding: '1rem 0', boxShadow: '0 2px 20px rgba(0,0,0,0.1)' }}>
-        <div className="max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-between">
-          <button
-            onClick={handleBack}
-            className="text-sm md:text-base"
-            style={{ color: '#C9A961', fontSize: '1.25rem', background: 'none', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateX(-4px)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateX(0)'; }}
-          >
-            ← <span className="hidden sm:inline">Volver</span>
-          </button>
-          <div style={{ height: '50px', display: 'flex', alignItems: 'center' }}>
-            <span className="text-2xl md:text-3xl" style={{ fontWeight: '800', color: '#C9A961', fontFamily: 'Montserrat, sans-serif', letterSpacing: '0.05em' }}>K-LAW</span>
+      {/* Back Button */}
+      <div className="absolute top-6 left-6 z-10">
+        <button 
+          onClick={handleBack}
+          className="transition-all duration-300"
+          style={{
+            backgroundColor: 'transparent',
+            color: '#1C1C1C',
+            border: '1.5px solid #1C1C1C',
+            padding: '0.5rem 1.5rem',
+            borderRadius: '25px',
+            fontSize: '0.875rem',
+            fontWeight: '500',
+            fontFamily: 'Inter, sans-serif',
+            letterSpacing: '0.02em',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#1C1C1C';
+            e.currentTarget.style.color = '#F4EFE8';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.color = '#1C1C1C';
+          }}
+        >
+          ← Volver
+        </button>
+      </div>
+
+      {/* Golden Top Bar */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '122px',
+        backgroundColor: '#C5A770',
+        zIndex: 0,
+        pointerEvents: 'none'
+      }} />
+      
+      {/* Thin Black Line */}
+      <div style={{
+        position: 'absolute',
+        top: '122px',
+        left: 0,
+        right: 0,
+        height: '1.5px',
+        backgroundColor: '#1C1C1C',
+        zIndex: 0,
+        pointerEvents: 'none'
+      }} />
+
+      {/* Elegant Header */}
+      <div className="relative py-8 md:py-12" style={{ zIndex: 2 }}>
+        {/* Subtle pattern overlay */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          opacity: 0.03,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231C1C1C' fill-opacity='1'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`
+        }} />
+        
+        <div className="relative z-10 text-center px-6">
+          <div className="mb-4" style={{ position: 'relative', zIndex: 10, marginTop: '-82px' }}>
+            <img 
+              src="/LOGO-KLAW.gif" 
+              alt="K-LAW Logo" 
+              className="mx-auto"
+              style={{ 
+                display: 'block',
+                width: 'auto',
+                height: 'auto',
+                maxWidth: '599px',
+                maxHeight: '240px',
+                position: 'relative',
+                zIndex: 10
+              }}
+            />
           </div>
-          <div style={{ width: '80px' }}></div>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl mb-2" style={{ 
+            fontFamily: 'Playfair Display, serif', 
+            fontWeight: '800',
+            color: '#1C1C1C',
+            letterSpacing: '-0.02em'
+          }}>
+            ¿Quién eres?
+          </h1>
+          <p className="text-sm md:text-base" style={{ 
+            fontFamily: 'Inter, sans-serif',
+            color: '#3D3D3D',
+            fontWeight: '300',
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase'
+          }}>
+            Personaliza tu experiencia según tu perfil profesional
+          </p>
         </div>
-      </nav>
+      </div>
+
+      {/* Botón de prueba */}
+      <div style={{ position: 'fixed', top: '200px', right: '20px', zIndex: 9999 }}>
+        <button 
+          onClick={() => {
+            console.log('BOTÓN DE PRUEBA CLICKEADO')
+            alert('Botón de prueba funcionando!')
+            localStorage.setItem('tipoUsuario', 'servidor')
+            localStorage.setItem('userPlan', 'premium')
+            window.location.href = '/calculadoras'
+          }}
+          style={{
+            padding: '10px 20px',
+            backgroundColor: '#C5A770',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: 'bold'
+          }}
+        >
+          BYPASS: Ir como Servidor Premium
+        </button>
+      </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center px-4 py-8 md:py-12 overflow-y-auto">
-        <div className="w-full max-w-5xl">
-          {/* Header Text */}
-          <div className="text-center mb-8 md:mb-12">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl" style={{ fontWeight: '700', marginBottom: '0.75rem', color: '#0A1628', fontFamily: 'Playfair Display, serif', letterSpacing: '-0.02em' }}>
-              ¿Quién eres?
-            </h1>
-            <p className="text-base md:text-lg lg:text-xl" style={{ color: '#6b7280', fontSize: '1.125rem', fontFamily: 'Inter, sans-serif', fontWeight: '400' }}>
-              Personaliza tu experiencia según tu perfil profesional
-            </p>
-          </div>
-
+      <div className="flex-1 flex items-center justify-center px-6 pb-8" style={{ position: 'relative', zIndex: 5 }}>
+        <div className="w-full max-w-4xl">
           {/* User Type Cards */}
-          <div className="flex flex-col md:flex-row justify-center items-stretch gap-4 md:gap-6 lg:gap-8">
+          <div className="grid md:grid-cols-2 gap-8 justify-center">
             {/* Litigante Card */}
             <button
-              onClick={() => handleSelectUser('litigante')}
-              className="relative w-full md:max-w-[450px] transform transition-all duration-300 md:hover:scale-105"
-              style={{ textAlign: 'left' }}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                console.log('Click en botón litigante')
+                handleSelectUser('litigante')
+              }}
+              className="group transition-all duration-300 transform hover:scale-[1.02]"
+              type="button"
             >
-              <div className="h-full" style={{ backgroundColor: selectedType === 'litigante' ? '#0A1628' : '#F5F5F5', borderRadius: '20px', padding: '2rem md:2.5rem lg:3rem', boxShadow: selectedType === 'litigante' ? '0 20px 60px rgba(10,22,40,0.3)' : '0 10px 40px rgba(0,0,0,0.06)', border: selectedType === 'litigante' ? '2px solid #C9A961' : '1px solid #e5e7eb', minHeight: '400px', display: 'flex', flexDirection: 'column', transition: 'all 0.3s ease' }}>
-                <div className="text-center mb-4 md:mb-6">
-                  <div style={{ width: '70px', height: '70px', margin: '0 auto 1.5rem', backgroundColor: selectedType === 'litigante' ? '#C9A961' : '#0A1628', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+              <div 
+                className="h-full p-6 md:p-8 transition-all duration-300"
+                style={{ 
+                  backgroundColor: selectedType === 'litigante' ? '#1C1C1C' : 'transparent',
+                  border: '2px solid #C5A770',
+                  borderRadius: '30px',
+                  minHeight: '400px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  cursor: 'pointer'
+                }}
+              >
+                <div className="text-center mb-6">
+                  <div style={{ 
+                    width: '70px', 
+                    height: '70px', 
+                    margin: '0 auto 1.5rem', 
+                    backgroundColor: selectedType === 'litigante' ? '#C5A770' : '#1C1C1C', 
+                    borderRadius: '50%', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center' 
+                  }}>
                     <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
-                      <path d="M7 8V6a5 5 0 0110 0v2h3a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1h3zm2 0h6V6a3 3 0 00-6 0v2zm-4 2v10h14V10H5zm7 2a1 1 0 011 1v4a1 1 0 11-2 0v-4a1 1 0 011-1z" fill={selectedType === 'litigante' ? '#0A1628' : '#FFFFFF'}/>
+                      <path d="M7 8V6a5 5 0 0110 0v2h3a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1h3zm2 0h6V6a3 3 0 00-6 0v2zm-4 2v10h14V10H5zm7 2a1 1 0 011 1v4a1 1 0 11-2 0v-4a1 1 0 011-1z" 
+                        fill={selectedType === 'litigante' ? '#1C1C1C' : '#F4EFE8'}/>
                     </svg>
                   </div>
-                  <h2 className="text-xl md:text-2xl" style={{ fontWeight: '700', color: selectedType === 'litigante' ? '#C9A961' : '#0A1628', marginBottom: '0.5rem', fontFamily: 'Montserrat, sans-serif' }}>Litigante</h2>
-                  <p className="text-sm md:text-base" style={{ color: selectedType === 'litigante' ? '#F5F5F5' : '#6b7280', fontFamily: 'Inter, sans-serif' }}>Abogado en práctica privada</p>
+                  <h2 className="text-2xl md:text-3xl mb-2" style={{ 
+                    fontWeight: '700', 
+                    color: selectedType === 'litigante' ? '#C5A770' : '#1C1C1C', 
+                    fontFamily: 'Playfair Display, serif' 
+                  }}>
+                    Litigante
+                  </h2>
+                  <p className="text-sm md:text-base" style={{ 
+                    color: selectedType === 'litigante' ? '#F4EFE8' : '#3D3D3D', 
+                    fontFamily: 'Inter, sans-serif',
+                    fontWeight: '300'
+                  }}>
+                    Abogado en práctica privada
+                  </p>
                 </div>
-                <ul className="flex-1" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                  <li className="py-3 md:py-4" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-1 15l-5-5 1.41-1.41L9 12.17l7.59-7.59L18 6l-9 9z" fill={selectedType === 'litigante' ? '#C9A961' : '#16a34a'}/>
-                    </svg>
-                    <span className="text-sm md:text-base" style={{ color: selectedType === 'litigante' ? '#FFFFFF' : '#374151', fontFamily: 'Inter, sans-serif' }}>Cálculos para tus casos</span>
-                  </li>
-                  <li className="py-3 md:py-4" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-1 15l-5-5 1.41-1.41L9 12.17l7.59-7.59L18 6l-9 9z" fill={selectedType === 'litigante' ? '#C9A961' : '#16a34a'}/>
-                    </svg>
-                    <span className="text-sm md:text-base" style={{ color: selectedType === 'litigante' ? '#FFFFFF' : '#374151', fontFamily: 'Inter, sans-serif' }}>Notificaciones de vencimientos</span>
-                  </li>
-                  <li className="py-3 md:py-4" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-1 15l-5-5 1.41-1.41L9 12.17l7.59-7.59L18 6l-9 9z" fill={selectedType === 'litigante' ? '#C9A961' : '#16a34a'}/>
-                    </svg>
-                    <span className="text-sm md:text-base" style={{ color: selectedType === 'litigante' ? '#FFFFFF' : '#374151', fontFamily: 'Inter, sans-serif' }}>Formatos de demandas y contratos</span>
-                  </li>
+                <ul className="flex-1 space-y-4" style={{ textAlign: 'left' }}>
+                  {['Cálculos para tus casos', 'Notificaciones de vencimientos', 'Formatos de demandas y contratos'].map((text, idx) => (
+                    <li key={idx} className="flex items-center gap-3">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="10" fill={selectedType === 'litigante' ? '#C5A770' : '#F4EFE8'}/>
+                        <path d="M14 7L8.5 12.5L6 10" stroke={selectedType === 'litigante' ? '#1C1C1C' : '#1C1C1C'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span className="text-sm" style={{ 
+                        color: selectedType === 'litigante' ? '#F4EFE8' : '#1C1C1C', 
+                        fontFamily: 'Inter, sans-serif',
+                        fontWeight: '400'
+                      }}>
+                        {text}
+                      </span>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </button>
 
             {/* Servidor Público Card */}
             <button
-              onClick={() => handleSelectUser('servidor')}
-              className="relative w-full md:max-w-[450px] transform transition-all duration-300 md:hover:scale-105"
-              style={{ textAlign: 'left' }}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                console.log('Click en botón servidor público')
+                handleSelectUser('servidor')
+              }}
+              className="group transition-all duration-300 transform hover:scale-[1.02]"
+              type="button"
             >
-              <div className="h-full" style={{ backgroundColor: selectedType === 'servidor' ? '#0A1628' : '#F5F5F5', borderRadius: '20px', padding: '2rem md:2.5rem lg:3rem', boxShadow: selectedType === 'servidor' ? '0 20px 60px rgba(10,22,40,0.3)' : '0 10px 40px rgba(0,0,0,0.06)', border: selectedType === 'servidor' ? '2px solid #C9A961' : '1px solid #e5e7eb', minHeight: '400px', display: 'flex', flexDirection: 'column', transition: 'all 0.3s ease' }}>
-                <div className="text-center mb-4 md:mb-6">
-                  <div style={{ width: '70px', height: '70px', margin: '0 auto 1.5rem', backgroundColor: selectedType === 'servidor' ? '#C9A961' : '#0A1628', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+              <div 
+                className="h-full p-6 md:p-8 transition-all duration-300"
+                style={{ 
+                  backgroundColor: selectedType === 'servidor' ? '#1C1C1C' : 'transparent',
+                  border: '2px solid #C5A770',
+                  borderRadius: '30px',
+                  minHeight: '400px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  cursor: 'pointer'
+                }}
+              >
+                <div className="text-center mb-6">
+                  <div style={{ 
+                    width: '70px', 
+                    height: '70px', 
+                    margin: '0 auto 1.5rem', 
+                    backgroundColor: selectedType === 'servidor' ? '#C5A770' : '#1C1C1C', 
+                    borderRadius: '50%', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center' 
+                  }}>
                     <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
-                      <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 2.18l8 4v9.82c0 4.28-2.88 8.3-7 9.63V11h-2v8.63c-4.12-1.33-7-5.35-7-9.63V8.18l8-4z" fill={selectedType === 'servidor' ? '#0A1628' : '#FFFFFF'}/>
+                      <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 2.18l8 4v9.82c0 4.28-2.88 8.3-7 9.63V11h-2v8.63c-4.12-1.33-7-5.35-7-9.63V8.18l8-4z" 
+                        fill={selectedType === 'servidor' ? '#1C1C1C' : '#F4EFE8'}/>
                     </svg>
                   </div>
-                  <h2 className="text-xl md:text-2xl" style={{ fontWeight: '700', color: selectedType === 'servidor' ? '#C9A961' : '#0A1628', marginBottom: '0.5rem', fontFamily: 'Montserrat, sans-serif' }}>Servidor Público</h2>
-                  <p className="text-sm md:text-base" style={{ color: selectedType === 'servidor' ? '#F5F5F5' : '#6b7280', fontFamily: 'Inter, sans-serif' }}>Funcionario judicial</p>
+                  <h2 className="text-2xl md:text-3xl mb-2" style={{ 
+                    fontWeight: '700', 
+                    color: selectedType === 'servidor' ? '#C5A770' : '#1C1C1C', 
+                    fontFamily: 'Playfair Display, serif' 
+                  }}>
+                    Servidor Público
+                  </h2>
+                  <p className="text-sm md:text-base" style={{ 
+                    color: selectedType === 'servidor' ? '#F4EFE8' : '#3D3D3D', 
+                    fontFamily: 'Inter, sans-serif',
+                    fontWeight: '300'
+                  }}>
+                    Funcionario judicial
+                  </p>
                 </div>
-                <ul className="flex-1" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                  <li className="py-3 md:py-4" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-1 15l-5-5 1.41-1.41L9 12.17l7.59-7.59L18 6l-9 9z" fill={selectedType === 'servidor' ? '#C9A961' : '#16a34a'}/>
-                    </svg>
-                    <span className="text-sm md:text-base" style={{ color: selectedType === 'servidor' ? '#FFFFFF' : '#374151', fontFamily: 'Inter, sans-serif' }}>Texto para resolución</span>
-                  </li>
-                  <li className="py-3 md:py-4" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm-1 15l-5-5 1.41-1.41L9 12.17l7.59-7.59L18 6l-9 9z" fill={selectedType === 'servidor' ? '#C9A961' : '#16a34a'}/>
-                    </svg>
-                    <span className="text-sm md:text-base" style={{ color: selectedType === 'servidor' ? '#FFFFFF' : '#374151', fontFamily: 'Inter, sans-serif' }}>Calendarios con identificadores</span>
-                  </li>
+                <ul className="flex-1 space-y-4" style={{ textAlign: 'left' }}>
+                  {['Texto para resolución', 'Calendarios con identificadores'].map((text, idx) => (
+                    <li key={idx} className="flex items-center gap-3">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="10" fill={selectedType === 'servidor' ? '#C5A770' : '#F4EFE8'}/>
+                        <path d="M14 7L8.5 12.5L6 10" stroke={selectedType === 'servidor' ? '#1C1C1C' : '#1C1C1C'} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span className="text-sm" style={{ 
+                        color: selectedType === 'servidor' ? '#F4EFE8' : '#1C1C1C', 
+                        fontFamily: 'Inter, sans-serif',
+                        fontWeight: '400'
+                      }}>
+                        {text}
+                      </span>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </button>

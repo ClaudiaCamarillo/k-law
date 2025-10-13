@@ -1543,51 +1543,159 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#ffffff' }}>
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Source+Code+Pro:wght@400;500&display=swap');
+    <div className="min-h-screen" style={{ backgroundColor: '#F4EFE8', position: 'relative' }}>
+      <style jsx>{`
+        .texto-resolucion sup {
+          font-size: 0.6em;
+          vertical-align: super;
+          line-height: 0;
+        }
       `}</style>
-      <nav className="k-law-nav" style={{ backgroundColor: '#1A1A2E', boxShadow: '0 2px 8px rgba(26, 26, 46, 0.15)' }}>
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <Link href="/" className="flex items-center">
-                <img src="/mnt/c/Users/Neo 14/Desktop/Logo.jpg" alt="K-LAW Logo" style={{ height: '48px', width: 'auto', filter: 'brightness(1.1)' }} />
-              </Link>
-              <span className="k-law-badge" style={{ backgroundColor: '#c9a961', color: '#1A1A2E', fontWeight: '600', padding: '6px 16px', borderRadius: '20px', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>
-                Modo: {tipoUsuario === 'litigante' ? 'Litigante' : 'Servidor Público'}
-              </span>
-            </div>
-            <Link href="/calculadoras" className="text-sm px-4 py-2" style={{ backgroundColor: 'transparent', color: '#FFFFFF', border: '1px solid #c9a961', borderRadius: '6px', transition: 'all 0.3s ease', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#c9a961'; e.currentTarget.style.color = '#1A1A2E'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#FFFFFF'; }}>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+      `}</style>
+      
+      {/* Franja dorada superior */}
+      <div style={{ 
+        position: 'absolute', 
+        top: 0, 
+        left: 0, 
+        right: 0, 
+        height: '122px', 
+        backgroundColor: '#C5A770', 
+        zIndex: 0,
+        pointerEvents: 'none'
+      }}></div>
+      
+      {/* Línea negra */}
+      <div style={{ 
+        position: 'absolute', 
+        top: '122px', 
+        left: 0, 
+        right: 0, 
+        height: '1.5px', 
+        backgroundColor: '#1C1C1C',
+        zIndex: 1
+      }}></div>
+      
+      {/* Logo K-LAW */}
+      <div style={{ 
+        position: 'absolute', 
+        top: '-43px', 
+        left: '20px', 
+        zIndex: 15 
+      }}>
+        <Link href="/">
+          <img 
+            src="/LOGO-KLAW.gif" 
+            alt="K-LAW Logo" 
+            style={{ 
+              display: 'block',
+              width: 'auto',
+              height: 'auto',
+              maxWidth: '599px',
+              maxHeight: '240px',
+              cursor: 'pointer'
+            }}
+          />
+        </Link>
+      </div>
+      
+      {/* Patrón diagonal */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        opacity: 0.03,
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231C1C1C' fill-opacity='1'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`,
+        pointerEvents: 'none'
+      }} />
+      
+      {/* Contenido principal */}
+      <div style={{ position: 'relative', zIndex: 10, paddingTop: '122px' }}>
+        
+        {/* Nav minimalista */}
+        <nav style={{ padding: '1rem 0' }}>
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="flex justify-between items-center">
+            <span style={{ 
+              backgroundColor: 'transparent', 
+              color: '#1C1C1C', 
+              fontWeight: '500', 
+              fontSize: '0.875rem', 
+              fontFamily: 'Inter, sans-serif',
+              border: '1.5px solid #C5A770',
+              padding: '6px 16px',
+              borderRadius: '20px'
+            }}>
+              Modo: {tipoUsuario === 'litigante' ? 'Litigante' : 'Servidor Público'}
+            </span>
+            <Link href="/calculadoras" 
+              className="text-sm px-4 py-2" 
+              style={{ 
+                backgroundColor: '#1C1C1C', 
+                color: '#FFFFFF', 
+                border: '1.5px solid #1C1C1C', 
+                borderRadius: '6px', 
+                transition: 'all 0.3s ease', 
+                cursor: 'pointer', 
+                fontFamily: 'Inter, sans-serif' 
+              }} 
+              onMouseEnter={(e) => { 
+                e.currentTarget.style.backgroundColor = '#C5A770'; 
+                e.currentTarget.style.borderColor = '#C5A770';
+                e.currentTarget.style.color = '#1C1C1C'; 
+              }} 
+              onMouseLeave={(e) => { 
+                e.currentTarget.style.backgroundColor = '#1C1C1C'; 
+                e.currentTarget.style.borderColor = '#1C1C1C';
+                e.currentTarget.style.color = '#FFFFFF'; 
+              }}>
               Volver
             </Link>
           </div>
         </div>
-      </nav>
+        </nav>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8" style={{ position: 'relative', zIndex: 10 }}>
         <div className="text-center mb-8">
-          <h1 className="k-law-title" style={{ color: '#1A1A2E', fontSize: '2.5rem', fontWeight: '700', marginBottom: '0.5rem', fontFamily: 'Montserrat, sans-serif' }}>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl mb-2" style={{ 
+            fontFamily: 'Playfair Display, serif', 
+            fontWeight: '800',
+            color: '#1C1C1C',
+            letterSpacing: '-0.02em'
+          }}>
             Recurso de Queja
           </h1>
-          <p style={{ color: '#666', fontSize: '1.125rem', fontFamily: 'Inter, sans-serif' }}>Sistema profesional de cálculo de plazos legales</p>
+          <p className="text-sm md:text-base" style={{ 
+            fontFamily: 'Inter, sans-serif',
+            color: '#3D3D3D',
+            fontWeight: '300',
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase'
+          }}>
+            Sistema profesional de cálculo de plazos legales
+          </p>
         </div>
         
         <section className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="k-law-card" style={{ backgroundColor: '#FFFFFF', borderRadius: '20px', boxShadow: '0 4px 20px rgba(26, 26, 46, 0.08)', padding: '2.5rem', border: '1px solid #f0f0f0' }}>
+            <form onSubmit={handleSubmit} style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.08)', padding: '2.5rem', border: '1.5px solid #C5A770' }}>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Tipo de Recurso</label>
-                  <select name="tipoQueja" value={formData.tipoQueja} onChange={handleChange} className="k-law-select" style={{ borderColor: '#E0E0E0', borderRadius: '12px', fontSize: '0.95rem', transition: 'border-color 0.3s ease', backgroundColor: '#FFFFFF', fontFamily: 'Inter, sans-serif', color: '#333333', width: '100%', padding: '0.75rem' }} onFocus={(e) => e.currentTarget.style.borderColor = '#c9a961'} onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} required suppressHydrationWarning={true}>
+                  <label className="block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>Tipo de Recurso</label>
+                  <select name="tipoQueja" value={formData.tipoQueja} onChange={handleChange} style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '12px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }} onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} required suppressHydrationWarning={true}>
                     <option value="indirecto">Queja en Amparo Indirecto</option>
                     <option value="directo">Queja en Amparo Directo</option>
                   </select>
                 </div>
                 
                 <div>
-                  <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Resolución Impugnada</label>
-                  <select name="resolucionImpugnada" value={formData.resolucionImpugnada} onChange={handleChange} className="k-law-select" style={{ borderColor: '#E0E0E0', borderRadius: '12px', fontSize: '0.95rem', transition: 'border-color 0.3s ease', backgroundColor: '#FFFFFF', fontFamily: 'Inter, sans-serif', color: '#333333', width: '100%', padding: '0.75rem' }} onFocus={(e) => e.currentTarget.style.borderColor = '#c9a961'} onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} required suppressHydrationWarning={true}>
+                  <label className="block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>Resolución Impugnada</label>
+                  <select name="resolucionImpugnada" value={formData.resolucionImpugnada} onChange={handleChange} style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '12px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }} onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} required suppressHydrationWarning={true}>
                     <option value="">Seleccione...</option>
                     {formData.tipoQueja === 'indirecto' ? (
                       // Fracción I - Amparo Indirecto
@@ -1614,8 +1722,8 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
                 </div>
                 
                 <div>
-                  <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Parte Recurrente</label>
-                  <select name="parteRecurrente" value={formData.parteRecurrente} onChange={handleChange} className="k-law-select" style={{ borderColor: '#E0E0E0', borderRadius: '12px', fontSize: '0.95rem', transition: 'border-color 0.3s ease', backgroundColor: '#FFFFFF', fontFamily: 'Inter, sans-serif', color: '#333333', width: '100%', padding: '0.75rem' }} onFocus={(e) => e.currentTarget.style.borderColor = '#c9a961'} onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} required suppressHydrationWarning={true}>
+                  <label className="block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>Parte Recurrente</label>
+                  <select name="parteRecurrente" value={formData.parteRecurrente} onChange={handleChange} style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '12px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }} onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} required suppressHydrationWarning={true}>
                     <option value="">Seleccione...</option>
                     <option value="autoridad">Autoridad responsable</option>
                     <option value="quejoso">Quejoso</option>
@@ -1624,25 +1732,10 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
                   </select>
                 </div>
                 
-                {formData.resolucionImpugnada !== 'omision-tramite' && (
-                  <div>
-                    <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Forma de Notificación</label>
-                    <select name="formaNotificacion" value={formData.formaNotificacion} onChange={handleChange} className="k-law-select" style={{ borderColor: '#E0E0E0', borderRadius: '12px', fontSize: '0.95rem', transition: 'border-color 0.3s ease', backgroundColor: '#FFFFFF', fontFamily: 'Inter, sans-serif', color: '#333333', width: '100%', padding: '0.75rem' }} onFocus={(e) => e.currentTarget.style.borderColor = '#c9a961'} onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} required suppressHydrationWarning={true}>
-                      <option value="">Seleccione...</option>
-                      <option value="personal">Personalmente</option>
-                      {(formData.parteRecurrente === 'autoridad' || formData.parteRecurrente === 'autoridad-tercero') && (
-                        <option value="oficio">Por oficio</option>
-                      )}
-                      <option value="lista">Por lista</option>
-                      <option value="electronica">En forma electrónica</option>
-                    </select>
-                  </div>
-                )}
-                
                 <div className="md:col-span-2">
-                  <label className="k-law-label block mb-4" style={{ color: '#0A1628', fontWeight: '700', fontSize: '1rem', fontFamily: 'Inter, sans-serif' }}>Seleccione el tipo de fecha:</label>
+                  <label className="label block mb-4" style={{ color: '#1C1C1C', fontWeight: '700', fontSize: '1rem', fontFamily: 'Inter, sans-serif' }}>Seleccione:</label>
                   <div className="space-y-4">
-                    <div style={{ backgroundColor: '#ffffff', padding: '1rem', borderRadius: '12px', border: '2px solid #e5e7eb', transition: 'all 0.3s ease' }}>
+                    <div style={{ backgroundColor: '#F4EFE8', padding: '1rem', borderRadius: '12px', border: '1.5px solid #E5E7EB', transition: 'all 0.3s ease' }}>
                       <label className="flex items-center space-x-3 cursor-pointer">
                         <input 
                           type="radio" 
@@ -1653,9 +1746,9 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
                             setTipoFecha('notificacion');
                             setFormData({...formData, fechaConocimiento: ''});
                           }}
-                          style={{ accentColor: '#0A1628' }}
+                          style={{ accentColor: '#1C1C1C' }}
                         />
-                        <span style={{ fontFamily: 'Inter, sans-serif', color: '#0A1628', fontWeight: '500' }}>
+                        <span style={{ fontFamily: 'Inter, sans-serif', color: '#1C1C1C', fontWeight: '500' }}>
                           {formData.resolucionImpugnada === 'omision-tramite' ? 'Fecha de Presentación de la Demanda que se Omitió Tramitar' : 'Fecha de Notificación'}
                         </span>
                       </label>
@@ -1663,19 +1756,36 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
                     
                     {/* Mostrar campos de notificación justo después de seleccionar esa opción */}
                     {tipoFecha === 'notificacion' && (
-                      <div className="ml-8 space-y-4" style={{ backgroundColor: '#F5F5F5', padding: '1.5rem', borderRadius: '12px', border: '2px solid #C9A961' }}>
+                      <div className="ml-8 space-y-4" style={{ backgroundColor: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1.5px solid #E5E7EB' }}>
                         <div>
+                          <label className="label block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>
+                            {formData.resolucionImpugnada === 'omision-tramite' ? 'Fecha de Presentación de la Demanda' : 'Fecha de Notificación'}
+                          </label>
                           <input 
                             type="date" 
                             name="fechaNotificacion" 
                             value={formData.fechaNotificacion} 
                             onChange={handleChange} 
-                            style={{ width: '100%', padding: '0.75rem', border: '2px solid #e5e7eb', borderRadius: '12px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#333333', backgroundColor: '#FFFFFF', transition: 'all 0.3s ease' }}
-                            onFocus={(e) => e.target.style.borderColor = '#C9A961'}
-                            onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                            style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '12px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }}
+                            onFocus={(e) => e.target.style.borderColor = '#C5A770'}
+                            onBlur={(e) => e.target.style.borderColor = '#1C1C1C'}
                             required 
                           />
                         </div>
+                        {formData.resolucionImpugnada !== 'omision-tramite' && (
+                          <div>
+                            <label className="label block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>Forma de Notificación</label>
+                            <select name="formaNotificacion" value={formData.formaNotificacion} onChange={handleChange} style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '12px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }} onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} required suppressHydrationWarning={true}>
+                              <option value="">Seleccione...</option>
+                              <option value="personal">Personalmente</option>
+                              {(formData.parteRecurrente === 'autoridad' || formData.parteRecurrente === 'autoridad-tercero') && (
+                                <option value="oficio">Por oficio</option>
+                              )}
+                              <option value="lista">Por lista</option>
+                              <option value="electronica">En forma electrónica</option>
+                            </select>
+                          </div>
+                        )}
                       </div>
                     )}
                     
@@ -1683,7 +1793,7 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
                       backgroundColor: tipoFecha === 'notificacion' ? '#f5f5f5' : '#ffffff', 
                       padding: '1rem', 
                       borderRadius: '12px', 
-                      border: '2px solid #e5e7eb', 
+                      border: '1.5px solid #1C1C1C', 
                       transition: 'all 0.3s ease',
                       opacity: tipoFecha === 'notificacion' ? '0.6' : '1'
                     }}>
@@ -1697,9 +1807,9 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
                             setTipoFecha('conocimiento');
                             setFormData({...formData, fechaNotificacion: '', formaNotificacion: ''});
                           }}
-                          style={{ accentColor: '#0A1628' }}
+                          style={{ accentColor: '#1C1C1C' }}
                         />
-                        <span style={{ fontFamily: 'Inter, sans-serif', color: tipoFecha === 'notificacion' ? '#999' : '#0A1628', fontWeight: '500' }}>
+                        <span style={{ fontFamily: 'Inter, sans-serif', color: tipoFecha === 'notificacion' ? '#999' : '#1C1C1C', fontWeight: '500' }}>
                           Fecha de conocimiento
                         </span>
                       </label>
@@ -1707,19 +1817,21 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
                     
                     {/* Mostrar campo de conocimiento */}
                     {tipoFecha === 'conocimiento' && (
-                      <div className="ml-8" style={{ backgroundColor: '#F5F5F5', padding: '1.5rem', borderRadius: '12px', border: '2px solid #C9A961' }}>
+                      <div className="ml-8" style={{ backgroundColor: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1.5px solid #E5E7EB' }}>
                         <div>
+                          <label className="label block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>
+                            Fecha de Conocimiento
+                          </label>
                           <input 
                             type="date" 
                             name="fechaConocimiento" 
                             value={formData.fechaConocimiento} 
                             onChange={handleChange} 
-                            style={{ width: '100%', padding: '0.75rem', border: '2px solid #e5e7eb', borderRadius: '12px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#333333', backgroundColor: '#FFFFFF', transition: 'all 0.3s ease' }}
-                            onFocus={(e) => e.target.style.borderColor = '#C9A961'}
-                            onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                            style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '12px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }}
+                            onFocus={(e) => e.target.style.borderColor = '#C5A770'}
+                            onBlur={(e) => e.target.style.borderColor = '#1C1C1C'}
                             required 
                           />
-                          <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem', fontFamily: 'Inter, sans-serif' }}>Si se usa esta fecha, el plazo iniciará al día siguiente de la misma</p>
                         </div>
                       </div>
                     )}
@@ -1729,13 +1841,13 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
                 {tipoUsuario === 'servidor' && (
                   <>
                     <div>
-                      <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>{formData.resolucionImpugnada === 'omision-tramite' ? 'Fecha de Presentación del Recurso de Queja' : 'Fecha de Presentación'}</label>
-                      <input type="date" name="fechaPresentacion" value={formData.fechaPresentacion} onChange={handleChange} style={{ borderColor: '#E0E0E0', borderRadius: '12px', fontSize: '0.95rem', transition: 'border-color 0.3s ease', backgroundColor: '#FFFFFF', fontFamily: 'Inter, sans-serif', color: '#333333', width: '100%', padding: '0.75rem' }} onFocus={(e) => e.currentTarget.style.borderColor = '#c9a961'} onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} required={tipoUsuario === 'servidor'} suppressHydrationWarning={true} />
+                      <label className="block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>{formData.resolucionImpugnada === 'omision-tramite' ? 'Fecha de Presentación del Recurso de Queja' : 'Fecha de Presentación'}</label>
+                      <input type="date" name="fechaPresentacion" value={formData.fechaPresentacion} onChange={handleChange} style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '12px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }} onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} required={tipoUsuario === 'servidor'} suppressHydrationWarning={true} />
                     </div>
                     
                     <div className="md:col-span-2">
-                      <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>{formData.resolucionImpugnada === 'omision-tramite' ? 'Forma de Presentación del Recurso de Queja' : 'Forma de Presentación'}</label>
-                      <select name="formaPresentacion" value={formData.formaPresentacion} onChange={handleChange} className="k-law-select" style={{ borderColor: '#E0E0E0', borderRadius: '12px', fontSize: '0.95rem', transition: 'border-color 0.3s ease', backgroundColor: '#FFFFFF', fontFamily: 'Inter, sans-serif', color: '#333333', width: '100%', padding: '0.75rem' }} onFocus={(e) => e.currentTarget.style.borderColor = '#c9a961'} onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} required={tipoUsuario === 'servidor'} suppressHydrationWarning={true}>
+                      <label className="block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>{formData.resolucionImpugnada === 'omision-tramite' ? 'Forma de Presentación del Recurso de Queja' : 'Forma de Presentación'}</label>
+                      <select name="formaPresentacion" value={formData.formaPresentacion} onChange={handleChange} style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '12px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }} onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} required={tipoUsuario === 'servidor'} suppressHydrationWarning={true}>
                         <option value="">Seleccione...</option>
                         <option value="escrito">Por escrito</option>
                         <option value="correo">Por correo</option>
@@ -1750,7 +1862,7 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
               </div>
               
               <div className="mt-8 text-center">
-                <button type="submit" disabled={calculando} className="w-full" style={{ backgroundColor: calculando ? '#B0B0B0' : '#1A1A2E', color: '#FFFFFF', padding: '14px 28px', borderRadius: '12px', fontSize: '1rem', fontWeight: '600', transition: 'all 0.3s ease', cursor: calculando ? 'not-allowed' : 'pointer', border: 'none', boxShadow: '0 2px 8px rgba(26, 26, 46, 0.2)', fontFamily: 'Inter, sans-serif' }} onMouseEnter={(e) => { if (!calculando) { e.currentTarget.style.backgroundColor = '#c9a961'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(201, 169, 97, 0.3)'; } }} onMouseLeave={(e) => { if (!calculando) { e.currentTarget.style.backgroundColor = '#1A1A2E'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(26, 26, 46, 0.2)'; } }} suppressHydrationWarning={true}>
+                <button type="submit" disabled={calculando} style={{ width: '100%', backgroundColor: calculando ? '#E5E5E5' : '#1C1C1C', color: calculando ? '#999' : '#F4EFE8', padding: '1rem 2rem', borderRadius: '25px', fontSize: '1rem', fontWeight: '500', transition: 'all 0.3s ease', cursor: calculando ? 'not-allowed' : 'pointer', border: '1.5px solid #1C1C1C', fontFamily: 'Inter, sans-serif', letterSpacing: '0.02em' }} onMouseEnter={(e) => { if (!calculando) { e.currentTarget.style.backgroundColor = '#C5A770'; e.currentTarget.style.borderColor = '#C5A770'; e.currentTarget.style.color = '#1C1C1C'; } }} onMouseLeave={(e) => { if (!calculando) { e.currentTarget.style.backgroundColor = '#1C1C1C'; e.currentTarget.style.borderColor = '#1C1C1C'; e.currentTarget.style.color = '#F4EFE8'; } }} suppressHydrationWarning={true}>
                   {calculando ? 'Calculando...' : 'Calcular Plazo'}
                 </button>
               </div>
@@ -1758,32 +1870,32 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
           </div>
           
           <div className="lg:col-span-1">
-            <div className="k-law-card" style={{ backgroundColor: '#f8f9fa', borderRadius: '20px', padding: '1.75rem', border: '1px solid #e5e7eb' }}>
-              <h3 className="k-law-subtitle" style={{ color: '#1A1A2E', fontSize: '1.125rem', fontWeight: '600', fontFamily: 'Montserrat, sans-serif', marginBottom: '1rem' }}>Días Inhábiles Adicionales</h3>
+            <div style={{ backgroundColor: 'transparent', borderRadius: '30px', padding: '2rem', border: '2px solid #C5A770' }}>
+              <h3 style={{ color: '#1C1C1C', fontSize: '1.25rem', fontWeight: '700', fontFamily: 'Playfair Display, serif', marginBottom: '1rem' }}>Días Inhábiles Adicionales</h3>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Agregar día inhábil</label>
+                  <label className="label block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>Agregar día inhábil</label>
                   <div className="flex gap-2">
-                    <input type="date" value={nuevoDiaInhabil} onChange={(e) => setNuevoDiaInhabil(e.target.value)} className="flex-1 p-2 border rounded-lg text-sm" suppressHydrationWarning={true} />
-                    <button type="button" onClick={agregarDiaInhabil} className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm" suppressHydrationWarning={true}>
+                    <input type="date" value={nuevoDiaInhabil} onChange={(e) => setNuevoDiaInhabil(e.target.value)} style={{ flex: 1, padding: '0.5rem', border: '1.5px solid #1C1C1C', borderRadius: '10px', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }} onFocus={(e) => e.target.style.borderColor = '#C5A770'} onBlur={(e) => e.target.style.borderColor = '#1C1C1C'} suppressHydrationWarning={true} />
+                    <button type="button" onClick={agregarDiaInhabil} style={{ backgroundColor: '#1C1C1C', color: '#F4EFE8', padding: '0.5rem 1rem', borderRadius: '25px', fontSize: '0.875rem', fontWeight: '500', border: '1.5px solid #1C1C1C', cursor: 'pointer', transition: 'all 0.3s ease', fontFamily: 'Inter, sans-serif' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#C5A770'; e.currentTarget.style.borderColor = '#C5A770'; e.currentTarget.style.color = '#1C1C1C'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#1C1C1C'; e.currentTarget.style.borderColor = '#1C1C1C'; e.currentTarget.style.color = '#F4EFE8'; }} suppressHydrationWarning={true}>
                       Agregar
                     </button>
                   </div>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Fundamento legal</label>
-                  <input type="text" value={fundamentoAdicional} onChange={(e) => setFundamentoAdicional(e.target.value)} placeholder="Ej: Circular CCNO/1/2024" className="w-full p-2 border rounded-lg text-sm" suppressHydrationWarning={true} />
+                  <label className="block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>Fundamento legal</label>
+                  <input type="text" value={fundamentoAdicional} onChange={(e) => setFundamentoAdicional(e.target.value)} placeholder="Ej: Circular CCNO/1/2024" style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '10px', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }} onFocus={(e) => e.target.style.borderColor = '#C5A770'} onBlur={(e) => e.target.style.borderColor = '#1C1C1C'} suppressHydrationWarning={true} />
                 </div>
                 
                 {diasAdicionales.length > 0 && (
                   <div className="mt-4">
-                    <p className="text-sm font-medium mb-2">Días agregados:</p>
+                    <p style={{ fontSize: '0.875rem', fontWeight: '600', marginBottom: '0.5rem', color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}>Días agregados:</p>
                     <div className="space-y-1">
                       {diasAdicionales.map((dia) => (
-                        <div key={dia} className="flex justify-between items-center bg-gray-50 p-2 rounded text-sm">
-                          <span>{tipoUsuario === 'litigante' ? fechaParaLitigante(dia) : fechaATexto(dia)}</span>
-                          <button type="button" onClick={() => setDiasAdicionales(diasAdicionales.filter(d => d !== dia))} className="text-red-600 hover:text-red-800">
+                        <div key={dia} className="flex justify-between items-center p-2 rounded text-sm" style={{ backgroundColor: 'rgba(197, 167, 112, 0.1)', border: '1px solid #C5A770' }}>
+                          <span style={{ color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}>{tipoUsuario === 'litigante' ? fechaParaLitigante(dia) : fechaATexto(dia)}</span>
+                          <button type="button" onClick={() => setDiasAdicionales(diasAdicionales.filter(d => d !== dia))} className="text-red-400 hover:text-red-300">
                             Eliminar
                           </button>
                         </div>
@@ -1799,14 +1911,14 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
         
         {resultado && (
           <>
-            <div className="mt-16 k-law-card" style={{ backgroundColor: '#FFFFFF', borderRadius: '20px', boxShadow: '0 4px 20px rgba(26, 26, 46, 0.08)', padding: '2.5rem', border: '1px solid #f0f0f0' }}>
+            <div className="mt-16" style={{ backgroundColor: '#FFFFFF', borderRadius: '20px', boxShadow: '0 4px 20px rgba(28, 28, 28, 0.08)', padding: '2.5rem', border: '1.5px solid #C5A770' }}>
               <div className="text-center mb-8">
-                <h2 className="k-law-subtitle" style={{ color: '#1A1A2E', fontSize: '1.75rem', fontWeight: '700', fontFamily: 'Montserrat, sans-serif' }}>Resultado del Cálculo</h2>
+                <h2 style={{ color: '#1C1C1C', fontSize: '1.75rem', fontWeight: '700', fontFamily: 'Playfair Display, serif' }}>Resultado del Cálculo</h2>
               </div>
               
-              <div style={{ padding: '1.5rem', borderRadius: '12px', marginBottom: '1rem', background: resultado.esOportuno ? 'linear-gradient(135deg, #f0fdf4 0%, #e6f7ed 100%)' : 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)', border: `1px solid ${resultado.esOportuno ? '#86efac' : '#fde047'}` }}>
+              <div style={{ padding: '1.5rem', borderRadius: '8px', marginBottom: '1rem', background: resultado.esOportuno ? 'linear-gradient(135deg, #f0fdf4 0%, #e6f7ed 100%)' : 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)', border: `1.5px solid ${resultado.esOportuno ? '#C5A770' : '#dc2626'}` }}>
                 {tipoUsuario === 'servidor' ? (
-                  <p style={{ fontSize: '1.125rem', fontWeight: '600', fontFamily: 'Inter, sans-serif', color: '#333333' }}>
+                  <p style={{ fontSize: '1.125rem', fontWeight: '600', fontFamily: 'Inter, sans-serif', color: '#1C1C1C' }}>
                     El recurso se presentó de forma: {' '}
                     <span style={{ color: resultado.esOportuno ? '#16a34a' : '#dc2626' }}>
                       {resultado.esOportuno ? 'OPORTUNA' : 'EXTEMPORÁNEA'}
@@ -1842,8 +1954,8 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
                 )}
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                <h3 className="font-semibold mb-2">Detalles del Cómputo:</h3>
+              <div className="p-4 rounded-lg mb-4" style={{ backgroundColor: '#F4EFE8', border: '1.5px solid #C5A770' }}>
+                <h3 className="font-semibold mb-2" style={{ color: '#1C1C1C', fontFamily: 'Playfair Display, serif' }}>Detalles del Cómputo:</h3>
                 <div className="space-y-1 text-sm">
                   <p><strong>Plazo legal:</strong> {formData.resolucionImpugnada === 'omision-tramite' ? 'Cualquier tiempo' : `${resultado.plazo} días`}</p>
                   <p><strong>Fundamento:</strong> {resultado.fundamento}</p>
@@ -1862,15 +1974,224 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
                     <p><strong>Fecha de presentación:</strong> {formData.fechaPresentacion ? fechaParaLitigante(formData.fechaPresentacion) : ''}</p>
                   )}
                   {formData.resolucionImpugnada !== 'omision-tramite' && (
-                    <p><strong>Días inhábiles excluidos:</strong> {resultado.diasInhabiles}</p>
+                    <p className="texto-resolucion"><strong>Días inhábiles excluidos:</strong> {(() => {
+                      // Generar texto con formato numérico y superíndices para detalles
+                      const fechaReferencia = resultado.usandoFechaConocimiento && resultado.fechaConocimiento ? 
+                        resultado.fechaConocimiento : 
+                        (resultado.fechaNotificacion || resultado.fechaInicio);
+                      
+                      const diasInhabiles: { fecha: Date, tipo: 'sabado' | 'domingo' | 'otro', fundamento?: string }[] = [];
+                      const notas: string[] = [];
+                      let contadorNotas = 1;
+                      const superindices = ['¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
+                      const fundamentosUsados = new Map<string, number>();
+                      
+                      const fechaActual = new Date(fechaReferencia);
+                      while (fechaActual <= resultado.fechaFin) {
+                        if (esDiaInhabil(fechaActual, diasAdicionales, tipoUsuario)) {
+                          const diaSemana = fechaActual.getDay();
+                          const fechaStr = fechaActual.toISOString().split('T')[0];
+                          let tipo: 'sabado' | 'domingo' | 'otro';
+                          let fundamento = '';
+                          
+                          if (diaSemana === 6) {
+                            tipo = 'sabado';
+                            fundamento = 'artículo 19 de la Ley de Amparo';
+                          } else if (diaSemana === 0) {
+                            tipo = 'domingo';
+                            fundamento = 'artículo 19 de la Ley de Amparo';
+                          } else {
+                            tipo = 'otro';
+                            if (diasAdicionales.includes(fechaStr)) {
+                              fundamento = fundamentoAdicional || 'el acuerdo correspondiente';
+                            } else {
+                              const año = fechaActual.getFullYear();
+                              for (const diaInhabil of diasInhabilesData) {
+                                let coincide = false;
+                                if (diaInhabil.tipo === 'movil') {
+                                  const diasMoviles = calcularDiasMoviles(año);
+                                  for (const diaMovil of diasMoviles) {
+                                    if (fechaStr === diaMovil.fecha) coincide = true;
+                                  }
+                                } else if (diaInhabil.fecha) {
+                                  if (diaInhabil.fecha.includes('-')) {
+                                    if (fechaStr === diaInhabil.fecha) coincide = true;
+                                  } else {
+                                    const messDia = fechaStr.substring(5);
+                                    if (messDia === diaInhabil.fecha) coincide = true;
+                                  }
+                                }
+                                if (coincide && (diaInhabil.aplicaPara === 'todos' || diaInhabil.aplicaPara === tipoUsuario)) {
+                                  fundamento = diaInhabil.fundamento;
+                                  break;
+                                }
+                              }
+                            }
+                          }
+                          diasInhabiles.push({ fecha: new Date(fechaActual), tipo, fundamento });
+                        }
+                        fechaActual.setDate(fechaActual.getDate() + 1);
+                      }
+                      
+                      // Contar sábados y domingos
+                      const sabados = diasInhabiles.filter(d => d.tipo === 'sabado').length;
+                      const domingos = diasInhabiles.filter(d => d.tipo === 'domingo').length;
+                      const otrosDias = diasInhabiles.filter(d => d.tipo === 'otro');
+                      
+                      let texto = '';
+                      
+                      // Agregar sábados y domingos con superíndice
+                      if (sabados > 0 || domingos > 0) {
+                        const fundamentoSabDom = 'artículo 19 de la Ley de Amparo';
+                        let numeroNota: number;
+                        if (!fundamentosUsados.has(fundamentoSabDom)) {
+                          numeroNota = contadorNotas;
+                          fundamentosUsados.set(fundamentoSabDom, numeroNota);
+                          notas.push(fundamentoSabDom + '.');
+                          contadorNotas++;
+                        } else {
+                          numeroNota = fundamentosUsados.get(fundamentoSabDom)!;
+                        }
+                        const superindice = numeroNota <= 9 ? superindices[numeroNota - 1] : `(${numeroNota})`;
+                        
+                        if ((sabados > 0 && domingos > 0)) {
+                          texto = `sábados y domingos incluidos entre el día de la notificación y el último día del cómputo${superindice}`;
+                        } else if (sabados > 0) {
+                          texto = `sábados incluidos entre el día de la notificación y el último día del cómputo${superindice}`;
+                        } else {
+                          texto = `domingos incluidos entre el día de la notificación y el último día del cómputo${superindice}`;
+                        }
+                      }
+                      
+                      // Agrupar todos los otros días con sus fundamentos
+                      const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+                                     'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+                      
+                      if (otrosDias.length > 0) {
+                        if (texto) texto += ', así como los días ';
+                        
+                        // Crear estructura para agrupar días con sus superíndices
+                        const diasConSuperindices: { fecha: Date, superindice: string }[] = [];
+                        
+                        otrosDias.forEach(d => {
+                          const fund = d.fundamento || 'Sin fundamento';
+                          let numeroNota: number;
+                          
+                          if (!fundamentosUsados.has(fund)) {
+                            numeroNota = contadorNotas;
+                            fundamentosUsados.set(fund, numeroNota);
+                            notas.push(fund + '.');
+                            contadorNotas++;
+                          } else {
+                            numeroNota = fundamentosUsados.get(fund)!;
+                          }
+                          
+                          const superindice = numeroNota <= 9 ? superindices[numeroNota - 1] : `(${numeroNota})`;
+                          diasConSuperindices.push({ fecha: d.fecha, superindice });
+                        });
+                        
+                        // Agrupar por año primero
+                        const diasPorAño = new Map<number, { fecha: Date, superindice: string }[]>();
+                        diasConSuperindices.forEach(d => {
+                          const año = d.fecha.getFullYear();
+                          if (!diasPorAño.has(año)) {
+                            diasPorAño.set(año, []);
+                          }
+                          diasPorAño.get(año)!.push(d);
+                        });
+                        
+                        const textosAños: string[] = [];
+                        
+                        diasPorAño.forEach((diasDelAño, año) => {
+                          // Ordenar por fecha
+                          diasDelAño.sort((a, b) => a.fecha.getTime() - b.fecha.getTime());
+                          
+                          // Agrupar por mes dentro del año
+                          const diasPorMes = new Map<number, { dia: number, superindice: string }[]>();
+                          diasDelAño.forEach(d => {
+                            const mes = d.fecha.getMonth();
+                            if (!diasPorMes.has(mes)) {
+                              diasPorMes.set(mes, []);
+                            }
+                            diasPorMes.get(mes)!.push({ dia: d.fecha.getDate(), superindice: d.superindice });
+                          });
+                          
+                          // Si todos los días son del mismo mes
+                          if (diasPorMes.size === 1) {
+                            const [mes, diasDelMes] = Array.from(diasPorMes.entries())[0];
+                            diasDelMes.sort((a, b) => a.dia - b.dia);
+                            
+                            const diasTexto = diasDelMes.map(d => `${d.dia}${d.superindice}`).join(', ');
+                            const ultimaComa = diasTexto.lastIndexOf(',');
+                            const diasFormateado = ultimaComa > -1 ? 
+                              diasTexto.substring(0, ultimaComa) + ' y' + diasTexto.substring(ultimaComa + 1) : 
+                              diasTexto;
+                            
+                            textosAños.push(`${diasFormateado} de ${meses[mes]} de ${año}`);
+                          } else {
+                            // Días de diferentes meses del mismo año
+                            const textosMeses: string[] = [];
+                            const mesesOrdenados = Array.from(diasPorMes.keys()).sort((a, b) => a - b);
+                            
+                            mesesOrdenados.forEach((mes, idx) => {
+                              const diasDelMes = diasPorMes.get(mes)!;
+                              diasDelMes.sort((a, b) => a.dia - b.dia);
+                              
+                              const diasTexto = diasDelMes.map(d => `${d.dia}${d.superindice}`).join(', ');
+                              const ultimaComa = diasTexto.lastIndexOf(',');
+                              const diasFormateado = ultimaComa > -1 ? 
+                                diasTexto.substring(0, ultimaComa) + ' y' + diasTexto.substring(ultimaComa + 1) : 
+                                diasTexto;
+                              
+                              if (idx === mesesOrdenados.length - 1 && mesesOrdenados.length > 1) {
+                                // Último mes - incluir el año
+                                textosMeses.push(`${diasFormateado} de ${meses[mes]} de ${año}`);
+                              } else {
+                                // Otros meses - sin año
+                                textosMeses.push(`${diasFormateado} de ${meses[mes]}`);
+                              }
+                            });
+                            
+                            const textoFinal = textosMeses.join(', ');
+                            const ultimaComa = textoFinal.lastIndexOf(',');
+                            const textoFormateado = ultimaComa > -1 ? 
+                              textoFinal.substring(0, ultimaComa) + ' y' + textoFinal.substring(ultimaComa + 1) : 
+                              textoFinal;
+                            
+                            textosAños.push(textoFormateado);
+                          }
+                        });
+                        
+                        texto += textosAños.join('; ');
+                      }
+                      
+                      // Guardar las notas para mostrarlas después
+                      resultado.diasInhabilesDetallesNotas = notas;
+                      return texto || 'Ninguno';
+                    })()}</p>
                   )}
                 </div>
+                
+                {/* Notas al pie para Detalles del Cómputo */}
+                {formData.resolucionImpugnada !== 'omision-tramite' && resultado.diasInhabilesDetallesNotas && resultado.diasInhabilesDetallesNotas.length > 0 && (
+                  <div style={{ borderTop: '1px solid #C5A770', marginTop: '0.75rem', paddingTop: '0.75rem' }}>
+                    {resultado.diasInhabilesDetallesNotas.map((nota: string, index: number) => {
+                      const superindices = ['¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
+                      const superindice = index < 9 ? superindices[index] : `(${index + 1})`;
+                      return (
+                        <p key={index} style={{ fontSize: '0.75rem', color: '#666', marginBottom: '0.25rem', fontFamily: 'Inter, sans-serif' }}>
+                          <sup>{superindice}</sup> {nota}
+                        </p>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
               
               {/* Calendario visual - solo para servidores */}
               {tipoUsuario === 'servidor' && (
-                <div className="bg-white p-6 rounded-lg shadow-lg">
-                  <h3 className="font-semibold text-lg mb-4">Calendario Visual del Cómputo</h3>
+                <div className="p-6 rounded-lg" style={{ backgroundColor: '#FFFFFF', border: '1.5px solid #C5A770', boxShadow: '0 4px 20px rgba(28, 28, 28, 0.08)' }}>
+                  <h3 className="font-semibold text-lg mb-4" style={{ color: '#1C1C1C', fontFamily: 'Playfair Display, serif' }}>Calendario Visual del Cómputo</h3>
                   
                   <div id="calendario-visual" className="bg-white">
                     <Calendario 
@@ -1888,8 +2209,8 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
               )}
               
               {tipoUsuario === 'servidor' && (
-                <div className="bg-blue-50 p-4 rounded-lg mt-6">
-                  <h3 className="font-bold mb-2">Texto para Resolución:</h3>
+                <div className="p-4 rounded-lg mt-6" style={{ backgroundColor: '#F4EFE8', border: '1.5px solid #C5A770' }}>
+                  <h3 className="font-bold mb-2" style={{ color: '#1C1C1C', fontFamily: 'Playfair Display, serif' }}>Texto para Resolución:</h3>
                   <div 
                     className="text-sm font-['Arial'] leading-relaxed" 
                     style={{textAlign: 'justify'}}
@@ -1901,15 +2222,15 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
               <div className="mt-6 flex gap-4">
                 {tipoUsuario === 'servidor' && (
                   <>
-                    <button onClick={copiarCalendario} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                    <button onClick={copiarCalendario} className="text-white px-4 py-2 rounded-lg" style={{ backgroundColor: '#1C1C1C', fontFamily: 'Inter, sans-serif', transition: 'all 0.3s ease' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#C5A770'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1C1C1C'}>
                       Copiar calendario
                     </button>
-                    <button onClick={copiarTextoConFormato} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                    <button onClick={copiarTextoConFormato} className="text-white px-4 py-2 rounded-lg" style={{ backgroundColor: '#1C1C1C', fontFamily: 'Inter, sans-serif', transition: 'all 0.3s ease' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#C5A770'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1C1C1C'}>
                       Copiar texto
                     </button>
                   </>
                 )}
-                <button onClick={() => { setResultado(null); setFormData({ tipoQueja: 'indirecto', resolucionImpugnada: '', parteRecurrente: '', fechaNotificacion: '', fechaConocimiento: '', formaNotificacion: '', fechaPresentacion: '', formaPresentacion: '' }); setTipoFecha(null); }} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                <button onClick={() => { setResultado(null); setFormData({ tipoQueja: 'indirecto', resolucionImpugnada: '', parteRecurrente: '', fechaNotificacion: '', fechaConocimiento: '', formaNotificacion: '', fechaPresentacion: '', formaPresentacion: '' }); setTipoFecha(null); }} className="text-white px-4 py-2 rounded-lg" style={{ backgroundColor: '#1C1C1C', fontFamily: 'Inter, sans-serif', transition: 'all 0.3s ease' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#C5A770'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1C1C1C'}>
                   Nuevo Cálculo
                 </button>
               </div>
@@ -1917,29 +2238,31 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
             
             {/* Sección para litigantes */}
             {tipoUsuario === 'litigante' && (
-              <div className="mt-6 bg-white rounded-lg shadow p-6">
-                <h3 className="text-xl font-bold mb-4">Guardar Cálculo y Notificaciones</h3>
+              <div className="mt-6 rounded-lg p-6" style={{ backgroundColor: '#FFFFFF', border: '1.5px solid #C5A770', boxShadow: '0 4px 20px rgba(28, 28, 28, 0.08)' }}>
+                <h3 className="text-xl font-bold mb-4" style={{ color: '#1C1C1C', fontFamily: 'Playfair Display, serif' }}>Guardar Cálculo y Notificaciones</h3>
                 
                 <div className="grid md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Número de Expediente</label>
+                    <label className="block text-sm font-medium mb-2" style={{ color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}>Número de Expediente</label>
                     <input 
                       type="text" 
                       value={numeroExpediente} 
                       onChange={(e) => setNumeroExpediente(e.target.value)}
                       placeholder="Ej: 123/2024"
-                      className="w-full p-2 border rounded-lg"
+                      className="w-full p-2 rounded-lg" 
+                      style={{ border: '1.5px solid #1C1C1C', backgroundColor: 'transparent', color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-2">WhatsApp (opcional)</label>
+                    <label className="block text-sm font-medium mb-2" style={{ color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}>WhatsApp (opcional)</label>
                     <input 
                       type="tel" 
                       value={telefonoWhatsApp} 
                       onChange={(e) => setTelefonoWhatsApp(e.target.value)}
                       placeholder="Ej: +52 1234567890"
-                      className="w-full p-2 border rounded-lg"
+                      className="w-full p-2 rounded-lg" 
+                      style={{ border: '1.5px solid #1C1C1C', backgroundColor: 'transparent', color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}
                     />
                   </div>
                 </div>
@@ -1947,7 +2270,10 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
                 <button 
                   onClick={guardarCalculo}
                   disabled={!numeroExpediente}
-                  className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 disabled:bg-gray-400"
+                  className="text-white px-6 py-2 rounded-lg disabled:bg-gray-400" 
+                  style={{ backgroundColor: !numeroExpediente ? '#B0B0B0' : '#1C1C1C', fontFamily: 'Inter, sans-serif', transition: 'all 0.3s ease' }} 
+                  onMouseEnter={(e) => { if (numeroExpediente) e.currentTarget.style.backgroundColor = '#C5A770'; }} 
+                  onMouseLeave={(e) => { if (numeroExpediente) e.currentTarget.style.backgroundColor = '#1C1C1C'; }}
                 >
                   Guardar Cálculo
                 </button>
@@ -1964,8 +2290,8 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
         
         {/* Lista de cálculos guardados para litigantes */}
         {tipoUsuario === 'litigante' && calculos.length > 0 && (
-          <div className="mt-6 bg-white rounded-lg shadow p-6">
-            <h3 className="text-xl font-bold mb-4">Cálculos Guardados</h3>
+          <div className="mt-6 rounded-lg p-6" style={{ backgroundColor: '#FFFFFF', border: '1.5px solid #C5A770', boxShadow: '0 4px 20px rgba(28, 28, 28, 0.08)' }}>
+            <h3 className="text-xl font-bold mb-4" style={{ color: '#1C1C1C', fontFamily: 'Playfair Display, serif' }}>Cálculos Guardados</h3>
             <div className="space-y-2">
               {calculos.map((calc) => (
                 <div key={calc.id} className="flex justify-between items-center p-3 bg-gray-50 rounded">

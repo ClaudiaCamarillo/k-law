@@ -809,7 +809,7 @@ function Calendario({
             <div key={idx} style={{
               backgroundColor: 'white',
               border: '1px solid #ccc',
-              borderRadius: '4px',
+              borderRadius: '8px',
               padding: '4px',
               width: '120px',
               flexShrink: 0
@@ -1699,54 +1699,213 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#ffffff' }}>
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Source+Code+Pro:wght@400;500&display=swap');
+    <div className="min-h-screen" style={{ backgroundColor: '#F4EFE8', position: 'relative' }}>
+      <style jsx>{`
+        .texto-resolucion sup {
+          font-size: 0.6em;
+          vertical-align: super;
+          line-height: 0;
+        }
       `}</style>
-      <nav className="k-law-nav" style={{ backgroundColor: '#0A1628', boxShadow: '0 2px 8px rgba(10, 22, 40, 0.15)' }}>
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <Link href="/" className="text-2xl font-bold" style={{ color: '#C9A961', letterSpacing: '0.05em', fontFamily: 'Montserrat, sans-serif' }}>
-                K-LAW
-              </Link>
-              <span className="k-law-badge" style={{ backgroundColor: '#C9A961', color: '#0A1628', fontWeight: '600', padding: '6px 16px', borderRadius: '20px', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+      `}</style>
+      
+      {/* Subtle pattern overlay */}
+      <div style={{
+        position: 'absolute',
+        top: '122px',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        opacity: 0.03,
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231C1C1C' fill-opacity='1'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`,
+        pointerEvents: 'none',
+        zIndex: 0
+      }} />
+      
+      {/* Franja dorada superior */}
+      <div style={{ 
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '122px', 
+        backgroundColor: '#C5A770', 
+        zIndex: 0,
+        pointerEvents: 'none'
+      }} />
+      
+      {/* Línea negra */}
+      <div style={{ 
+        position: 'absolute',
+        top: '122px',
+        left: 0,
+        right: 0,
+        height: '1.5px', 
+        backgroundColor: '#1C1C1C',
+        zIndex: 1
+      }} />
+
+      {/* Logo K-LAW en la parte izquierda */}
+      <div style={{ 
+        position: 'absolute',
+        top: '-43px',
+        left: '20px',
+        zIndex: 15
+      }}>
+        <Link href="/">
+          <img 
+            src="/LOGO-KLAW.gif" 
+            alt="K-LAW Logo" 
+            style={{ 
+              display: 'block',
+              width: 'auto',
+              height: 'auto',
+              maxWidth: '599px',
+              maxHeight: '240px',
+              cursor: 'pointer'
+            }}
+          />
+        </Link>
+      </div>
+
+      {/* Contenido principal */}
+      <div style={{ position: 'relative', zIndex: 10, paddingTop: '122px' }}>
+        
+        {/* Nav minimalista */}
+        <nav style={{ padding: '1rem 0' }}>
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="flex justify-between items-center">
+              <span style={{ 
+                backgroundColor: 'transparent', 
+                color: '#1C1C1C', 
+                fontWeight: '500', 
+                fontSize: '0.875rem', 
+                fontFamily: 'Inter, sans-serif',
+                border: '1.5px solid #C5A770',
+                padding: '6px 16px',
+                borderRadius: '25px'
+              }}>
                 Modo: {tipoUsuario === 'litigante' ? 'Litigante' : 'Servidor Público'}
               </span>
+              <Link 
+                href="/calculadoras" 
+                className="text-sm px-4 py-2" 
+                style={{ 
+                  backgroundColor: '#1C1C1C', 
+                  color: '#FFFFFF', 
+                  borderRadius: '6px', 
+                  transition: 'all 0.3s ease', 
+                  cursor: 'pointer', 
+                  fontFamily: 'Inter, sans-serif' 
+                }} 
+                onMouseEnter={(e) => { 
+                  e.currentTarget.style.backgroundColor = '#C5A770'; 
+                  e.currentTarget.style.color = '#1C1C1C'; 
+                }} 
+                onMouseLeave={(e) => { 
+                  e.currentTarget.style.backgroundColor = '#1C1C1C'; 
+                  e.currentTarget.style.color = '#FFFFFF'; 
+                }}
+              >
+                Volver
+              </Link>
             </div>
-            <Link href="/calculadoras" className="text-sm px-4 py-2" style={{ backgroundColor: 'transparent', color: '#FFFFFF', border: '1px solid #C9A961', borderRadius: '6px', transition: 'all 0.3s ease', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#C9A961'; e.currentTarget.style.color = '#0A1628'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#FFFFFF'; }}>
-              Volver
-            </Link>
           </div>
-        </div>
-      </nav>
+        </nav>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8" style={{ position: 'relative', zIndex: 10 }}>
         <div className="text-center mb-8">
-          <h1 className="k-law-title" style={{ color: '#0A1628', fontSize: '2.5rem', fontWeight: '700', marginBottom: '0.5rem', fontFamily: 'Montserrat, sans-serif' }}>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl mb-2" style={{ 
+            fontFamily: 'Playfair Display, serif', 
+            fontWeight: '800',
+            color: '#1C1C1C',
+            letterSpacing: '-0.02em'
+          }}>
             Recurso de Inconformidad
           </h1>
-          <p style={{ color: '#666', fontSize: '1.125rem', fontFamily: 'Inter, sans-serif' }}>Sistema profesional de cálculo de plazos legales</p>
+          <p className="text-sm md:text-base" style={{ 
+            fontFamily: 'Inter, sans-serif',
+            color: '#3D3D3D',
+            fontWeight: '300',
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase'
+          }}>
+            Sistema profesional de cálculo de plazos legales
+          </p>
         </div>
         
         <section className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="k-law-card" style={{ backgroundColor: '#FFFFFF', borderRadius: '20px', boxShadow: '0 4px 20px rgba(26, 26, 46, 0.08)', padding: '2.5rem', border: '1px solid #f0f0f0' }}>
+            <form onSubmit={handleSubmit} style={{ 
+              backgroundColor: '#FFFFFF', 
+              borderRadius: '12px', 
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.08)', 
+              padding: '2.5rem', 
+              border: '1.5px solid #C5A770' 
+            }}>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Tipo de Recurso</label>
+                  <label className="block" style={{ 
+                    color: '#1C1C1C', 
+                    fontWeight: '600', 
+                    marginBottom: '0.5rem', 
+                    fontSize: '0.95rem', 
+                    fontFamily: 'Inter, sans-serif' 
+                  }}>
+                    Tipo de Recurso
+                  </label>
                   <input 
                     type="text" 
                     value="Inconformidad" 
                     readOnly 
-                    style={{ width: '100%', padding: '0.75rem', border: '2px solid #e5e7eb', borderRadius: '12px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#666', backgroundColor: '#f8f9fa', cursor: 'not-allowed' }} 
+                    style={{ 
+                      width: '100%', 
+                      padding: '0.75rem', 
+                      border: '1.5px solid #1C1C1C', 
+                      borderRadius: '8px', 
+                      fontSize: '1rem', 
+                      fontFamily: 'Inter, sans-serif', 
+                      color: '#3D3D3D', 
+                      backgroundColor: 'transparent', 
+                      cursor: 'not-allowed' 
+                    }} 
                     suppressHydrationWarning={true}
                   />
                 </div>
                 
                 <div>
-                  <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Resolución Impugnada</label>
-                  <select name="resolucionImpugnada" value={formData.resolucionImpugnada} onChange={handleChange} className="k-law-select" style={{ borderColor: '#E0E0E0', borderRadius: '12px', fontSize: '0.95rem', transition: 'border-color 0.3s ease', backgroundColor: '#FFFFFF', fontFamily: 'Inter, sans-serif', color: '#333333', width: '100%', padding: '0.75rem' }} onFocus={(e) => e.currentTarget.style.borderColor = '#C9A961'} onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} required suppressHydrationWarning={true}>
+                  <label className="block" style={{ 
+                    color: '#1C1C1C', 
+                    fontWeight: '600', 
+                    marginBottom: '0.5rem', 
+                    fontSize: '0.95rem', 
+                    fontFamily: 'Inter, sans-serif' 
+                  }}>
+                    Resolución Impugnada
+                  </label>
+                  <select 
+                    name="resolucionImpugnada" 
+                    value={formData.resolucionImpugnada} 
+                    onChange={handleChange} 
+                    style={{ 
+                      border: '1.5px solid #1C1C1C', 
+                      borderRadius: '8px', 
+                      fontSize: '0.95rem', 
+                      transition: 'all 0.3s ease', 
+                      backgroundColor: 'transparent', 
+                      fontFamily: 'Inter, sans-serif', 
+                      color: '#1C1C1C', 
+                      width: '100%', 
+                      padding: '0.75rem' 
+                    }} 
+                    onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} 
+                    onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} 
+                    required 
+                    suppressHydrationWarning={true}
+                  >
                     <option value="">Seleccione...</option>
                     <option value="auto-cumplida">Auto que declara cumplida la ejecutoria de amparo</option>
                     <option value="auto-imposibilidad">Auto que declara que existe imposibilidad material de cumplir la ejecutoria de amparo</option>
@@ -1757,8 +1916,35 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                 </div>
                 
                 <div>
-                  <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Parte Recurrente</label>
-                  <select name="parteRecurrente" value={formData.parteRecurrente} onChange={handleChange} className="k-law-select" style={{ borderColor: '#E0E0E0', borderRadius: '12px', fontSize: '0.95rem', transition: 'border-color 0.3s ease', backgroundColor: '#FFFFFF', fontFamily: 'Inter, sans-serif', color: '#333333', width: '100%', padding: '0.75rem' }} onFocus={(e) => e.currentTarget.style.borderColor = '#C9A961'} onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} required suppressHydrationWarning={true}>
+                  <label className="block" style={{ 
+                    color: '#1C1C1C', 
+                    fontWeight: '600', 
+                    marginBottom: '0.5rem', 
+                    fontSize: '0.95rem', 
+                    fontFamily: 'Inter, sans-serif' 
+                  }}>
+                    Parte Recurrente
+                  </label>
+                  <select 
+                    name="parteRecurrente" 
+                    value={formData.parteRecurrente} 
+                    onChange={handleChange} 
+                    style={{ 
+                      border: '1.5px solid #1C1C1C', 
+                      borderRadius: '8px', 
+                      fontSize: '0.95rem', 
+                      transition: 'all 0.3s ease', 
+                      backgroundColor: 'transparent', 
+                      fontFamily: 'Inter, sans-serif', 
+                      color: '#1C1C1C', 
+                      width: '100%', 
+                      padding: '0.75rem' 
+                    }} 
+                    onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} 
+                    onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} 
+                    required 
+                    suppressHydrationWarning={true}
+                  >
                     <option value="">Seleccione...</option>
                     {formData.resolucionImpugnada !== 'auto-cumplida' && (
                       <option value="autoridad">Autoridad</option>
@@ -1771,78 +1957,170 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                 </div>
                 
                 <div className="md:col-span-2">
-                  <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Seleccione tipo de fecha</label>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                      <input 
-                        type="radio" 
-                        name="tipoFecha" 
-                        value="notificacion" 
-                        checked={formData.tipoFecha === 'notificacion'} 
-                        onChange={handleChange} 
-                        style={{ marginRight: '0.5rem' }}
-                      />
-                      <span style={{ color: '#333333', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>
-                        {formData.parteRecurrente === 'tercero-extrano' ? 'Fecha de notificación' : 'Fecha de notificación'}
-                      </span>
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                      <input 
-                        type="radio" 
-                        name="tipoFecha" 
-                        value="conocimiento" 
-                        checked={formData.tipoFecha === 'conocimiento'} 
-                        onChange={handleChange} 
-                        style={{ marginRight: '0.5rem' }}
-                      />
-                      <span style={{ color: '#333333', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Fecha de conocimiento</span>
-                    </label>
-                  </div>
-                </div>
-                
-                {formData.tipoFecha === 'notificacion' && (
-                  <>
-                    <div>
-                      <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>
-                        {formData.parteRecurrente === 'tercero-extrano' ? 'Forma de notificación' : 'Forma de Notificación'}
+                  <label className="label block mb-4" style={{ color: '#1C1C1C', fontWeight: '700', fontSize: '1rem', fontFamily: 'Inter, sans-serif' }}>Seleccione:</label>
+                  <div className="space-y-4">
+                    <div style={{ backgroundColor: '#F4EFE8', padding: '1rem', borderRadius: '12px', border: '1.5px solid #E5E7EB', transition: 'all 0.3s ease' }}>
+                      <label className="flex items-center space-x-3 cursor-pointer">
+                        <input 
+                          type="radio" 
+                          name="tipoFecha" 
+                          value="notificacion"
+                          checked={formData.tipoFecha === 'notificacion'}
+                          onChange={handleChange}
+                          style={{ accentColor: '#1C1C1C' }}
+                        />
+                        <span style={{ fontFamily: 'Inter, sans-serif', color: '#1C1C1C', fontWeight: '500' }}>
+                          Fecha de Notificación
+                        </span>
                       </label>
-                      <select name="formaNotificacion" value={formData.formaNotificacion} onChange={handleChange} className="k-law-select" style={{ borderColor: '#E0E0E0', borderRadius: '12px', fontSize: '0.95rem', transition: 'border-color 0.3s ease', backgroundColor: '#FFFFFF', fontFamily: 'Inter, sans-serif', color: '#333333', width: '100%', padding: '0.75rem' }} onFocus={(e) => e.currentTarget.style.borderColor = '#C9A961'} onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} required suppressHydrationWarning={true}>
-                        <option value="">Seleccione...</option>
-                        <option value="personal">Personalmente</option>
-                        {formData.parteRecurrente === 'autoridad' && formData.resolucionImpugnada !== 'auto-cumplida' && (
-                          <option value="oficio">Por oficio</option>
-                        )}
-                        <option value="lista">Por lista</option>
-                        <option value="electronica">En forma electrónica</option>
-                      </select>
                     </div>
                     
-                    <div>
-                      <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>
-                        Fecha de Notificación
+                    {/* Mostrar campos de notificación justo después de seleccionar esa opción */}
+                    {formData.tipoFecha === 'notificacion' && (
+                      <div className="ml-8 space-y-4" style={{ backgroundColor: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1.5px solid #E5E7EB' }}>
+                        <div>
+                          <label className="label block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>
+                            Fecha de Notificación
+                          </label>
+                          <input 
+                            type="date" 
+                            name="fechaNotificacion" 
+                            value={formData.fechaNotificacion} 
+                            onChange={handleChange} 
+                            style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '12px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }}
+                            onFocus={(e) => e.target.style.borderColor = '#C5A770'}
+                            onBlur={(e) => e.target.style.borderColor = '#1C1C1C'}
+                            required 
+                            suppressHydrationWarning={true}
+                          />
+                        </div>
+                        <div>
+                          <label className="label block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>Forma de Notificación</label>
+                          <select name="formaNotificacion" value={formData.formaNotificacion} onChange={handleChange} style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '12px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }} onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} required suppressHydrationWarning={true}>
+                            <option value="">Seleccione...</option>
+                            <option value="personal">Personalmente</option>
+                            {formData.parteRecurrente === 'autoridad' && formData.resolucionImpugnada !== 'auto-cumplida' && (
+                              <option value="oficio">Por oficio</option>
+                            )}
+                            <option value="lista">Por lista</option>
+                            <option value="electronica">En forma electrónica</option>
+                          </select>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div style={{ 
+                      backgroundColor: formData.tipoFecha === 'notificacion' ? '#f5f5f5' : '#ffffff', 
+                      padding: '1rem', 
+                      borderRadius: '12px', 
+                      border: '1.5px solid #1C1C1C', 
+                      transition: 'all 0.3s ease',
+                      opacity: formData.tipoFecha === 'notificacion' ? '0.6' : '1'
+                    }}>
+                      <label className="flex items-center space-x-3 cursor-pointer">
+                        <input 
+                          type="radio" 
+                          name="tipoFecha" 
+                          value="conocimiento"
+                          checked={formData.tipoFecha === 'conocimiento'}
+                          onChange={handleChange}
+                          style={{ accentColor: '#1C1C1C' }}
+                        />
+                        <span style={{ fontFamily: 'Inter, sans-serif', color: formData.tipoFecha === 'notificacion' ? '#999' : '#1C1C1C', fontWeight: '500' }}>
+                          Fecha de Conocimiento
+                        </span>
                       </label>
-                      <input type="date" name="fechaNotificacion" value={formData.fechaNotificacion} onChange={handleChange} style={{ width: '100%', padding: '0.75rem', border: '2px solid #E0E0E0', borderRadius: '12px', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif', color: '#333333', backgroundColor: '#FFFFFF', transition: 'all 0.3s ease' }} onFocus={(e) => e.target.style.borderColor = '#C9A961'} onBlur={(e) => e.target.style.borderColor = '#E0E0E0'} required suppressHydrationWarning={true} />
                     </div>
-                  </>
-                )}
-
-                {formData.tipoFecha === 'conocimiento' && (
-                  <div>
-                    <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Fecha de conocimiento</label>
-                    <input type="date" name="fechaConocimiento" value={formData.fechaConocimiento} onChange={handleChange} style={{ width: '100%', padding: '0.75rem', border: '2px solid #E0E0E0', borderRadius: '12px', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif', color: '#333333', backgroundColor: '#FFFFFF', transition: 'all 0.3s ease' }} onFocus={(e) => e.target.style.borderColor = '#C9A961'} onBlur={(e) => e.target.style.borderColor = '#E0E0E0'} required suppressHydrationWarning={true} />
+                    
+                    {/* Mostrar campo de conocimiento */}
+                    {formData.tipoFecha === 'conocimiento' && (
+                      <div className="ml-8" style={{ backgroundColor: '#FFFFFF', padding: '1.5rem', borderRadius: '12px', border: '1.5px solid #E5E7EB' }}>
+                        <div>
+                          <label className="label block" style={{ color: '#1C1C1C', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>
+                            Fecha de Conocimiento
+                          </label>
+                          <input 
+                            type="date" 
+                            name="fechaConocimiento" 
+                            value={formData.fechaConocimiento} 
+                            onChange={handleChange} 
+                            style={{ width: '100%', padding: '0.75rem', border: '1.5px solid #1C1C1C', borderRadius: '12px', fontSize: '1rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C', backgroundColor: 'transparent', transition: 'all 0.3s ease' }}
+                            onFocus={(e) => e.target.style.borderColor = '#C5A770'}
+                            onBlur={(e) => e.target.style.borderColor = '#1C1C1C'}
+                            required 
+                            suppressHydrationWarning={true}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
                 
                 {tipoUsuario === 'servidor' && (
                   <>
                     <div>
-                      <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Fecha de Presentación</label>
-                      <input type="date" name="fechaPresentacion" value={formData.fechaPresentacion} onChange={handleChange} style={{ width: '100%', padding: '0.75rem', border: '2px solid #E0E0E0', borderRadius: '12px', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif', color: '#333333', backgroundColor: '#FFFFFF', transition: 'all 0.3s ease' }} onFocus={(e) => e.target.style.borderColor = '#C9A961'} onBlur={(e) => e.target.style.borderColor = '#E0E0E0'} required={tipoUsuario === 'servidor'} suppressHydrationWarning={true} />
+                      <label className="block" style={{ 
+                        color: '#1C1C1C', 
+                        fontWeight: '600', 
+                        marginBottom: '0.5rem', 
+                        fontSize: '0.95rem', 
+                        fontFamily: 'Inter, sans-serif' 
+                      }}>
+                        Fecha de Presentación
+                      </label>
+                      <input 
+                        type="date" 
+                        name="fechaPresentacion" 
+                        value={formData.fechaPresentacion} 
+                        onChange={handleChange} 
+                        style={{ 
+                          width: '100%', 
+                          padding: '0.75rem', 
+                          border: '1.5px solid #1C1C1C', 
+                          borderRadius: '8px', 
+                          fontSize: '0.95rem', 
+                          fontFamily: 'Inter, sans-serif', 
+                          color: '#1C1C1C', 
+                          backgroundColor: 'transparent', 
+                          transition: 'all 0.3s ease' 
+                        }} 
+                        onFocus={(e) => e.target.style.borderColor = '#C5A770'} 
+                        onBlur={(e) => e.target.style.borderColor = '#1C1C1C'} 
+                        required={tipoUsuario === 'servidor'} 
+                        suppressHydrationWarning={true} 
+                      />
                     </div>
                     
                     <div className="md:col-span-2">
-                      <label className="k-law-label block" style={{ color: '#333333', fontWeight: '600', marginBottom: '0.5rem', fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>Forma de Presentación</label>
-                      <select name="formaPresentacion" value={formData.formaPresentacion} onChange={handleChange} className="k-law-select" style={{ borderColor: '#E0E0E0', borderRadius: '12px', fontSize: '0.95rem', transition: 'border-color 0.3s ease', backgroundColor: '#FFFFFF', fontFamily: 'Inter, sans-serif', color: '#333333', width: '100%', padding: '0.75rem' }} onFocus={(e) => e.currentTarget.style.borderColor = '#C9A961'} onBlur={(e) => e.currentTarget.style.borderColor = '#E0E0E0'} required={tipoUsuario === 'servidor'} suppressHydrationWarning={true}>
+                      <label className="block" style={{ 
+                        color: '#1C1C1C', 
+                        fontWeight: '600', 
+                        marginBottom: '0.5rem', 
+                        fontSize: '0.95rem', 
+                        fontFamily: 'Inter, sans-serif' 
+                      }}>
+                        Forma de Presentación
+                      </label>
+                      <select 
+                        name="formaPresentacion" 
+                        value={formData.formaPresentacion} 
+                        onChange={handleChange} 
+                        style={{ 
+                          border: '1.5px solid #1C1C1C', 
+                          borderRadius: '8px', 
+                          fontSize: '0.95rem', 
+                          transition: 'all 0.3s ease', 
+                          backgroundColor: 'transparent', 
+                          fontFamily: 'Inter, sans-serif', 
+                          color: '#1C1C1C', 
+                          width: '100%', 
+                          padding: '0.75rem' 
+                        }} 
+                        onFocus={(e) => e.currentTarget.style.borderColor = '#C5A770'} 
+                        onBlur={(e) => e.currentTarget.style.borderColor = '#1C1C1C'} 
+                        required={tipoUsuario === 'servidor'} 
+                        suppressHydrationWarning={true}
+                      >
                         <option value="">Seleccione...</option>
                         <option value="escrito">Por escrito</option>
                         <option value="correo">Por correo</option>
@@ -1855,7 +2133,7 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
               </div>
               
               <div className="mt-8 text-center">
-                <button type="submit" disabled={calculando} className="w-full" style={{ backgroundColor: calculando ? '#B0B0B0' : '#0A1628', color: '#FFFFFF', padding: '14px 28px', borderRadius: '12px', fontSize: '1rem', fontWeight: '600', transition: 'all 0.3s ease', cursor: calculando ? 'not-allowed' : 'pointer', border: 'none', boxShadow: '0 2px 8px rgba(10, 22, 40, 0.2)', fontFamily: 'Inter, sans-serif' }} onMouseEnter={(e) => { if (!calculando) { e.currentTarget.style.backgroundColor = '#C9A961'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(201, 169, 97, 0.3)'; } }} onMouseLeave={(e) => { if (!calculando) { e.currentTarget.style.backgroundColor = '#0A1628'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(10, 22, 40, 0.2)'; } }} suppressHydrationWarning={true}>
+                <button type="submit" disabled={calculando} style={{ width: '100%', backgroundColor: calculando ? '#E5E5E5' : '#1C1C1C', color: calculando ? '#999' : '#F4EFE8', padding: '1rem 2rem', borderRadius: '25px', fontSize: '1rem', fontWeight: '500', transition: 'all 0.3s ease', cursor: calculando ? 'not-allowed' : 'pointer', border: '1.5px solid #1C1C1C', fontFamily: 'Inter, sans-serif', letterSpacing: '0.02em' }} onMouseEnter={(e) => { if (!calculando) { e.currentTarget.style.backgroundColor = '#C5A770'; e.currentTarget.style.borderColor = '#C5A770'; e.currentTarget.style.color = '#1C1C1C'; } }} onMouseLeave={(e) => { if (!calculando) { e.currentTarget.style.backgroundColor = '#1C1C1C'; e.currentTarget.style.borderColor = '#1C1C1C'; e.currentTarget.style.color = '#F4EFE8'; } }} suppressHydrationWarning={true}>
                   {calculando ? 'Calculando...' : 'Calcular Plazo'}
                 </button>
               </div>
@@ -1863,32 +2141,124 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
           </div>
           
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="font-semibold mb-4">Días Inhábiles Adicionales</h3>
+            <div style={{ 
+              backgroundColor: 'transparent', 
+              borderRadius: '30px', 
+              padding: '2rem', 
+              border: '2px solid #C5A770' 
+            }}>
+              <h3 style={{ 
+                fontFamily: 'Playfair Display, serif', 
+                fontSize: '1.25rem', 
+                fontWeight: '600', 
+                color: '#1C1C1C', 
+                marginBottom: '1rem' 
+              }}>
+                Días Inhábiles Adicionales
+              </h3>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Agregar día inhábil</label>
+                  <label className="block" style={{ 
+                    fontSize: '0.875rem', 
+                    fontWeight: '500', 
+                    marginBottom: '0.5rem', 
+                    color: '#1C1C1C', 
+                    fontFamily: 'Inter, sans-serif' 
+                  }}>
+                    Agregar día inhábil
+                  </label>
                   <div className="flex gap-2">
-                    <input type="date" value={nuevoDiaInhabil} onChange={(e) => setNuevoDiaInhabil(e.target.value)} className="flex-1 p-2 border rounded-lg text-sm" suppressHydrationWarning={true} />
-                    <button type="button" onClick={agregarDiaInhabil} className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 text-sm" suppressHydrationWarning={true}>
+                    <input 
+                      type="date" 
+                      value={nuevoDiaInhabil} 
+                      onChange={(e) => setNuevoDiaInhabil(e.target.value)} 
+                      style={{ 
+                        flex: 1, 
+                        padding: '0.5rem', 
+                        border: '1.5px solid #1C1C1C', 
+                        borderRadius: '8px', 
+                        fontSize: '0.875rem', 
+                        backgroundColor: 'transparent', 
+                        color: '#1C1C1C', 
+                        fontFamily: 'Inter, sans-serif' 
+                      }} 
+                      suppressHydrationWarning={true} 
+                    />
+                    <button type="button" onClick={agregarDiaInhabil} style={{ backgroundColor: '#1C1C1C', color: '#F4EFE8', padding: '0.5rem 1rem', borderRadius: '25px', fontSize: '0.875rem', fontWeight: '500', border: '1.5px solid #1C1C1C', cursor: 'pointer', transition: 'all 0.3s ease', fontFamily: 'Inter, sans-serif' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#C5A770'; e.currentTarget.style.borderColor = '#C5A770'; e.currentTarget.style.color = '#1C1C1C'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#1C1C1C'; e.currentTarget.style.borderColor = '#1C1C1C'; e.currentTarget.style.color = '#F4EFE8'; }} suppressHydrationWarning={true}>
                       Agregar
                     </button>
                   </div>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Fundamento legal</label>
-                  <input type="text" value={fundamentoAdicional} onChange={(e) => setFundamentoAdicional(e.target.value)} placeholder="Ej: Circular CCNO/1/2024" className="w-full p-2 border rounded-lg text-sm" suppressHydrationWarning={true} />
+                  <label className="block" style={{ 
+                    fontSize: '0.875rem', 
+                    fontWeight: '500', 
+                    marginBottom: '0.5rem', 
+                    color: '#1C1C1C', 
+                    fontFamily: 'Inter, sans-serif' 
+                  }}>
+                    Fundamento legal
+                  </label>
+                  <input 
+                    type="text" 
+                    value={fundamentoAdicional} 
+                    onChange={(e) => setFundamentoAdicional(e.target.value)} 
+                    placeholder="Ej: Circular CCNO/1/2024" 
+                    style={{ 
+                      width: '100%', 
+                      padding: '0.5rem', 
+                      border: '1.5px solid #1C1C1C', 
+                      borderRadius: '8px', 
+                      fontSize: '0.875rem', 
+                      backgroundColor: 'transparent', 
+                      color: '#1C1C1C', 
+                      fontFamily: 'Inter, sans-serif' 
+                    }} 
+                    suppressHydrationWarning={true} 
+                  />
                 </div>
                 
                 {diasAdicionales.length > 0 && (
                   <div className="mt-4">
-                    <p className="text-sm font-medium mb-2">Días agregados:</p>
+                    <p style={{ 
+                      fontSize: '0.875rem', 
+                      fontWeight: '500', 
+                      marginBottom: '0.5rem', 
+                      color: '#1C1C1C', 
+                      fontFamily: 'Inter, sans-serif' 
+                    }}>
+                      Días agregados:
+                    </p>
                     <div className="space-y-1">
                       {diasAdicionales.map((dia) => (
-                        <div key={dia} className="flex justify-between items-center bg-gray-50 p-2 rounded text-sm">
+                        <div key={dia} style={{ 
+                          display: 'flex', 
+                          justifyContent: 'space-between', 
+                          alignItems: 'center', 
+                          backgroundColor: '#F4EFE8', 
+                          padding: '0.5rem', 
+                          borderRadius: '8px', 
+                          fontSize: '0.875rem', 
+                          fontFamily: 'Inter, sans-serif', 
+                          marginBottom: '0.25rem' 
+                        }}>
                           <span>{tipoUsuario === 'litigante' ? fechaParaLitigante(dia) : fechaATexto(dia)}</span>
-                          <button type="button" onClick={() => setDiasAdicionales(diasAdicionales.filter(d => d !== dia))} className="text-red-600 hover:text-red-800">
+                          <button 
+                            type="button" 
+                            onClick={() => setDiasAdicionales(diasAdicionales.filter(d => d !== dia))} 
+                            style={{ 
+                              color: '#C5A770', 
+                              background: 'none', 
+                              border: 'none', 
+                              cursor: 'pointer', 
+                              fontSize: '0.875rem', 
+                              fontFamily: 'Inter, sans-serif', 
+                              transition: 'color 0.3s ease' 
+                            }} 
+                            onMouseEnter={(e) => e.currentTarget.style.color = '#1C1C1C'} 
+                            onMouseLeave={(e) => e.currentTarget.style.color = '#C5A770'}
+                          >
                             Eliminar
                           </button>
                         </div>
@@ -1903,26 +2273,28 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
         
         {resultado && (
           <>
-            <div className="mt-6 bg-white rounded-lg shadow p-6">
-              <h2 className="text-2xl font-bold mb-4">Resultado del Cálculo</h2>
+            <div style={{ 
+              marginTop: '1.5rem', 
+              backgroundColor: '#FFFFFF', 
+              borderRadius: '8px', 
+              padding: '2rem', 
+              border: '1.5px solid #1C1C1C' 
+            }}>
+              <h2 style={{ 
+                fontSize: '1.875rem', 
+                fontWeight: '700', 
+                marginBottom: '1rem', 
+                color: '#1C1C1C', 
+                fontFamily: 'Playfair Display, serif' 
+              }}>
+                Resultado del Cálculo
+              </h2>
               
-              <div 
-                className="p-6 rounded-lg mb-4"
-                style={{
-                  background: resultado.esOportuno 
-                    ? 'linear-gradient(135deg, #f0fdf4 0%, #e6f7ed 100%)' 
-                    : 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
-                  border: `2px solid ${resultado.esOportuno ? '#86efac' : '#fde047'}`,
-                }}
-              >
+              <div style={{ padding: '1.5rem', borderRadius: '8px', marginBottom: '1rem', background: resultado.esOportuno ? 'linear-gradient(135deg, #f0fdf4 0%, #e6f7ed 100%)' : 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)', border: `1.5px solid ${resultado.esOportuno ? '#C5A770' : '#dc2626'}` }}>
                 {tipoUsuario === 'servidor' ? (
-                  <p style={{ 
-                    fontSize: '1.125rem', 
-                    fontWeight: '600', 
-                    fontFamily: 'Inter, sans-serif' 
-                  }}>
+                  <p style={{ fontSize: '1.125rem', fontWeight: '600', fontFamily: 'Inter, sans-serif', color: '#1C1C1C' }}>
                     El recurso se presentó de forma: {' '}
-                    <span style={{ color: resultado.esOportuno ? '#166534' : '#a16207' }}>
+                    <span style={{ color: resultado.esOportuno ? '#16a34a' : '#dc2626' }}>
                       {resultado.esOportuno ? 'OPORTUNA' : 'EXTEMPORÁNEA'}
                     </span>
                   </p>
@@ -1934,17 +2306,28 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                       fontFamily: 'Inter, sans-serif' 
                     }}>
                       El plazo para presentar el recurso vence el: {' '}
-                      <span style={{ color: '#166534' }}>
+                      <span style={{ color: '#1C1C1C' }}>
                         {fechaParaLitigante(resultado.fechaFin.toISOString().split('T')[0])}
                       </span>
                     </p>
                     {resultado.diasRestantes > 0 && (
-                      <p className="mt-2 text-sm">
+                      <p style={{ 
+                        marginTop: '0.5rem', 
+                        fontSize: '0.875rem', 
+                        color: '#3D3D3D', 
+                        fontFamily: 'Inter, sans-serif' 
+                      }}>
                         Quedan <strong>{resultado.diasRestantes}</strong> días hábiles para el vencimiento
                       </p>
                     )}
                     {resultado.diasRestantes === 0 && (
-                      <p className="mt-2 text-sm text-red-600 font-bold">
+                      <p style={{ 
+                        marginTop: '0.5rem', 
+                        fontSize: '0.875rem', 
+                        color: '#C5A770', 
+                        fontWeight: 'bold', 
+                        fontFamily: 'Inter, sans-serif' 
+                      }}>
                         ⚠️ El plazo ha vencido
                       </p>
                     )}
@@ -1952,9 +2335,21 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                 )}
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                <h3 className="font-semibold mb-2">Detalles del Cómputo:</h3>
-                <div className="space-y-1 text-sm">
+              <div style={{ 
+                backgroundColor: '#F4EFE8', 
+                padding: '1rem', 
+                borderRadius: '8px', 
+                marginBottom: '1rem' 
+              }}>
+                <h3 style={{ 
+                  fontWeight: '600', 
+                  marginBottom: '0.5rem', 
+                  color: '#1C1C1C', 
+                  fontFamily: 'Inter, sans-serif' 
+                }}>
+                  Detalles del Cómputo:
+                </h3>
+                <div style={{ fontSize: '0.875rem', fontFamily: 'Inter, sans-serif', color: '#1C1C1C' }}>
                   <p><strong>Plazo legal:</strong> {resultado.plazo} días</p>
                   <p><strong>Fundamento:</strong> {resultado.fundamento}</p>
                   {resultado.usandoFechaConocimiento ? (
@@ -1975,8 +2370,22 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
               
               {/* Calendario visual - solo para servidores */}
               {tipoUsuario === 'servidor' && (
-                <div className="bg-white p-6 rounded-lg shadow-lg">
-                  <h3 className="font-semibold text-lg mb-4">Calendario Visual del Cómputo</h3>
+                <div style={{ 
+                  backgroundColor: '#FFFFFF', 
+                  padding: '1.5rem', 
+                  borderRadius: '8px', 
+                  border: '1.5px solid #C5A770', 
+                  marginTop: '1rem' 
+                }}>
+                  <h3 style={{ 
+                    fontWeight: '600', 
+                    fontSize: '1.125rem', 
+                    marginBottom: '1rem', 
+                    color: '#1C1C1C', 
+                    fontFamily: 'Playfair Display, serif' 
+                  }}>
+                    Calendario Visual del Cómputo
+                  </h3>
                   
                   <div id="calendario-visual" className="bg-white">
                     <Calendario 
@@ -1992,8 +2401,21 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
               )}
               
               {tipoUsuario === 'servidor' && (
-                <div className="bg-blue-50 p-4 rounded-lg mt-6">
-                  <h3 className="font-bold mb-2">Texto para Resolución:</h3>
+                <div style={{ 
+                  backgroundColor: '#F4EFE8', 
+                  padding: '1rem', 
+                  borderRadius: '8px', 
+                  marginTop: '1.5rem', 
+                  border: '1.5px solid #C5A770' 
+                }}>
+                  <h3 style={{ 
+                    fontWeight: '700', 
+                    marginBottom: '0.5rem', 
+                    color: '#1C1C1C', 
+                    fontFamily: 'Inter, sans-serif' 
+                  }}>
+                    Texto para Resolución:
+                  </h3>
                   <div 
                     className="text-sm font-['Arial'] leading-relaxed" 
                     style={{textAlign: 'justify'}}
@@ -2005,15 +2427,90 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
               <div className="mt-6 flex gap-4">
                 {tipoUsuario === 'servidor' && (
                   <>
-                    <button onClick={copiarCalendario} style={{ backgroundColor: '#16a34a', color: '#FFFFFF', padding: '0.75rem 1.5rem', borderRadius: '12px', fontSize: '0.95rem', fontWeight: '600', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', fontFamily: 'Inter, sans-serif' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#15803d'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#16a34a'; }}>
+                    <button 
+                      onClick={copiarCalendario} 
+                      style={{ 
+                        backgroundColor: '#1C1C1C', 
+                        color: '#FFFFFF', 
+                        padding: '0.75rem 1.5rem', 
+                        borderRadius: '8px', 
+                        fontSize: '0.95rem', 
+                        fontWeight: '600', 
+                        border: 'none', 
+                        cursor: 'pointer', 
+                        transition: 'all 0.3s ease', 
+                        fontFamily: 'Inter, sans-serif' 
+                      }} 
+                      onMouseEnter={(e) => { 
+                        e.currentTarget.style.backgroundColor = '#C5A770'; 
+                      }} 
+                      onMouseLeave={(e) => { 
+                        e.currentTarget.style.backgroundColor = '#1C1C1C'; 
+                      }}
+                    >
                       Copiar calendario
                     </button>
-                    <button onClick={copiarTexto} style={{ backgroundColor: '#0A1628', color: '#FFFFFF', padding: '0.75rem 1.5rem', borderRadius: '12px', fontSize: '0.95rem', fontWeight: '600', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', fontFamily: 'Inter, sans-serif' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#C9A961'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0A1628'; }}>
+                    <button 
+                      onClick={copiarTexto} 
+                      style={{ 
+                        backgroundColor: 'transparent', 
+                        color: '#1C1C1C', 
+                        padding: '0.75rem 1.5rem', 
+                        borderRadius: '8px', 
+                        fontSize: '0.95rem', 
+                        fontWeight: '600', 
+                        border: '1.5px solid #1C1C1C', 
+                        cursor: 'pointer', 
+                        transition: 'all 0.3s ease', 
+                        fontFamily: 'Inter, sans-serif' 
+                      }} 
+                      onMouseEnter={(e) => { 
+                        e.currentTarget.style.backgroundColor = '#1C1C1C'; 
+                        e.currentTarget.style.color = '#FFFFFF'; 
+                      }} 
+                      onMouseLeave={(e) => { 
+                        e.currentTarget.style.backgroundColor = 'transparent'; 
+                        e.currentTarget.style.color = '#1C1C1C'; 
+                      }}
+                    >
                       Copiar texto
                     </button>
                   </>
                 )}
-                <button onClick={() => { setResultado(null); setFormData({ tipoRecurso: 'principal', resolucionImpugnada: '', parteRecurrente: '', fechaNotificacion: '', fechaConocimiento: '', tipoFecha: null, formaNotificacion: '', fechaPresentacion: '', formaPresentacion: '' }); }} style={{ backgroundColor: '#0A1628', color: '#FFFFFF', padding: '0.75rem 1.5rem', borderRadius: '12px', fontSize: '0.95rem', fontWeight: '600', border: 'none', cursor: 'pointer', transition: 'all 0.3s ease', fontFamily: 'Inter, sans-serif' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#C9A961'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#0A1628'; }}>
+                <button 
+                  onClick={() => { 
+                    setResultado(null); 
+                    setFormData({ 
+                      tipoRecurso: 'principal', 
+                      resolucionImpugnada: '', 
+                      parteRecurrente: '', 
+                      fechaNotificacion: '', 
+                      fechaConocimiento: '', 
+                      tipoFecha: null, 
+                      formaNotificacion: '', 
+                      fechaPresentacion: '', 
+                      formaPresentacion: '' 
+                    }); 
+                  }} 
+                  style={{ 
+                    backgroundColor: '#1C1C1C', 
+                    color: '#FFFFFF', 
+                    padding: '0.75rem 1.5rem', 
+                    borderRadius: '8px', 
+                    fontSize: '0.95rem', 
+                    fontWeight: '600', 
+                    border: 'none', 
+                    cursor: 'pointer', 
+                    transition: 'all 0.3s ease', 
+                    fontFamily: 'Inter, sans-serif' 
+                  }} 
+                  onMouseEnter={(e) => { 
+                    e.currentTarget.style.backgroundColor = '#C5A770'; 
+                  }} 
+                  onMouseLeave={(e) => { 
+                    e.currentTarget.style.backgroundColor = '#1C1C1C'; 
+                  }}
+                >
                   Nuevo Cálculo
                 </button>
               </div>
@@ -2021,29 +2518,75 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
             
             {/* Sección para litigantes */}
             {tipoUsuario === 'litigante' && (
-              <div className="mt-6 bg-white rounded-lg shadow p-6">
-                <h3 className="k-law-subtitle mb-4">Guardar Cálculo y Notificaciones</h3>
+              <div style={{ 
+                marginTop: '1.5rem', 
+                backgroundColor: '#FFFFFF', 
+                borderRadius: '8px', 
+                padding: '1.5rem', 
+                border: '1.5px solid #C5A770' 
+              }}>
+                <h3 style={{ 
+                  fontSize: '1.25rem', 
+                  fontWeight: '600', 
+                  marginBottom: '1rem', 
+                  color: '#1C1C1C', 
+                  fontFamily: 'Playfair Display, serif' 
+                }}>
+                  Guardar Cálculo y Notificaciones
+                </h3>
                 
                 <div className="grid md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Número de Expediente</label>
+                    <label className="block" style={{ 
+                      fontSize: '0.875rem', 
+                      fontWeight: '500', 
+                      marginBottom: '0.5rem', 
+                      color: '#1C1C1C', 
+                      fontFamily: 'Inter, sans-serif' 
+                    }}>
+                      Número de Expediente
+                    </label>
                     <input 
                       type="text" 
                       value={numeroExpediente} 
                       onChange={(e) => setNumeroExpediente(e.target.value)}
                       placeholder="Ej: 123/2024"
-                      className="w-full p-2 border rounded-lg"
+                      style={{ 
+                        width: '100%', 
+                        padding: '0.5rem', 
+                        border: '1.5px solid #1C1C1C', 
+                        borderRadius: '8px', 
+                        backgroundColor: 'transparent', 
+                        color: '#1C1C1C', 
+                        fontFamily: 'Inter, sans-serif' 
+                      }}
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-2">WhatsApp (opcional)</label>
+                    <label className="block" style={{ 
+                      fontSize: '0.875rem', 
+                      fontWeight: '500', 
+                      marginBottom: '0.5rem', 
+                      color: '#1C1C1C', 
+                      fontFamily: 'Inter, sans-serif' 
+                    }}>
+                      WhatsApp (opcional)
+                    </label>
                     <input 
                       type="tel" 
                       value={telefonoWhatsApp} 
                       onChange={(e) => setTelefonoWhatsApp(e.target.value)}
                       placeholder="Ej: +52 1234567890"
-                      className="w-full p-2 border rounded-lg"
+                      style={{ 
+                        width: '100%', 
+                        padding: '0.5rem', 
+                        border: '1.5px solid #1C1C1C', 
+                        borderRadius: '8px', 
+                        backgroundColor: 'transparent', 
+                        color: '#1C1C1C', 
+                        fontFamily: 'Inter, sans-serif' 
+                      }}
                     />
                   </div>
                 </div>
@@ -2051,13 +2594,33 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                 <button 
                   onClick={guardarCalculo}
                   disabled={!numeroExpediente}
-                  className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 disabled:bg-gray-400"
+                  style={{ 
+                    backgroundColor: !numeroExpediente ? '#B0B0B0' : '#1C1C1C', 
+                    color: '#FFFFFF', 
+                    padding: '0.5rem 1.5rem', 
+                    borderRadius: '8px', 
+                    cursor: !numeroExpediente ? 'not-allowed' : 'pointer', 
+                    border: 'none', 
+                    fontFamily: 'Inter, sans-serif', 
+                    transition: 'all 0.3s ease' 
+                  }} 
+                  onMouseEnter={(e) => { 
+                    if (numeroExpediente) e.currentTarget.style.backgroundColor = '#C5A770'; 
+                  }} 
+                  onMouseLeave={(e) => { 
+                    if (numeroExpediente) e.currentTarget.style.backgroundColor = '#1C1C1C'; 
+                  }}
                 >
                   Guardar Cálculo
                 </button>
                 
                 {telefonoWhatsApp && (
-                  <p className="mt-2 text-sm text-gray-600">
+                  <p style={{ 
+                    marginTop: '0.5rem', 
+                    fontSize: '0.875rem', 
+                    color: '#3D3D3D', 
+                    fontFamily: 'Inter, sans-serif' 
+                  }}>
                     Recibirás recordatorios 3, 2 y 1 día antes del vencimiento, y el día del vencimiento.
                   </p>
                 )}
@@ -2068,14 +2631,46 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
         
         {/* Lista de cálculos guardados para litigantes */}
         {tipoUsuario === 'litigante' && calculos.length > 0 && (
-          <div className="mt-6 bg-white rounded-lg shadow p-6">
-            <h3 className="text-xl font-bold mb-4">Cálculos Guardados</h3>
+          <div style={{ 
+            marginTop: '1.5rem', 
+            backgroundColor: '#FFFFFF', 
+            borderRadius: '8px', 
+            padding: '1.5rem', 
+            border: '1.5px solid #1C1C1C' 
+          }}>
+            <h3 style={{ 
+              fontSize: '1.5rem', 
+              fontWeight: '700', 
+              marginBottom: '1rem', 
+              color: '#1C1C1C', 
+              fontFamily: 'Playfair Display, serif' 
+            }}>
+              Cálculos Guardados
+            </h3>
             <div className="space-y-2">
               {calculos.map((calc) => (
-                <div key={calc.id} className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                <div key={calc.id} style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center', 
+                  padding: '0.75rem', 
+                  backgroundColor: '#F4EFE8', 
+                  borderRadius: '8px', 
+                  marginBottom: '0.5rem' 
+                }}>
                   <div>
-                    <p className="font-semibold">Expediente: {calc.expediente}</p>
-                    <p className="text-sm text-gray-600">
+                    <p style={{ 
+                      fontWeight: '600', 
+                      color: '#1C1C1C', 
+                      fontFamily: 'Inter, sans-serif' 
+                    }}>
+                      Expediente: {calc.expediente}
+                    </p>
+                    <p style={{ 
+                      fontSize: '0.875rem', 
+                      color: '#3D3D3D', 
+                      fontFamily: 'Inter, sans-serif' 
+                    }}>
                       Vence: {new Date(calc.fechaVencimiento).toLocaleDateString()}
                     </p>
                   </div>
@@ -2086,7 +2681,17 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                         JSON.stringify(calculos.filter(c => c.id !== calc.id))
                       );
                     }}
-                    className="text-red-600 hover:text-red-800"
+                    style={{ 
+                      color: '#C5A770', 
+                      background: 'none', 
+                      border: 'none', 
+                      cursor: 'pointer', 
+                      fontSize: '0.875rem', 
+                      fontFamily: 'Inter, sans-serif', 
+                      transition: 'color 0.3s ease' 
+                    }} 
+                    onMouseEnter={(e) => e.currentTarget.style.color = '#1C1C1C'} 
+                    onMouseLeave={(e) => e.currentTarget.style.color = '#C5A770'}
                   >
                     Eliminar
                   </button>
