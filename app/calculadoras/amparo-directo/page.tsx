@@ -1830,7 +1830,7 @@ export default function Page() {
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               break;
             case 'boletin_jurisdiccional':
-            case 'estrados':
+            // case 'estrados':
             case 'lista':
               // Por Boletín Jurisdiccional, estrados o lista - artículo 82, fracción II
               textoSurte = 'el día siguiente de su publicación';
@@ -1858,7 +1858,7 @@ export default function Page() {
               fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles';
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               break;
-            case 'estrados':
+            // case 'estrados':
               // Por estrados
               textoSurte = 'al día siguiente de su publicación';
               fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles';
@@ -1927,7 +1927,7 @@ export default function Page() {
               textoSurte = 'al día siguiente de aquel en que se hubieren hecho';
               fundamentoSurte = 'Arts. 1068, fracc. II y 1075, párrafo 2° del Código de Comercio';
               break;
-            case 'estrados':
+            // case 'estrados':
               // Por estrados - Arts. 1068, fracc. III y 1075, párrafo 2°
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día siguiente de aquel en que se hubieren fijado';
@@ -1972,25 +1972,25 @@ export default function Page() {
               fundamentoSurte = 'artículo 38 de la Ley Federal de Procedimiento Administrativo';
               fechaSurte = fechaNotif;
               break;
-            case 'correo_certificado_acuse':
+            // case 'correo_certificado_acuse':
               // Por correo certificado con acuse de recibo - artículo 35, fracción II
               textoSurte = 'al día siguiente de la notificación';
               fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               break;
-            case 'mensajeria_acuse':
+            // case 'mensajeria_acuse':
               // Por mensajería, con acuse de recibo - artículo 35, fracción III
               textoSurte = 'al día siguiente de la notificación';
               fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               break;
-            case 'oficio':
+            // case 'oficio':
               // Por oficio - artículo 35, fracción II
               textoSurte = 'al día siguiente de la notificación';
               fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               break;
-            case 'estrados':
+            // case 'estrados':
               // Por estrados
               textoSurte = 'al día siguiente de la notificación';
               fundamentoSurte = 'artículo 321 del Código Federal de Procedimientos Civiles, aplicable supletoriamente conforme lo dispuesto en el artículo 2 de la Ley Federal de Procedimiento Administrativo';
@@ -2053,7 +2053,7 @@ export default function Page() {
               fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               break;
-            case 'estrados':
+            // case 'estrados':
               // Por estrados - artículo 134, fracción III
               textoSurte = 'al día hábil siguiente en que fueron hechas, en la inteligencia de que se tienen por hechas el decimoprimer día contado a partir del día siguiente a aquél en el que se hubiera publicado el documento';
               fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
@@ -2105,7 +2105,7 @@ export default function Page() {
               fundamentoSurte = 'artículo 747, fracción II de la Ley Federal del Trabajo';
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               break;
-            case 'estrados':
+            // case 'estrados':
               // Por estrados - artículo 739
               textoSurte = 'al día siguiente de su fijación';
               fundamentoSurte = 'artículo 747, fracción II de la Ley Federal del Trabajo';
@@ -2117,7 +2117,7 @@ export default function Page() {
               fundamentoSurte = 'artículo 747, fracción II de la Ley Federal del Trabajo';
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               break;
-            case 'oficio':
+            // case 'oficio':
               // Por oficio - artículo 739 Ter, fracción II - Solo para autoridades específicas
               textoSurte = 'el día y hora en que se practiquen';
               fundamentoSurte = 'artículo 747, fracción I de la Ley Federal del Trabajo';
@@ -2163,7 +2163,7 @@ export default function Page() {
               fundamentoSurte = 'artículo 747, fracción II, de la Ley Federal del Trabajo, de aplicación supletoria conforme a lo previsto en el artículo 11 de la Ley Federal de los Trabajadores al Servicio del Estado, Reglamentaria del Apartado B) del Artículo 123 Constitucional';
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               break;
-            case 'estrados':
+            // case 'estrados':
               // Por estrados - artículo 739 (supletorio) - Nota especial para litigantes
               textoSurte = 'al día siguiente de su fijación';
               fundamentoSurte = 'artículo 747, fracción II, de la Ley Federal del Trabajo, de aplicación supletoria conforme a lo previsto en el artículo 11 de la Ley Federal de los Trabajadores al Servicio del Estado, Reglamentaria del Apartado B) del Artículo 123 Constitucional';
@@ -2200,10 +2200,10 @@ export default function Page() {
                   textoSurte = 'el día en que hubieren sido realizadas';
                   fundamentoSurte = 'artículo 38 de la Ley Federal de Procedimiento Administrativo';
                   break;
-                case 'correo_certificado_acuse':
-                case 'mensajeria_acuse':
-                case 'oficio':
-                case 'estrados':
+                // case 'correo_certificado_acuse':
+                // case 'mensajeria_acuse':
+                // case 'oficio':
+                // case 'estrados':
                 case 'correo_ordinario':
                 case 'telegrama':
                 case 'medios_electronicos':
@@ -2424,7 +2424,7 @@ export default function Page() {
               fundamentoSurte = 'artículo 327 de la Ley de Navegación y Comercio Marítimos';
               break;
               
-            case 'estrados':
+            // case 'estrados':
               // Por estrados - artículo 287, segundo párrafo
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día siguiente';
@@ -2502,7 +2502,7 @@ export default function Page() {
               fundamentoSurte = 'artículo 9A, último párrafo, de la Ley Aduanera';
               break;
               
-            case 'estrados':
+            // case 'estrados':
               // Por estrados - artículo 9B - décimosexto día hábil contando como día 1 el de su publicación
               const fechaBaseEstrados = new Date(fechaNotif);
               let diasContadosEstrados = 1; // Empezamos contando el día de publicación como día 1
