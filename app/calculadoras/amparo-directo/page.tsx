@@ -2192,7 +2192,8 @@ export default function Page() {
               break;
             case 'otra_lfpa':
               // Usar las reglas de LFPA según formaNotificacionLFPA
-              const formaLFPA = formData.formaNotificacion;
+              // Temporalmente usar 'personal' como default
+              const formaLFPA = 'personal'; // formData.formaNotificacion;
               switch (formaLFPA) {
                 case 'personal':
                   fechaSurte = new Date(fechaNotif);
