@@ -1744,7 +1744,7 @@ export default function Page() {
         fundamentoSurte = getFundamentoSurtimientoEfectos(formData.formaNotificacion, parteRecurrente);
         
         // Calcular fecha que surte efectos
-        const esAutoridadTercero = parteRecurrente === 'autoridad' || parteRecurrente === 'tercero';
+        const esAutoridadTercero = (parteRecurrente as string) === 'autoridad' || (parteRecurrente as string) === 'tercero';
         fechaSurte = calcularFechaSurteEfectos(
           fechaNotif,
           formData.formaNotificacion,
