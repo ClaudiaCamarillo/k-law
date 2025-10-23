@@ -242,6 +242,30 @@ export default function CalculadorasPage() {
           >
             📖 Legislación
           </button>
+          <button
+            onClick={() => router.push('/jurisprudencia')}
+            className="px-5 py-2 transition-all duration-300"
+            style={{
+              backgroundColor: 'transparent',
+              color: '#1C1C1C',
+              fontWeight: '500',
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '0.875rem',
+              border: '1.5px solid #1C1C1C',
+              letterSpacing: '0.02em',
+              borderRadius: '30px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#1C1C1C';
+              e.currentTarget.style.color = '#F4EFE8';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = '#1C1C1C';
+            }}
+          >
+            🏛️ Jurisprudencia
+          </button>
         </div>
         
         {/* Plan Status */}
