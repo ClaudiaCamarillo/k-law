@@ -13,52 +13,67 @@ interface EndpointResult {
 }
 
 export class APIExplorer {
-  private baseURL = 'https://bicentenario.scjn.gob.mx'
-  private timeout = 8000
+  // URLs REALES confirmadas de la SCJN
+  private urlsReales = {
+    bicentenario: 'https://bicentenario.scjn.gob.mx',
+    datosAbiertos: 'https://bj.scjn.gob.mx/datos-abiertos', 
+    repositorioSJF: 'https://bicentenario.scjn.gob.mx/repositorio-scjn/sjf'
+  }
+  private timeout = 12000
 
   /**
-   * Explora múltiples endpoints posibles para descubrir la estructura de la API
+   * Explora TODAS las plataformas REALES confirmadas de la SCJN
    */
   async explorarAPI(): Promise<EndpointResult[]> {
-    console.log('🔍 Iniciando exploración de la API del Bicentenario...')
+    console.log('🔍 EXPLORANDO APIs REALES confirmadas de la SCJN...')
     
-    const posiblesEndpoints = [
-      '/api',
-      '/api/tesis',
-      '/api/sjf/tesis',
-      '/api/busqueda',
-      '/api/jurisprudencia',
-      '/tesis/buscar',
-      '/datos-abiertos/api',
-      '/repositorio/api',
-      '/api/v1',
-      '/api/v2',
-      '/sjf/api',
-      '/bicentenario/api',
-      '/consulta/api',
-      '/semanario/api',
-      '/api/semanario',
-      '/api/consulta'
-    ]
+    // Endpoints basados en la investigación oficial realizada
+    const endpointsPorPlataforma = {
+      // Bicentenario (Manual oficial confirma API)
+      bicentenario: [
+        '/api', '/api/sjf', '/api/tesis', '/api/search', '/api/count', '/api/list',
+        '/api/v1', '/api/v1/sjf', '/api/v1/tesis', '/services/api',
+        '/repositorio/api', '/datos/api'
+      ],
+      // Datos Abiertos (Plataforma oficial confirmada)
+      datosAbiertos: [
+        '/api', '/api/v1', '/api/sjf', '/api/search', '/api/jurisprudencia',
+        '/conjunto-datos', '/conjunto-datos/api', '/datasets/api',
+        '/open-data/api', '/api/datasets'
+      ],
+      // Repositorio SJF específico
+      repositorioSJF: [
+        '/api', '/datos', '/tesis', '/search', '/consulta',
+        '/api/tesis', '/api/search', '/api/count'
+      ]
+    }
 
     const resultados: EndpointResult[] = []
 
-    for (const endpoint of posiblesEndpoints) {
-      try {
-        console.log(`🔎 Probando: ${this.baseURL}${endpoint}`)
-        
-        const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), this.timeout)
+    // Explorar cada plataforma real
+    for (const [plataforma, endpoints] of Object.entries(endpointsPorPlataforma)) {
+      const baseURL = this.urlsReales[plataforma as keyof typeof this.urlsReales]
+      console.log(`\n🏛️ EXPLORANDO ${plataforma.toUpperCase()}: ${baseURL}`)
+      
+      for (const endpoint of endpoints) {
+        try {
+          const url = baseURL + endpoint
+          console.log(`🔎 Probando: ${url}`)
+          
+          const controller = new AbortController()
+          const timeoutId = setTimeout(() => controller.abort(), this.timeout)
 
-        const response = await fetch(this.baseURL + endpoint, {
-          method: 'GET',
-          signal: controller.signal,
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'User-Agent': 'K-LAW-Explorer/1.0'
-          }
-        })
+          const response = await fetch(url, {
+            method: 'GET',
+            signal: controller.signal,
+            headers: {
+              'Accept': 'application/json, text/html, */*',
+              'Content-Type': 'application/json',
+              'User-Agent': 'K-LAW-Explorer/2.0 (APIs-Reales)',
+              'Cache-Control': 'no-cache'
+            },
+            mode: 'cors'
+          })
 
         clearTimeout(timeoutId)
 
@@ -69,8 +84,15 @@ export class APIExplorer {
           headers: this.extractHeaders(response)
         }
 
+        const result: EndpointResult = {
+          endpoint: `${plataforma}${endpoint}`,
+          status: response.status,
+          success: response.ok,
+          headers: this.extractHeaders(response)
+        }
+
         if (response.ok) {
-          console.log(`✅ ${endpoint}: ${response.status} - OK`)
+          console.log(`✅ ${plataforma}${endpoint}: ${response.status} - OK`)
           
           const contentType = response.headers.get('content-type') || ''
           
@@ -78,36 +100,45 @@ export class APIExplorer {
             try {
               const data = await response.json()
               result.data = data
-              console.log(`📄 Estructura encontrada en ${endpoint}:`, data)
+              console.log(`📊 JSON encontrado en ${plataforma}${endpoint}:`, Object.keys(data || {}))
+              
+              // Analizar si parece API de tesis/jurisprudencia
+              if (this.esAPIRelevante(data)) {
+                console.log(`🎯 ¡API RELEVANTE encontrada en ${plataforma}${endpoint}!`)
+              }
             } catch (jsonError) {
-              result.error = 'Respuesta no es JSON válido'
+              result.error = 'JSON inválido'
             }
           } else if (contentType.includes('text/html')) {
             const text = await response.text()
-            result.data = text.substring(0, 500) + '...' // Primeros 500 caracteres
-            console.log(`📄 Respuesta HTML en ${endpoint} (${text.length} caracteres)`)
+            result.data = text.substring(0, 300) + '...'
+            console.log(`📄 HTML en ${plataforma}${endpoint} (${text.length} chars)`)
           } else {
-            result.data = `Tipo de contenido: ${contentType}`
+            result.data = `Tipo: ${contentType}`
           }
         } else {
-          console.log(`❌ ${endpoint}: ${response.status} - ${response.statusText}`)
+          console.log(`❌ ${plataforma}${endpoint}: ${response.status}`)
           result.error = response.statusText
         }
 
         resultados.push(result)
 
-      } catch (error) {
-        console.log(`❌ ${endpoint}: Error - ${error}`)
-        resultados.push({
-          endpoint,
-          status: 0,
-          success: false,
-          error: error instanceof Error ? error.message : 'Error desconocido'
-        })
-      }
+        } catch (error) {
+          console.log(`❌ ${plataforma}${endpoint}: ${error instanceof Error ? error.message : 'Error'}`)
+          resultados.push({
+            endpoint: `${plataforma}${endpoint}`,
+            status: 0,
+            success: false,
+            error: error instanceof Error ? error.message : 'Error desconocido'
+          })
+        }
 
-      // Pequeña pausa para no sobrecargar el servidor
-      await this.sleep(200)
+        // Pausa entre requests para ser respetuosos
+        await this.sleep(400)
+      }
+      
+      // Pausa más larga entre plataformas
+      await this.sleep(1000)
     }
 
     console.log('🏁 Exploración completada')
@@ -115,72 +146,103 @@ export class APIExplorer {
   }
 
   /**
-   * Prueba endpoints específicos de búsqueda con parámetros
+   * Prueba búsquedas REALES en las plataformas confirmadas
    */
   async probarBusquedas(): Promise<EndpointResult[]> {
-    console.log('🔍 Probando endpoints de búsqueda...')
+    console.log('🔍 PROBANDO BÚSQUEDAS en APIs reales...')
     
-    const endpointsBusqueda = [
-      { url: '/api/tesis?q=amparo', desc: 'Búsqueda simple' },
-      { url: '/api/buscar?texto=amparo', desc: 'Búsqueda con texto' },
-      { url: '/api/sjf/buscar?consulta=amparo', desc: 'Búsqueda SJF' },
-      { url: '/tesis/buscar?query=amparo', desc: 'Búsqueda directa' },
-      { url: '/api/tesis/buscar?q=amparo&formato=json', desc: 'Con formato JSON' },
-      { url: '/datos-abiertos/api/tesis?search=amparo', desc: 'Datos abiertos' }
-    ]
+    const busquedasPorPlataforma = {
+      bicentenario: [
+        { path: '/api/sjf/search?q=amparo&format=json', desc: 'SJF Search JSON' },
+        { path: '/api/tesis?query=amparo&formato=json', desc: 'Tesis Query' },
+        { path: '/api/search?texto=amparo&materia=amparo', desc: 'Search General' },
+        { path: '/api/v1/sjf?search=amparo&type=jurisprudencia', desc: 'API v1 SJF' }
+      ],
+      datosAbiertos: [
+        { path: '/api/search?q=amparo&dataset=sjf', desc: 'Datos Abiertos Search' },
+        { path: '/api/jurisprudencia?consulta=amparo', desc: 'Jurisprudencia API' },
+        { path: '/conjunto-datos/sjf?search=amparo', desc: 'Conjunto Datos SJF' },
+        { path: '/api/v1/datasets?query=amparo', desc: 'Datasets API' }
+      ],
+      repositorioSJF: [
+        { path: '/api/search?texto=amparo&tipo=tesis', desc: 'Repositorio Search' },
+        { path: '/api/tesis?q=amparo&limit=10', desc: 'Tesis API' },
+        { path: '/search?consulta=amparo&formato=json', desc: 'Search JSON' }
+      ]
+    }
 
     const resultados: EndpointResult[] = []
 
-    for (const { url, desc } of endpointsBusqueda) {
-      try {
-        console.log(`🔎 Probando búsqueda: ${desc} - ${this.baseURL}${url}`)
-        
-        const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), this.timeout)
+    for (const [plataforma, busquedas] of Object.entries(busquedasPorPlataforma)) {
+      const baseURL = this.urlsReales[plataforma as keyof typeof this.urlsReales]
+      console.log(`\n🔍 BÚSQUEDAS en ${plataforma.toUpperCase()}: ${baseURL}`)
+      
+      for (const { path, desc } of busquedas) {
+        try {
+          const url = baseURL + path
+          console.log(`🎯 ${desc}: ${url}`)
+          
+          const controller = new AbortController()
+          const timeoutId = setTimeout(() => controller.abort(), this.timeout)
 
-        const response = await fetch(this.baseURL + url, {
-          signal: controller.signal,
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        })
+          const response = await fetch(url, {
+            signal: controller.signal,
+            headers: {
+              'Accept': 'application/json, */*',
+              'Content-Type': 'application/json',
+              'User-Agent': 'K-LAW-Search/1.0'
+            },
+            mode: 'cors'
+          })
 
         clearTimeout(timeoutId)
 
-        const result: EndpointResult = {
-          endpoint: `${url} (${desc})`,
-          status: response.status,
-          success: response.ok
-        }
+          clearTimeout(timeoutId)
 
-        if (response.ok) {
-          console.log(`✅ ${desc}: ${response.status}`)
-          try {
-            const data = await response.json()
-            result.data = data
-            console.log(`📊 Resultados de búsqueda:`, data)
-          } catch {
-            result.data = await response.text()
+          const result: EndpointResult = {
+            endpoint: `${plataforma}: ${desc}`,
+            status: response.status,
+            success: response.ok
           }
-        } else {
-          console.log(`❌ ${desc}: ${response.status}`)
-          result.error = response.statusText
+
+          if (response.ok) {
+            console.log(`✅ ${desc}: ${response.status}`)
+            try {
+              const data = await response.json()
+              result.data = data
+              
+              // Analizar si encontramos datos de tesis
+              const cantidadTesis = this.contarTesis(data)
+              if (cantidadTesis > 0) {
+                console.log(`🎉 ¡TESIS ENCONTRADAS! ${cantidadTesis} resultados en ${desc}`)
+              }
+              
+              console.log(`📊 Estructura de respuesta:`, Object.keys(data || {}))
+            } catch {
+              const text = await response.text()
+              result.data = text.substring(0, 200) + '...'
+            }
+          } else {
+            console.log(`❌ ${desc}: ${response.status}`)
+            result.error = response.statusText
+          }
+
+          resultados.push(result)
+
+        } catch (error) {
+          console.log(`❌ ${desc}: ${error instanceof Error ? error.message : 'Error'}`)
+          resultados.push({
+            endpoint: `${plataforma}: ${desc}`,
+            status: 0,
+            success: false,
+            error: error instanceof Error ? error.message : 'Error desconocido'
+          })
         }
 
-        resultados.push(result)
-
-      } catch (error) {
-        console.log(`❌ ${desc}: Error`)
-        resultados.push({
-          endpoint: `${url} (${desc})`,
-          status: 0,
-          success: false,
-          error: error instanceof Error ? error.message : 'Error desconocido'
-        })
+        await this.sleep(500)
       }
-
-      await this.sleep(300)
+      
+      await this.sleep(1500) // Pausa entre plataformas
     }
 
     return resultados
@@ -266,6 +328,48 @@ ${exitosos.filter(r => typeof r.data === 'object').map(r =>
 
   private sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms))
+  }
+
+  /**
+   * Analiza si una respuesta parece ser de una API relevante de tesis
+   */
+  private esAPIRelevante(data: any): boolean {
+    if (!data || typeof data !== 'object') return false
+    
+    const campos = Object.keys(data).join(' ').toLowerCase()
+    const palabrasClave = [
+      'tesis', 'jurisprudencia', 'precedente', 'sjf', 'semanario',
+      'amparo', 'tribunal', 'corte', 'sentencia', 'registro'
+    ]
+    
+    return palabrasClave.some(palabra => campos.includes(palabra))
+  }
+
+  /**
+   * Cuenta cuántas tesis hay en una respuesta
+   */
+  private contarTesis(data: any): number {
+    if (!data) return 0
+    
+    // Buscar arrays que podrían contener tesis
+    const posiblesArrays = [
+      data.resultados, data.results, data.tesis, data.data, 
+      data.items, data.documents, data.entries
+    ]
+    
+    for (const array of posiblesArrays) {
+      if (Array.isArray(array)) {
+        return array.length
+      }
+    }
+    
+    // Si la respuesta misma es un array
+    if (Array.isArray(data)) {
+      return data.length
+    }
+    
+    // Buscar campos de conteo
+    return data.total || data.count || data.totalResults || 0
   }
 }
 
