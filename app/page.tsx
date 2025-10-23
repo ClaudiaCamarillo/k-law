@@ -11,14 +11,22 @@ export default function Home() {
   const router = useRouter()
 
   const seleccionarPlan = async (plan: 'free' | 'premium') => {
-    // Guardar el plan seleccionado
-    localStorage.setItem('userPlan', plan)
-    
-    // TEMPORALMENTE DESACTIVADO: Redirigir a Auth0 para registro/login
-    // window.location.href = `/api/auth/login?returnTo=/seleccionar-usuario?plan=${plan}`
-    
-    // ACCESO DIRECTO TEMPORAL para validación
-    router.push('/calculadoras')
+    try {
+      // Guardar el plan seleccionado (solo en el cliente)
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('userPlan', plan)
+      }
+      
+      // TEMPORALMENTE DESACTIVADO: Redirigir a Auth0 para registro/login
+      // window.location.href = `/api/auth/login?returnTo=/seleccionar-usuario?plan=${plan}`
+      
+      // ACCESO DIRECTO TEMPORAL para validación
+      router.push('/calculadoras')
+    } catch (error) {
+      console.error('Error al seleccionar plan:', error)
+      // Redirigir directamente si hay error
+      router.push('/calculadoras')
+    }
   }
 
   return (
@@ -207,8 +215,11 @@ export default function Home() {
                 </div>
 
                 <button
-                  onClick={() => seleccionarPlan('free')}
-                  className="w-full py-2 rounded-full transition-all duration-300 transform hover:scale-[1.02]"
+                  onClick={() => {
+                    console.log('Botón Gratis clickeado')
+                    seleccionarPlan('free')
+                  }}
+                  className="w-full py-3 rounded-full transition-all duration-300 transform hover:scale-[1.02] cursor-pointer"
                   style={{ 
                     backgroundColor: 'transparent',
                     border: '1.5px solid #1C1C1C',
@@ -333,8 +344,11 @@ export default function Home() {
                 </div>
 
                 <button
-                  onClick={() => seleccionarPlan('premium')}
-                  className="w-full py-2 rounded-full transition-all duration-300 transform hover:scale-[1.02]"
+                  onClick={() => {
+                    console.log('Botón Premium clickeado')
+                    seleccionarPlan('premium')
+                  }}
+                  className="w-full py-3 rounded-full transition-all duration-300 transform hover:scale-[1.02] cursor-pointer"
                   style={{ 
                     backgroundColor: '#C5A770',
                     border: '1.5px solid #C5A770',
