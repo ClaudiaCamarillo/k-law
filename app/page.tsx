@@ -14,9 +14,11 @@ export default function Home() {
     // Guardar el plan seleccionado
     localStorage.setItem('userPlan', plan)
     
-    // Redirigir a Auth0 para registro/login
-    // Ambos planes (free y premium) requieren autenticación
-    window.location.href = `/api/auth/login?returnTo=/seleccionar-usuario?plan=${plan}`
+    // TEMPORALMENTE DESACTIVADO: Redirigir a Auth0 para registro/login
+    // window.location.href = `/api/auth/login?returnTo=/seleccionar-usuario?plan=${plan}`
+    
+    // ACCESO DIRECTO TEMPORAL para validación
+    router.push('/calculadoras')
   }
 
   return (

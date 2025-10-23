@@ -8,7 +8,12 @@ import { loadStripe } from '@stripe/stripe-js'
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
 export default function PerfilPage() {
-  const { user, error, isLoading } = useUser()
+  // TEMPORALMENTE DESACTIVADO: Auth0
+  // const { user, error, isLoading } = useUser()
+  const user = { name: 'Usuario Demo', email: 'demo@k-law.com' } // Usuario temporal para validación
+  const error = null
+  const isLoading = false
+  
   const router = useRouter()
   const [currentPlan, setCurrentPlan] = useState<string>('free')
   const [userType, setUserType] = useState<string>('')

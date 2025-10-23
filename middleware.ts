@@ -4,6 +4,11 @@ import { withMiddlewareAuthRequired } from '@auth0/nextjs-auth0/edge'
 export default async function middleware(request: NextRequest) {
   const url = new URL(request.url)
   
+  // TEMPORALMENTE DESACTIVADO: Permitir acceso total para validación
+  // TODO: Reactivar autenticación después de la validación
+  return NextResponse.next()
+  
+  /* CÓDIGO DE AUTENTICACIÓN TEMPORALMENTE COMENTADO
   // Permitir acceso a páginas públicas sin autenticación
   if (url.pathname === '/demo' || 
       url.pathname === '/api/activate-demo' || 
@@ -22,6 +27,7 @@ export default async function middleware(request: NextRequest) {
   // Si no es demo, usar Auth0 normal
   const authMiddleware = withMiddlewareAuthRequired()
   return authMiddleware(request)
+  */
 }
 
 export const config = {
