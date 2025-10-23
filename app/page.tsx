@@ -20,7 +20,7 @@ export default function Home() {
   }
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: '#F4EFE8' }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#F4EFE8' }}>
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
       `}</style>
@@ -155,7 +155,7 @@ export default function Home() {
                         fontWeight: '700',
                         color: '#1C1C1C'
                       }}>$0</span>
-                      <span className="text-sm" style={{ 
+                      <span className="text-xs md:text-sm" style={{ 
                         fontFamily: 'Inter, sans-serif',
                         color: '#3D3D3D',
                         fontWeight: '300'
@@ -177,7 +177,7 @@ export default function Home() {
                         <circle cx="10" cy="10" r="10" fill="#F4EFE8"/>
                         <path d="M14 7L8.5 12.5L6 10" stroke="#1C1C1C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
-                      <span className="text-sm" style={{ 
+                      <span className="text-xs md:text-sm" style={{ 
                         fontFamily: 'Inter, sans-serif',
                         color: '#1C1C1C',
                         fontWeight: '400'
@@ -188,7 +188,7 @@ export default function Home() {
                         <circle cx="10" cy="10" r="10" fill="#F4EFE8"/>
                         <path d="M14 7L8.5 12.5L6 10" stroke="#1C1C1C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
-                      <span className="text-sm" style={{ 
+                      <span className="text-xs md:text-sm" style={{ 
                         fontFamily: 'Inter, sans-serif',
                         color: '#1C1C1C',
                         fontWeight: '400'
@@ -199,7 +199,7 @@ export default function Home() {
                         <circle cx="10" cy="10" r="10" fill="#F4EFE8"/>
                         <path d="M8 8L12 12M12 8L8 12" stroke="#3D3D3D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
-                      <span className="text-sm" style={{ 
+                      <span className="text-xs md:text-sm" style={{ 
                         fontFamily: 'Inter, sans-serif',
                         color: '#3D3D3D',
                         fontWeight: '300'
@@ -270,7 +270,7 @@ export default function Home() {
                         fontWeight: '700',
                         color: '#1C1C1C'
                       }}>$299</span>
-                      <span className="text-sm" style={{ 
+                      <span className="text-xs md:text-sm" style={{ 
                         fontFamily: 'Inter, sans-serif',
                         color: '#3D3D3D',
                         fontWeight: '300'
@@ -292,7 +292,7 @@ export default function Home() {
                         <circle cx="10" cy="10" r="10" fill="#F4EFE8"/>
                         <path d="M14 7L8.5 12.5L6 10" stroke="#C5A770" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
-                      <span className="text-sm" style={{ 
+                      <span className="text-xs md:text-sm" style={{ 
                         fontFamily: 'Inter, sans-serif',
                         color: '#1C1C1C',
                         fontWeight: '400'
@@ -303,7 +303,7 @@ export default function Home() {
                         <circle cx="10" cy="10" r="10" fill="#F4EFE8"/>
                         <path d="M14 7L8.5 12.5L6 10" stroke="#C5A770" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
-                      <span className="text-sm" style={{ 
+                      <span className="text-xs md:text-sm" style={{ 
                         fontFamily: 'Inter, sans-serif',
                         color: '#1C1C1C',
                         fontWeight: '400'
@@ -314,7 +314,7 @@ export default function Home() {
                         <circle cx="10" cy="10" r="10" fill="#F4EFE8"/>
                         <path d="M14 7L8.5 12.5L6 10" stroke="#C5A770" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
-                      <span className="text-sm" style={{ 
+                      <span className="text-xs md:text-sm" style={{ 
                         fontFamily: 'Inter, sans-serif',
                         color: '#1C1C1C',
                         fontWeight: '400'
@@ -325,7 +325,7 @@ export default function Home() {
                         <circle cx="10" cy="10" r="10" fill="#F4EFE8"/>
                         <path d="M14 7L8.5 12.5L6 10" stroke="#C5A770" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
-                      <span className="text-sm" style={{ 
+                      <span className="text-xs md:text-sm" style={{ 
                         fontFamily: 'Inter, sans-serif',
                         color: '#1C1C1C',
                         fontWeight: '400'

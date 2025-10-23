@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API SCJN - K-LAW</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #F4EFE8;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            color: #1C1C1C;
+            margin-bottom: 0.5rem;
+        }
+        .search-box {
+            margin-bottom: 2rem;
+        }
+        .search-box input {
+            width: 70%;
+            padding: 12px;
+            border: 2px solid #C5A770;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .search-box button {
+            padding: 12px 20px;
+            background: #C5A770;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+        .results {
+            margin-top: 2rem;
+        }
+        .tesis {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .logs {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 1rem;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 2rem;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        .status.info { background: #d1ecf1; color: #0c5460; }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.warning { background: #fff3cd; color: #856404; }
+        .status.error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏛️ Test API SCJN Real</h1>
+            <p>Probando APIs reales actualizadas de K-LAW</p>
+        </div>
+
+        <div id="status" class="status info">
+            ⏳ Listo para probar...
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Buscar jurisprudencia (ej: amparo)" value="amparo">
+            <button onclick="buscarJurisprudencia()">🔍 Buscar</button>
+            <button onclick="explorarAPIs()">🔧 Explorar APIs</button>
+        </div>
+
+        <div id="results" class="results"></div>
+        
+        <div id="logs" class="logs">
+            <div>📋 Logs del sistema:</div>
+        </div>
+    </div>
+
+    <script>
+        // URLs REALES confirmadas de la SCJN
+        const urlsReales = {
+            bicentenario: 'https://bicentenario.scjn.gob.mx',
+            datosAbiertos: 'https://bj.scjn.gob.mx/datos-abiertos',
+            repositorioSJF: 'https://bicentenario.scjn.gob.mx/repositorio-scjn/sjf'
+        };
+
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = {
+                'info': '#00ff00',
+                'success': '#00ff00',
+                'warning': '#ffff00',
+                'error': '#ff0000'
+            }[type] || '#00ff00';
+            
+            logs.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function updateStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        async function explorarAPIs() {
+            updateStatus('🔍 Explorando APIs reales de la SCJN...', 'info');
+            log('🚀 INICIANDO EXPLORACIÓN DE APIs REALES');
+            
+            const endpoints = [
+                // Bicentenario
+                { base: urlsReales.bicentenario, path: '/api' },
+                { base: urlsReales.bicentenario, path: '/api/sjf' },
+                { base: urlsReales.bicentenario, path: '/api/tesis' },
+                { base: urlsReales.bicentenario, path: '/repositorio/api' },
+                
+                // Datos Abiertos
+                { base: urlsReales.datosAbiertos, path: '/api' },
+                { base: urlsReales.datosAbiertos, path: '/conjunto-datos' },
+                { base: urlsReales.datosAbiertos, path: '/api/sjf' },
+                
+                // Repositorio SJF
+                { base: urlsReales.repositorioSJF, path: '/api' },
+                { base: urlsReales.repositorioSJF, path: '/datos' }
+            ];
+
+            let endpointsEncontrados = 0;
+
+            for (const { base, path } of endpoints) {
+                try {
+                    const url = base + path;
+                    log(`🔎 Probando: ${url}`);
+                    
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json, text/html, */*',
+                            'User-Agent': 'K-LAW-Test/1.0'
+                        },
+                        mode: 'cors'
+                    });
+
+                    if (response.ok) {
+                        log(`✅ ENCONTRADO: ${url} (${response.status})`, 'success');
+                        endpointsEncontrados++;
+                        
+                        const contentType = response.headers.get('content-type') || '';
+                        if (contentType.includes('application/json')) {
+                            try {
+                                const data = await response.json();
+                                log(`📊 JSON: ${Object.keys(data).join(', ')}`);
+                            } catch (e) {
+                                log(`📄 Respuesta JSON inválida`);
+                            }
+                        }
+                    } else {
+                        log(`❌ ${url}: ${response.status}`, 'warning');
+                    }
+                } catch (error) {
+                    log(`⚠️ Error ${base}${path}: ${error.message}`, 'error');
+                }
+                
+                // Pausa entre requests
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+
+            if (endpointsEncontrados > 0) {
+                updateStatus(`✅ Exploración completada: ${endpointsEncontrados} endpoints encontrados`, 'success');
+                log(`🎉 EXPLORACIÓN COMPLETADA: ${endpointsEncontrados} endpoints activos`, 'success');
+            } else {
+                updateStatus('⚠️ No se encontraron endpoints activos', 'warning');
+                log('⚠️ Ningún endpoint respondió - posibles restricciones CORS', 'warning');
+            }
+        }
+
+        async function buscarJurisprudencia() {
+            const searchTerm = document.getElementById('searchInput').value;
+            if (!searchTerm) {
+                updateStatus('❌ Ingresa un término de búsqueda', 'error');
+                return;
+            }
+
+            updateStatus(`🔍 Buscando "${searchTerm}" en APIs reales...`, 'info');
+            log(`🎯 BÚSQUEDA INICIADA: "${searchTerm}"`);
+
+            const resultados = document.getElementById('results');
+            resultados.innerHTML = '<p>⏳ Buscando en APIs reales de la SCJN...</p>';
+
+            // Intentar APIs reales primero
+            const busquedas = [
+                // Bicentenario
+                { url: `${urlsReales.bicentenario}/api/sjf/search?q=${encodeURIComponent(searchTerm)}&format=json`, desc: 'Bicentenario SJF' },
+                { url: `${urlsReales.bicentenario}/api/tesis?query=${encodeURIComponent(searchTerm)}&formato=json`, desc: 'Bicentenario Tesis' },
+                
+                // Datos Abiertos
+                { url: `${urlsReales.datosAbiertos}/api/search?q=${encodeURIComponent(searchTerm)}&dataset=sjf`, desc: 'Datos Abiertos' },
+                { url: `${urlsReales.datosAbiertos}/api/jurisprudencia?consulta=${encodeURIComponent(searchTerm)}`, desc: 'Jurisprudencia API' },
+                
+                // Repositorio
+                { url: `${urlsReales.repositorioSJF}/api/search?texto=${encodeURIComponent(searchTerm)}`, desc: 'Repositorio SJF' }
+            ];
+
+            let encontroResultados = false;
+
+            for (const { url, desc } of busquedas) {
+                try {
+                    log(`🔎 Probando ${desc}: ${url}`);
+                    
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        mode: 'cors'
+                    });
+
+                    if (response.ok) {
+                        log(`✅ ${desc} respondió: ${response.status}`, 'success');
+                        
+                        const data = await response.json();
+                        
+                        // Analizar si tiene datos de tesis
+                        const tesis = data.resultados || data.results || data.tesis || data.data || [];
+                        
+                        if (Array.isArray(tesis) && tesis.length > 0) {
+                            log(`🎉 ENCONTRADAS ${tesis.length} tesis en ${desc}!`, 'success');
+                            mostrarResultados(tesis, desc);
+                            encontroResultados = true;
+                            break;
+                        } else if (Array.isArray(data) && data.length > 0) {
+                            log(`🎉 ENCONTRADAS ${data.length} tesis directas en ${desc}!`, 'success');
+                            mostrarResultados(data, desc);
+                            encontroResultados = true;
+                            break;
+                        } else {
+                            log(`📄 ${desc} respondió pero sin tesis`);
+                        }
+                    } else {
+                        log(`❌ ${desc}: ${response.status}`, 'warning');
+                    }
+                } catch (error) {
+                    log(`⚠️ Error en ${desc}: ${error.message}`, 'error');
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+
+            if (!encontroResultados) {
+                log('⚠️ APIs reales no disponibles, usando datos de ejemplo', 'warning');
+                updateStatus('⚠️ APIs no disponibles, mostrando datos de ejemplo', 'warning');
+                mostrarDatosEjemplo(searchTerm);
+            }
+        }
+
+        function mostrarResultados(tesis, fuente) {
+            updateStatus(`✅ Encontradas ${tesis.length} tesis desde ${fuente}`, 'success');
+            
+            const resultados = document.getElementById('results');
+            resultados.innerHTML = `
+                <h3>📊 Resultados desde ${fuente} (${tesis.length} tesis)</h3>
+                ${tesis.map((t, i) => `
+                    <div class="tesis">
+                        <h4>${t.rubro || t.titulo || t.title || `Tesis ${i+1}`}</h4>
+                        <p><strong>Tipo:</strong> ${t.tipo || t.type || 'No especificado'}</p>
+                        <p><strong>Texto:</strong> ${(t.texto || t.contenido || t.content || 'Sin contenido').substring(0, 200)}...</p>
+                        <p><strong>Materia:</strong> ${t.materia || t.subject || 'No especificada'}</p>
+                        <p><strong>Fuente:</strong> API Real de la SCJN (${fuente})</p>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function mostrarDatosEjemplo(termino) {
+            const tesisEjemplo = [
+                {
+                    rubro: 'AMPARO DIRECTO. CÓMPUTO DEL TÉRMINO DE QUINCE DÍAS PARA SU INTERPOSICIÓN',
+                    texto: 'El término de quince días para interponer la demanda de amparo directo debe computarse a partir del día siguiente al en que haya surtido efectos la notificación de la resolución que se reclama...',
+                    tipo: 'jurisprudencia',
+                    materia: 'común',
+                    numero_tesis: '1a./J. 45/2023'
+                },
+                {
+                    rubro: 'DEMANDA DE AMPARO. REQUISITOS DE PROCEDIBILIDAD',
+                    texto: 'Para la procedencia de la demanda de amparo es necesario que se cumplan los requisitos establecidos en los artículos 107 y 108 de la Ley de Amparo...',
+                    tipo: 'aislada',
+                    materia: 'común', 
+                    numero_tesis: '1a. 234/2023'
+                }
+            ];
+
+            const filtradas = tesisEjemplo.filter(t => 
+                t.rubro.toLowerCase().includes(termino.toLowerCase()) ||
+                t.texto.toLowerCase().includes(termino.toLowerCase())
+            );
+
+            const resultados = document.getElementById('results');
+            resultados.innerHTML = `
+                <h3>📋 Datos de Ejemplo (${filtradas.length} tesis)</h3>
+                <p style="color: #856404; background: #fff3cd; padding: 10px; border-radius: 5px;">
+                    ⚠️ Las APIs reales no están disponibles temporalmente. Mostrando datos de ejemplo para demostrar funcionalidad.
+                </p>
+                ${filtradas.map(t => `
+                    <div class="tesis">
+                        <h4>${t.rubro}</h4>
+                        <p><strong>Tipo:</strong> ${t.tipo}</p>
+                        <p><strong>Texto:</strong> ${t.texto.substring(0, 200)}...</p>
+                        <p><strong>Materia:</strong> ${t.materia}</p>
+                        <p><strong>Tesis:</strong> ${t.numero_tesis}</p>
+                        <p><strong>Fuente:</strong> Datos de ejemplo de K-LAW</p>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // Mensaje inicial
+        log('🚀 Sistema de prueba K-LAW iniciado');
+        log('📋 URLs reales configuradas:');
+        Object.entries(urlsReales).forEach(([nombre, url]) => {
+            log(`   ${nombre}: ${url}`);
+        });
+        log('✨ Listo para probar las APIs reales de la SCJN');
+    </script>
+</body>
+</html>

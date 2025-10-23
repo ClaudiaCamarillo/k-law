@@ -4,8 +4,11 @@ import { withMiddlewareAuthRequired } from '@auth0/nextjs-auth0/edge'
 export default async function middleware(request: NextRequest) {
   const url = new URL(request.url)
   
-  // Permitir acceso a la página de demo sin autenticación
-  if (url.pathname === '/demo' || url.pathname === '/api/activate-demo') {
+  // Permitir acceso a páginas públicas sin autenticación
+  if (url.pathname === '/demo' || 
+      url.pathname === '/api/activate-demo' || 
+      url.pathname === '/jurisprudencia' ||
+      url.pathname.startsWith('/jurisprudencia/')) {
     return NextResponse.next()
   }
   
@@ -24,6 +27,7 @@ export default async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/calculadoras/:path*',
+    '/jurisprudencia/:path*',
     '/seleccionar-usuario',
     '/api/analizar-ley',
     '/api/create-checkout-session',
