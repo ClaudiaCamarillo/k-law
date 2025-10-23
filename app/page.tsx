@@ -65,9 +65,13 @@ export default function Home() {
             <img 
               src="/LOGO-KLAW.gif" 
               alt="K-LAW Logo" 
-              className="mx-auto w-auto h-auto max-w-[160px] max-h-[60px] sm:max-w-[200px] sm:max-h-[75px] md:max-w-[250px] md:max-h-[95px] lg:max-w-[300px] lg:max-h-[115px]"
+              className="mx-auto"
               style={{ 
                 display: 'block',
+                width: 'auto',
+                height: 'auto',
+                maxWidth: '640px',
+                maxHeight: '240px',
                 position: 'relative',
                 zIndex: 20
               }}
