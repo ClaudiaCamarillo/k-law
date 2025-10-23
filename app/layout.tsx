@@ -29,9 +29,9 @@ export const metadata: Metadata = {
 
 export const viewport = {
   width: 'device-width',
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  initialScale: 0.3,
+  maximumScale: 2.0,
+  userScalable: true,
   viewportFit: 'cover',
   themeColor: '#F4EFE8'
 };
@@ -46,7 +46,7 @@ export default function RootLayout({
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=1024, user-scalable=yes" />
+        <meta name="viewport" content="width=device-width, initial-scale=0.3, maximum-scale=2.0, user-scalable=yes" />
         <meta name="HandheldFriendly" content="true" />
         <meta name="MobileOptimized" content="320" />
       </head>
