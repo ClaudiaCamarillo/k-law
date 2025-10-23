@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import "./mobile-force.css";
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 
 const inter = Inter({
