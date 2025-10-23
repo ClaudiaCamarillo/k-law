@@ -310,8 +310,8 @@ export default function CalculadorasPage() {
       </div>
 
       {/* Calculators Grid */}
-      <div className="flex-1 px-3 md:px-6 pb-8" style={{ position: 'relative', zIndex: 5 }}>
-        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+      <div className="flex-1 px-2 pb-4" style={{ position: 'relative', zIndex: 5 }}>
+        <div className="max-w-none mx-auto grid grid-cols-7 gap-2">
           {calculadoras.map((calc) => (
             <button
               key={calc.id}
