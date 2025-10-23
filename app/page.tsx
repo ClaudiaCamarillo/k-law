@@ -38,17 +38,17 @@ export default function Home() {
       {/* Golden Strip */}
       <div style={{ 
         backgroundColor: '#C5A770', 
-        height: '80px',
+        height: '120px',
         width: '100%',
         position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
         zIndex: 1
-      }} className="md:h-[120px]" />
+      }} />
       
       {/* Elegant Header */}
-      <div className="relative py-2 md:py-8 px-4" style={{ zIndex: 2 }}>
+      <div className="relative py-4 md:py-8" style={{ zIndex: 2 }}>
         {/* Subtle pattern overlay */}
         <div style={{
           position: 'absolute',
@@ -60,8 +60,8 @@ export default function Home() {
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231C1C1C' fill-opacity='1'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`
         }} />
         
-        <div className="relative text-center px-2 md:px-6" style={{ paddingTop: '10px', zIndex: 10, position: 'relative' }}>
-          <div className="mb-2" style={{ marginTop: '-20px' }}>
+        <div className="relative text-center px-6" style={{ paddingTop: '0px', zIndex: 10, position: 'relative' }}>
+          <div className="mb-2" style={{ marginTop: '-50px' }}>
             <img 
               src="/LOGO-KLAW.gif" 
               alt="K-LAW Logo" 
