@@ -5,10 +5,28 @@
 @tailwind utilities;
 
 @layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+  
   body {
     font-family: 'Inter', sans-serif;
     background: linear-gradient(180deg, #1e3a5f 0%, #0f1f33 100%);
     min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+  }
+  
+  img {
+    max-width: 100%;
+    height: auto;
   }
 }
 

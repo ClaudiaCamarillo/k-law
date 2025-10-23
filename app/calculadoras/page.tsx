@@ -310,17 +310,17 @@ export default function CalculadorasPage() {
       </div>
 
       {/* Calculators Grid */}
-      <div className="flex-1 px-6 pb-8" style={{ position: 'relative', zIndex: 5 }}>
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="flex-1 px-3 md:px-6 pb-8" style={{ position: 'relative', zIndex: 5 }}>
+        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
           {calculadoras.map((calc) => (
             <button
               key={calc.id}
               onClick={() => handleCalculadoraClick(calc)}
               className="relative group transition-all duration-300 transform hover:scale-[1.02] text-left"
-              style={{ minHeight: '200px' }}
+              style={{ minHeight: '160px' }}
             >
               <div 
-                className="h-full p-6 transition-all duration-300"
+                className="h-full p-4 md:p-6 transition-all duration-300"
                 style={{ 
                   backgroundColor: 'transparent',
                   border: '2px solid #C5A770',

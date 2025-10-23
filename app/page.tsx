@@ -28,17 +28,17 @@ export default function Home() {
       {/* Golden Strip */}
       <div style={{ 
         backgroundColor: '#C5A770', 
-        height: '120px',
+        height: '80px',
         width: '100%',
         position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
         zIndex: 1
-      }} />
+      }} className="md:h-[120px]" />
       
       {/* Elegant Header */}
-      <div className="relative py-4 md:py-8" style={{ zIndex: 2 }}>
+      <div className="relative py-2 md:py-8 px-4" style={{ zIndex: 2 }}>
         {/* Subtle pattern overlay */}
         <div style={{
           position: 'absolute',
@@ -50,18 +50,14 @@ export default function Home() {
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231C1C1C' fill-opacity='1'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`
         }} />
         
-        <div className="relative text-center px-6" style={{ paddingTop: '0px', zIndex: 10, position: 'relative' }}>
-          <div className="mb-2" style={{ marginTop: '-50px' }}>
+        <div className="relative text-center px-2 md:px-6" style={{ paddingTop: '10px', zIndex: 10, position: 'relative' }}>
+          <div className="mb-2" style={{ marginTop: '-20px' }}>
             <img 
               src="/LOGO-KLAW.gif" 
               alt="K-LAW Logo" 
-              className="mx-auto"
+              className="mx-auto w-auto h-auto max-w-[160px] max-h-[60px] sm:max-w-[200px] sm:max-h-[80px] md:max-w-[400px] md:max-h-[150px] lg:max-w-[640px] lg:max-h-[240px]"
               style={{ 
                 display: 'block',
-                width: 'auto',
-                height: 'auto',
-                maxWidth: '640px',
-                maxHeight: '240px',
                 position: 'relative',
                 zIndex: 20
               }}
@@ -130,10 +126,10 @@ export default function Home() {
           </div>
 
           {/* Plans Grid */}
-          <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
             {/* Free Plan */}
             <div className="group">
-              <div className="h-full flex flex-col p-4 md:p-6 transition-all duration-300" 
+              <div className="h-full flex flex-col p-5 md:p-6 transition-all duration-300" 
                 style={{ 
                   backgroundColor: '#FFFFFF',
                   borderRadius: '20px',
@@ -248,7 +244,7 @@ export default function Home() {
                   Recomendado
                 </span>
               </div>
-              <div className="h-full flex flex-col p-4 md:p-6 transition-all duration-300" 
+              <div className="h-full flex flex-col p-5 md:p-6 transition-all duration-300" 
                 style={{ 
                   backgroundColor: '#FFFFFF',
                   borderRadius: '20px',
