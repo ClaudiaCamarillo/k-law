@@ -1,29 +1,51 @@
-/* VISTA DE ESCRITORIO ESCALADA PARA MÓVIL */
+/* FORZAR VISTA DE ESCRITORIO EN MÓVIL */
 
-@media screen and (max-width: 480px) {
-  body {
-    transform: scale(0.35) !important;
-    transform-origin: top left !important;
-    width: 285.7% !important;
-    height: 285.7% !important;
+/* Desactivar TODOS los breakpoints responsive */
+@media screen and (max-width: 768px) {
+  /* Forzar que las clases responsive NO se apliquen */
+  .grid-cols-1 {
+    grid-template-columns: repeat(3, 1fr) !important;
   }
   
-  html {
-    overflow-x: hidden !important;
-    overflow-y: hidden !important;
-  }
-}
-
-@media screen and (min-width: 481px) and (max-width: 768px) {
-  body {
-    transform: scale(0.5) !important;
-    transform-origin: top left !important;
-    width: 200% !important;
-    height: 200% !important;
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(3, 1fr) !important;
   }
   
-  html {
-    overflow-x: hidden !important;
-    overflow-y: hidden !important;
+  .lg\:grid-cols-3 {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  /* Tamaños de texto iguales a desktop */
+  .text-sm,
+  .md\:text-base,
+  .lg\:text-lg {
+    font-size: 1rem !important;
+  }
+  
+  .text-xs,
+  .md\:text-sm {
+    font-size: 0.875rem !important;
+  }
+  
+  /* Espaciado igual a desktop */
+  .px-3,
+  .md\:px-6 {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+  
+  .gap-3,
+  .md\:gap-6 {
+    gap: 1.5rem !important;
+  }
+  
+  .p-4,
+  .md\:p-6 {
+    padding: 1.5rem !important;
+  }
+  
+  /* Permitir scroll horizontal si es necesario */
+  html, body {
+    overflow-x: auto !important;
   }
 }
