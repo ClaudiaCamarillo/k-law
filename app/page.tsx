@@ -12,20 +12,24 @@ export default function Home() {
 
   const seleccionarPlan = async (plan: 'free' | 'premium') => {
     try {
+      console.log('Seleccionando plan:', plan)
+      
       // Guardar el plan seleccionado (solo en el cliente)
       if (typeof window !== 'undefined') {
         localStorage.setItem('userPlan', plan)
+        console.log('Plan guardado en localStorage')
       }
       
       // TEMPORALMENTE DESACTIVADO: Redirigir a Auth0 para registro/login
       // window.location.href = `/api/auth/login?returnTo=/seleccionar-usuario?plan=${plan}`
       
       // ACCESO DIRECTO TEMPORAL para validación
-      router.push('/calculadoras')
+      console.log('Navegando a /calculadoras')
+      await router.push('/calculadoras')
     } catch (error) {
       console.error('Error al seleccionar plan:', error)
-      // Redirigir directamente si hay error
-      router.push('/calculadoras')
+      // Intentar navegación con window.location si router falla
+      window.location.href = '/calculadoras'
     }
   }
 
