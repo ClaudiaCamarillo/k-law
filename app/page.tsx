@@ -37,6 +37,25 @@ export default function Home() {
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#F4EFE8' }}>
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        /* Fix para botones en iOS y dispositivos touch */
+        button {
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+        }
+        
+        /* Mejorar la interacción en dispositivos móviles */
+        @media (hover: none) and (pointer: coarse) {
+          button:active {
+            transform: scale(0.98);
+          }
+        }
+        
+        /* Prevenir zoom en iOS */
+        input, select, textarea, button {
+          font-size: 16px !important;
+        }
       `}</style>
       
       {/* Golden Strip */}
@@ -223,11 +242,13 @@ export default function Home() {
                 </div>
 
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
                     console.log('Botón Gratis clickeado')
                     seleccionarPlan('free')
                   }}
-                  className="w-full py-3 rounded-full transition-all duration-300 transform hover:scale-[1.02] cursor-pointer"
+                  className="w-full py-3 rounded-full transition-all duration-300 transform hover:scale-[1.02] cursor-pointer select-none"
                   style={{ 
                     backgroundColor: 'transparent',
                     border: '1.5px solid #1C1C1C',
@@ -235,7 +256,10 @@ export default function Home() {
                     fontFamily: 'Inter, sans-serif',
                     fontWeight: '500',
                     fontSize: '15px',
-                    letterSpacing: '0.02em'
+                    letterSpacing: '0.02em',
+                    WebkitTapHighlightColor: 'transparent',
+                    touchAction: 'manipulation',
+                    userSelect: 'none'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#1C1C1C';
@@ -245,6 +269,9 @@ export default function Home() {
                     e.currentTarget.style.backgroundColor = 'transparent';
                     e.currentTarget.style.color = '#1C1C1C';
                   }}
+                  type="button"
+                  role="button"
+                  aria-label="Seleccionar plan Gratuito"
                 >
                   Comenzar Gratis
                 </button>
@@ -352,11 +379,13 @@ export default function Home() {
                 </div>
 
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
                     console.log('Botón Premium clickeado')
                     seleccionarPlan('premium')
                   }}
-                  className="w-full py-3 rounded-full transition-all duration-300 transform hover:scale-[1.02] cursor-pointer"
+                  className="w-full py-3 rounded-full transition-all duration-300 transform hover:scale-[1.02] cursor-pointer select-none"
                   style={{ 
                     backgroundColor: '#C5A770',
                     border: '1.5px solid #C5A770',
@@ -364,7 +393,10 @@ export default function Home() {
                     fontFamily: 'Inter, sans-serif',
                     fontWeight: '600',
                     fontSize: '15px',
-                    letterSpacing: '0.02em'
+                    letterSpacing: '0.02em',
+                    WebkitTapHighlightColor: 'transparent',
+                    touchAction: 'manipulation',
+                    userSelect: 'none'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#B39760';
@@ -374,6 +406,9 @@ export default function Home() {
                     e.currentTarget.style.backgroundColor = '#C5A770';
                     e.currentTarget.style.borderColor = '#C5A770';
                   }}
+                  type="button"
+                  role="button"
+                  aria-label="Seleccionar plan Premium"
                 >
                   Comenzar Premium
                 </button>
