@@ -292,9 +292,13 @@ export const diasInhabilesData = [
   
   // Días móviles 2025
   { dia: '3 de febrero 2025', fundamento: 'Artículo 74 de la Ley Federal del Trabajo', fecha: '2025-02-03', aplicaPara: 'todos' },
+  { dia: '17 de marzo 2025', fundamento: 'Artículo 74 de la Ley Federal del Trabajo', fecha: '2025-03-17', aplicaPara: 'todos' },
   { dia: '17 de noviembre 2025', fundamento: 'Artículo 74 de la Ley Federal del Trabajo', fecha: '2025-11-17', aplicaPara: 'todos' },
   
-  // Circular 1/2024 - Semana Santa 2025
+  // Circular 2/2025
+  { dia: '2 de mayo 2025', fundamento: 'Circular 2/2025 del Pleno del Consejo de la Judicatura Federal', fecha: '2025-05-02', aplicaPara: 'todos' },
+  
+  // Circular 1/2025 - Semana Santa 2025
   { dia: '17 de abril 2025', fundamento: 'Circular 1/2025 del Pleno del Consejo de la Judicatura Federal', fecha: '2025-04-17', aplicaPara: 'todos' },
   { dia: '18 de abril 2025', fundamento: 'Circular 1/2025 del Pleno del Consejo de la Judicatura Federal', fecha: '2025-04-18', aplicaPara: 'todos' },
   { dia: '19 de abril 2025', fundamento: 'Circular 1/2025 del Pleno del Consejo de la Judicatura Federal', fecha: '2025-04-19', aplicaPara: 'todos' }

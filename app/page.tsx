@@ -20,16 +20,13 @@ export default function Home() {
         console.log('Plan guardado en localStorage')
       }
       
-      // TEMPORALMENTE DESACTIVADO: Redirigir a Auth0 para registro/login
-      // window.location.href = `/api/auth/login?returnTo=/seleccionar-usuario?plan=${plan}`
-      
-      // ACCESO DIRECTO TEMPORAL para validación
-      console.log('Navegando a /calculadoras')
-      await router.push('/calculadoras')
+      // Redirigir a la página de selección de usuario
+      console.log('Navegando a /seleccionar-usuario')
+      await router.push(`/seleccionar-usuario?plan=${plan}`)
     } catch (error) {
       console.error('Error al seleccionar plan:', error)
       // Intentar navegación con window.location si router falla
-      window.location.href = '/calculadoras'
+      window.location.href = `/seleccionar-usuario?plan=${plan}`
     }
   }
 
@@ -80,7 +77,8 @@ export default function Home() {
           right: 0,
           bottom: 0,
           opacity: 0.03,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231C1C1C' fill-opacity='1'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231C1C1C' fill-opacity='1'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`,
+          pointerEvents: 'none'
         }} />
         
         <div className="relative text-center px-6" style={{ paddingTop: '0px', zIndex: 10, position: 'relative' }}>
@@ -116,7 +114,7 @@ export default function Home() {
       <div className="flex-1 flex flex-col items-center px-4 pb-4">
         <div className="w-full max-w-5xl">
           {/* Tienda Button */}
-          <div className="text-center mb-6">
+          <div className="text-center mb-6 flex justify-center gap-4">
             <button
               onClick={() => router.push('/tienda')}
               className="px-6 py-2 transition-all duration-300"
@@ -142,6 +140,33 @@ export default function Home() {
             >
               🛍️ Ir a la Tienda
             </button>
+            
+            {/* Botón temporal para selección de usuario */}
+            <button
+              onClick={() => router.push('/seleccionar-usuario')}
+              className="px-6 py-2 transition-all duration-300"
+              style={{
+                backgroundColor: 'transparent',
+                color: '#C5A770',
+                fontWeight: '500',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '0.875rem',
+                border: '1.5px solid #C5A770',
+                letterSpacing: '0.02em',
+                borderRadius: '30px',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#C5A770';
+                e.currentTarget.style.color = '#F4EFE8';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = '#C5A770';
+              }}
+            >
+              👤 Seleccionar Usuario
+            </button>
           </div>
           {/* Section Title */}
           <div className="text-center mb-4 md:mb-8">
@@ -163,7 +188,7 @@ export default function Home() {
           </div>
 
           {/* Plans Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto" style={{ position: 'relative', zIndex: 10 }}>
             {/* Free Plan */}
             <div className="group">
               <div className="h-full flex flex-col p-5 md:p-6 transition-all duration-300" 
@@ -242,13 +267,11 @@ export default function Home() {
                 </div>
 
                 <button
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
+                  onClick={() => {
                     console.log('Botón Gratis clickeado')
                     seleccionarPlan('free')
                   }}
-                  className="w-full py-3 rounded-full transition-all duration-300 transform hover:scale-[1.02] cursor-pointer select-none"
+                  className="w-full py-3 rounded-full transition-all duration-300 transform hover:scale-[1.02] cursor-pointer"
                   style={{ 
                     backgroundColor: 'transparent',
                     border: '1.5px solid #1C1C1C',
@@ -259,7 +282,9 @@ export default function Home() {
                     letterSpacing: '0.02em',
                     WebkitTapHighlightColor: 'transparent',
                     touchAction: 'manipulation',
-                    userSelect: 'none'
+                    position: 'relative',
+                    zIndex: 50,
+                    pointerEvents: 'auto'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#1C1C1C';
@@ -379,13 +404,11 @@ export default function Home() {
                 </div>
 
                 <button
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
+                  onClick={() => {
                     console.log('Botón Premium clickeado')
                     seleccionarPlan('premium')
                   }}
-                  className="w-full py-3 rounded-full transition-all duration-300 transform hover:scale-[1.02] cursor-pointer select-none"
+                  className="w-full py-3 rounded-full transition-all duration-300 transform hover:scale-[1.02] cursor-pointer"
                   style={{ 
                     backgroundColor: '#C5A770',
                     border: '1.5px solid #C5A770',
@@ -396,7 +419,9 @@ export default function Home() {
                     letterSpacing: '0.02em',
                     WebkitTapHighlightColor: 'transparent',
                     touchAction: 'manipulation',
-                    userSelect: 'none'
+                    position: 'relative',
+                    zIndex: 50,
+                    pointerEvents: 'auto'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = '#B39760';
@@ -425,6 +450,33 @@ export default function Home() {
             }}>
               Cancela cuando quieras • Precios en MXN incluyen IVA
             </p>
+          </div>
+
+          {/* Botón temporal para selección de usuario */}
+          <div className="text-center mt-8">
+            <button
+              onClick={() => router.push('/seleccionar-usuario')}
+              className="px-6 py-3 rounded-full transition-all duration-300 transform hover:scale-[1.02]"
+              style={{
+                backgroundColor: '#1C1C1C',
+                color: '#F4EFE8',
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: '500',
+                fontSize: '15px',
+                letterSpacing: '0.02em',
+                border: '2px solid #1C1C1C'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = '#1C1C1C';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#1C1C1C';
+                e.currentTarget.style.color = '#F4EFE8';
+              }}
+            >
+              Seleccionar Tipo de Usuario (Temporal)
+            </button>
           </div>
         </div>
       </div>

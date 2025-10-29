@@ -2,9 +2,92 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { diasInhabilesData } from '../../diasInhabiles.js'
 import { getCuandoSurteEfectos, calcularFechaSurteEfectos, getFundamentoSurtimientoEfectos } from '../../../lib/articulo31LeyAmparo.js'
 import { SelectorLeyNotificacion } from '@/components/SelectorLeyNotificacion'
+
+// Función para obtener el texto de la forma de notificación
+function obtenerTextoFormaNotificacion(formaNotificacion: string): string {
+  const formasNotificacion: {[key: string]: string} = {
+    // Formas comunes
+    'personal': 'personalmente',
+    'personalmente': 'personalmente',
+    'lista': 'por lista',
+    'oficio': 'por oficio',
+    'electronica': 'en forma electrónica',
+    'estrados': 'por estrados',
+    'boletin': 'por boletín',
+    'edictos': 'por edictos',
+    
+    // Código Nacional de Procedimientos Penales
+    'personal_audiencia': 'personalmente, en audiencia',
+    'personal_correo_electronico': 'personalmente, por correo electrónico',
+    'personal_telefono': 'personalmente, por teléfono',
+    'personal_domicilio': 'personalmente, en su domicilio',
+    'personal_instructivo': 'por instructivo en su domicilio',
+    'personal_instalaciones': 'personalmente, en las instalaciones del órgano jurisdiccional',
+    'personal_detencion': 'personalmente, en el lugar de la detención',
+    'correo_certificado': 'por correo certificado',
+    'boletin_jurisdiccional': 'por boletín jurisdiccional',
+    'electronica': 'por medios electrónicos',
+    
+    // Código Federal de Procedimientos Civiles
+    'cedula': 'por cédula',
+    'telegrama': 'por telegrama',
+    'rotulon': 'por rotulón',
+    'instructivo': 'por instructivo',
+    
+    // Código de Comercio
+    'boletin_judicial': 'por Boletín Judicial',
+    'gaceta_judicial': 'por Gaceta Judicial',
+    'periodico_judicial': 'por Periódico Judicial',
+    'correo': 'por correo',
+    'telegrafo': 'por telégrafo',
+    'audiencia': 'en audiencia',
+    
+    // Ley Federal de Procedimiento Administrativo
+    'correo_certificado_acuse': 'por correo certificado con acuse de recibo',
+    'mensajeria_acuse': 'por mensajería, con acuse de recibo',
+    'correo_ordinario': 'por correo ordinario',
+    
+    // Ley del Seguro Social
+    'medios_magneticos_digitales': 'a través de medios magnéticos, digitales, electrónicos, ópticos, magneto ópticos o de cualquier otra naturaleza',
+    'buzon_imss': 'a través del Buzón IMSS',
+    
+    // Código Fiscal de la Federación
+    'buzon_tributario': 'por buzón tributario',
+    
+    // Código Nacional de Procedimientos Civiles y Familiares
+    'comunicacion_judicial': 'por medio de comunicación judicial',
+    'audiencia_juicio_oral': 'en audiencia en juicio oral',
+    'comunicacion_electronica': 'por cualquier otro medio de comunicación electrónica o sistema de justicia digital',
+    'adhesion': 'por adhesión',
+    'correo_electronico': 'por correo electrónico',
+    'cedula_1027_1028': 'por cédula',
+    
+    // Ley General de Educación
+    'visita_vigilancia': 'mediante visita de vigilancia',
+    'otra_lfpa': 'en la forma prevista en la LFPA',
+    
+    // Ley de Navegación y Comercio Marítimos (con LFPA)
+    'personal_lfpa': 'personalmente',
+    'correo_certificado_acuse_lfpa': 'por correo certificado con acuse de recibo',
+    'mensajeria_acuse_lfpa': 'por mensajería, con acuse de recibo',
+    'estrados_lfpa': 'por estrados',
+    'edictos_lfpa': 'por edictos',
+    'electronica_lfpa': 'por medios electrónicos',
+    'oficio_lfpa': 'por oficio',
+    'correo_ordinario_lfpa': 'por correo ordinario',
+    'telegrama_lfpa': 'por telegrama',
+    
+    // Ley Aduanera
+    'notificaciones_electronicas': 'por medios electrónicos',
+    'avisos_autorizacion': 'mediante los avisos de autorización'
+  };
+  
+  return formasNotificacion[formaNotificacion] || 'en la forma correspondiente';
+}
 
 // Función para convertir fecha a texto en español
 function fechaATexto(fecha: string): string {
@@ -903,12 +986,8 @@ function obtenerDiasInhabilesConNotas(inicio: Date, fin: Date, diasAdicionales: 
     fecha.setDate(fecha.getDate() + 1);
   }
   
-  // Construir el texto con notas al pie
+  // Construir el texto
   let diasTexto: string[] = [];
-  let notasAlPie: string[] = [];
-  let numeroNota = 1;
-  const superindices = ['¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
-  const fundamentosYaUsados: {[key: string]: string} = {}; // Mapeo de fundamento a superíndice
   
   // Agregar sábados y domingos si hay
   if (hayFinDeSemana) {
@@ -921,34 +1000,50 @@ function obtenerDiasInhabilesConNotas(inicio: Date, fin: Date, diasAdicionales: 
       if (fundamento.includes(fundamentoBuscado) || (fundamentoBuscado === 'usuario' && fundamento === fundamentoAdicional)) {
         const dias = diasPorFundamento[fundamento];
         if (dias && dias.length > 0) {
-          // Agrupar días del mismo mes (solo en función de texto)
-          let diasFinales = dias;
-          // Agrupar días del mismo mes
-          diasFinales = dias;
-          
-          // Para litigantes no mostramos superíndices
-          if (tipoUsuario === 'litigante') {
-            diasTexto = diasTexto.concat(diasFinales);
-          } else {
-            let superindiceAUsar = fundamentosYaUsados[fundamento];
-            
-            if (!superindiceAUsar) {
-              superindiceAUsar = numeroNota <= 9 ? superindices[numeroNota - 1] : `(${numeroNota})`;
-              fundamentosYaUsados[fundamento] = superindiceAUsar;
-              notasAlPie.push(`${superindiceAUsar} ${fundamento}`);
-              numeroNota++;
-            }
-            
-            diasTexto = diasTexto.concat(diasFinales.map(dia => dia + superindiceAUsar));
-          }
+          // No agregar superíndices
+          diasTexto = diasTexto.concat(dias);
         }
       }
     });
   });
   
+  // Mejorar formato de texto para evitar repetición de año
+  let textoFinal = diasTexto.join(', ');
+  
+  // Si el texto contiene múltiples fechas del mismo año, simplificar
+  const año2025 = 'dos mil veinticinco';
+  const año2024 = 'dos mil veinticuatro';
+  
+  // Contar cuántas veces aparece cada año
+  const veces2025 = (textoFinal.match(/de dos mil veinticinco/g) || []).length;
+  const veces2024 = (textoFinal.match(/de dos mil veinticuatro/g) || []).length;
+  
+  // Si un año aparece más de 2 veces, simplificar
+  if (veces2025 > 2 || veces2024 > 2) {
+    // Reemplazar todas las ocurrencias menos la última
+    if (veces2025 > 2) {
+      let contador = 0;
+      textoFinal = textoFinal.replace(/de dos mil veinticinco/g, (match) => {
+        contador++;
+        return contador < veces2025 ? '' : match;
+      });
+    }
+    if (veces2024 > 2) {
+      let contador = 0;
+      textoFinal = textoFinal.replace(/de dos mil veinticuatro/g, (match) => {
+        contador++;
+        return contador < veces2024 ? '' : match;
+      });
+    }
+    
+    // Limpiar espacios y comas extras
+    textoFinal = textoFinal.replace(/\s+de\s*,/g, ',');
+    textoFinal = textoFinal.replace(/\s{2,}/g, ' ');
+  }
+  
   return {
-    texto: diasTexto.join(', '),
-    notas: notasAlPie
+    texto: textoFinal,
+    notas: []
   };
 }
 
@@ -997,7 +1092,7 @@ function obtenerDiasInhabilesParaTexto(inicio: Date, fin: Date, diasAdicionales:
           // Agrupar múltiples días del mismo mes
           const ultimoDia = dias.pop();
           const otrosDias = dias.join(', ');
-          resultado.push(`${otrosDias} y ${ultimoDia}, todos de ${mesAno}`);
+          resultado.push(`${otrosDias} y ${ultimoDia} de ${mesAno}`);
         }
       }
     });
@@ -1071,116 +1166,12 @@ function obtenerDiasInhabilesParaTexto(inicio: Date, fin: Date, diasAdicionales:
     fecha.setDate(fecha.getDate() + 1);
   }
   
-  // Construir el texto con notas al pie
+  // Construir el texto
   let diasTexto: string[] = [];
-  let notasAlPie: string[] = [];
-  let numeroNota = 1;
-  const superindices = ['¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
-  const fundamentosYaUsados: {[key: string]: string} = {}; // Mapeo de fundamento a superíndice
   
-  // Agregar sábados y domingos si hay - especificando cuáles exactamente
+  // Agregar sábados y domingos si hay
   if (hayFinDeSemana) {
-    // Obtener todos los sábados y domingos desde el día después de la notificación hasta el fin del período
-    const sabadosYDomingos: string[] = [];
-    
-    // Calcular desde el día después de la notificación
-    let fechaDesde: Date;
-    if (fechaNotificacion) {
-      // Usar la fecha de notificación real más un día
-      fechaDesde = new Date(fechaNotificacion);
-      fechaDesde.setDate(fechaDesde.getDate() + 1);
-    } else {
-      // Fallback: usar un día antes del inicio del cómputo
-      fechaDesde = new Date(inicio);
-      fechaDesde.setDate(fechaDesde.getDate() - 1);
-    }
-    
-    const fechaTemp = new Date(fechaDesde);
-    while (fechaTemp <= fin) {
-      if (fechaTemp.getDay() === 0 || fechaTemp.getDay() === 6) {
-        const fechaStr = fechaTemp.toISOString().split('T')[0];
-        const fechaTexto = fechaATexto(fechaStr);
-        sabadosYDomingos.push(fechaTexto);
-      }
-      fechaTemp.setDate(fechaTemp.getDate() + 1);
-    }
-    
-    if (sabadosYDomingos.length > 0) {
-      // Separar por mes para mejor formato
-      const sabadosYDomingosPorMes: {[key: string]: string[]} = {};
-      sabadosYDomingos.forEach(fechaTexto => {
-        // Extraer mes de "diez de febrero de dos mil veinticinco"
-        const partes = fechaTexto.split(' de ');
-        const mes = partes[1]; // "febrero"
-        if (!sabadosYDomingosPorMes[mes]) {
-          sabadosYDomingosPorMes[mes] = [];
-        }
-        sabadosYDomingosPorMes[mes].push(fechaTexto);
-      });
-      
-      const mesesConSabDom = Object.keys(sabadosYDomingosPorMes);
-      if (mesesConSabDom.length === 1) {
-        // Solo un mes
-        const primerMes = mesesConSabDom[0];
-        const diasDelMes = sabadosYDomingosPorMes[primerMes];
-        const diasAgrupados = agruparDiasConsecutivosTexto(diasDelMes);
-        const prefijo = diasAgrupados.includes(' al ') ? 'del ' : '';
-        diasTexto.push(`${prefijo}${diasAgrupados}, por corresponder a sábados y domingos, inhábiles conforme lo previsto en artículo 19 de la Ley de la Materia`);
-      } else {
-        // Múltiples meses
-        const partesSabDom: string[] = [];
-        mesesConSabDom.forEach(mes => {
-          const diasDelMes = sabadosYDomingosPorMes[mes];
-          
-          // Extraer solo los números de día de las fechas completas
-          const soloNumerosDias = diasDelMes.map(fechaCompleta => {
-            const partes = fechaCompleta.split(' de ');
-            return partes[0]; // Solo el día en texto (ej: "diez")
-          });
-          
-          // Agrupar los números de días
-          const diasOrdenados = soloNumerosDias.sort((a, b) => {
-            const textoANumero = (texto: string): number => {
-              const textos: {[key: string]: number} = {
-                'uno': 1, 'dos': 2, 'tres': 3, 'cuatro': 4, 'cinco': 5, 'seis': 6, 'siete': 7, 'ocho': 8, 'nueve': 9, 'diez': 10,
-                'once': 11, 'doce': 12, 'trece': 13, 'catorce': 14, 'quince': 15, 'dieciséis': 16, 'diecisiete': 17, 'dieciocho': 18, 'diecinueve': 19, 'veinte': 20,
-                'veintiuno': 21, 'veintidós': 22, 'veintitrés': 23, 'veinticuatro': 24, 'veinticinco': 25, 'veintiséis': 26, 'veintisiete': 27, 'veintiocho': 28, 'veintinueve': 29, 'treinta': 30, 'treinta y uno': 31
-              };
-              return textos[texto] || 0;
-            };
-            return textoANumero(a) - textoANumero(b);
-          });
-          
-          // Formatear según cantidad de días
-          let textoDelMes = '';
-          if (diasOrdenados.length === 1) {
-            textoDelMes = diasOrdenados[0];
-          } else if (diasOrdenados.length === 2) {
-            textoDelMes = `${diasOrdenados[0]} y ${diasOrdenados[1]}`;
-          } else {
-            const ultimoDia = diasOrdenados.pop();
-            textoDelMes = `${diasOrdenados.join(', ')} y ${ultimoDia}`;
-          }
-          
-          // Solo agregar mes, sin año (se agrega al final)
-          partesSabDom.push(`${textoDelMes} de ${mes}`);
-        });
-        
-        // Unir las partes con "así como" y agregar año al final
-        const añoPeriodo = inicio.getFullYear();
-        const añoTexto = añoPeriodo === 2024 ? 'dos mil veinticuatro' : añoPeriodo === 2025 ? 'dos mil veinticinco' : `${añoPeriodo}`;
-        
-        let textoCompleto = '';
-        if (partesSabDom.length === 2) {
-          textoCompleto = `${partesSabDom[0]}, así como ${partesSabDom[1]}, todos del referido año`;
-        } else {
-          const ultimaParte = partesSabDom.pop();
-          textoCompleto = `${partesSabDom.join(', ')}, así como ${ultimaParte}, todos del referido año`;
-        }
-        
-        diasTexto.push(`${textoCompleto}, por corresponder a sábados y domingos, inhábiles conforme lo previsto en artículo 19 de la Ley de la Materia`);
-      }
-    }
+    diasTexto.push('sábados y domingos');
   }
   
   // Agregar días por orden de fundamento
@@ -1189,34 +1180,50 @@ function obtenerDiasInhabilesParaTexto(inicio: Date, fin: Date, diasAdicionales:
       if (fundamento.includes(fundamentoBuscado) || (fundamentoBuscado === 'usuario' && fundamento === fundamentoAdicional)) {
         const dias = diasPorFundamento[fundamento];
         if (dias && dias.length > 0) {
-          // Agrupar días del mismo mes (solo en función de texto)
-          let diasFinales = dias;
-          // Agrupar días del mismo mes
-          diasFinales = dias;
-          
-          // Para litigantes no mostramos superíndices
-          if (tipoUsuario === 'litigante') {
-            diasTexto = diasTexto.concat(diasFinales);
-          } else {
-            let superindiceAUsar = fundamentosYaUsados[fundamento];
-            
-            if (!superindiceAUsar) {
-              superindiceAUsar = numeroNota <= 9 ? superindices[numeroNota - 1] : `(${numeroNota})`;
-              fundamentosYaUsados[fundamento] = superindiceAUsar;
-              notasAlPie.push(`${superindiceAUsar} ${fundamento}`);
-              numeroNota++;
-            }
-            
-            diasTexto = diasTexto.concat(diasFinales.map(dia => dia + superindiceAUsar));
-          }
+          // No agregar superíndices
+          diasTexto = diasTexto.concat(dias);
         }
       }
     });
   });
   
+  // Mejorar formato de texto para evitar repetición de año
+  let textoFinal = diasTexto.join(', ');
+  
+  // Si el texto contiene múltiples fechas del mismo año, simplificar
+  const año2025 = 'dos mil veinticinco';
+  const año2024 = 'dos mil veinticuatro';
+  
+  // Contar cuántas veces aparece cada año
+  const veces2025 = (textoFinal.match(/de dos mil veinticinco/g) || []).length;
+  const veces2024 = (textoFinal.match(/de dos mil veinticuatro/g) || []).length;
+  
+  // Si un año aparece más de 2 veces, simplificar
+  if (veces2025 > 2 || veces2024 > 2) {
+    // Reemplazar todas las ocurrencias menos la última
+    if (veces2025 > 2) {
+      let contador = 0;
+      textoFinal = textoFinal.replace(/de dos mil veinticinco/g, (match) => {
+        contador++;
+        return contador < veces2025 ? '' : match;
+      });
+    }
+    if (veces2024 > 2) {
+      let contador = 0;
+      textoFinal = textoFinal.replace(/de dos mil veinticuatro/g, (match) => {
+        contador++;
+        return contador < veces2024 ? '' : match;
+      });
+    }
+    
+    // Limpiar espacios y comas extras
+    textoFinal = textoFinal.replace(/\s+de\s*,/g, ',');
+    textoFinal = textoFinal.replace(/\s{2,}/g, ' ');
+  }
+  
   return {
-    texto: diasTexto.join(', '),
-    notas: notasAlPie
+    texto: textoFinal,
+    notas: []
   };
 }
 
@@ -1586,6 +1593,7 @@ function mapearLeyAIdentificador(nombreLey: string): string {
 }
 
 export default function Page() {
+  const router = useRouter();
   const [tipoUsuario, setTipoUsuario] = useState<string>('litigante');
   const [formData, setFormData] = useState({
     tipoRecurso: 'principal',
@@ -1632,7 +1640,14 @@ export default function Page() {
   useEffect(() => {
     setMounted(true);
     // Obtener tipo de usuario de localStorage
-    const tipo = localStorage.getItem('tipoUsuario') || 'litigante';
+    const tipo = localStorage.getItem('tipoUsuario');
+    
+    // Si no hay tipo de usuario, redirigir a selección
+    if (!tipo) {
+      router.push('/seleccionar-usuario');
+      return;
+    }
+    
     setTipoUsuario(tipo);
     
     // Cargar cálculos guardados (solo para litigantes)
@@ -1642,7 +1657,7 @@ export default function Page() {
         setCalculos(JSON.parse(calculosGuardados));
       }
     }
-  }, []);
+  }, [router]);
 
   // Evitar hidratación hasta que el componente esté montado
   if (!mounted) {
@@ -2792,15 +2807,13 @@ export default function Page() {
     const getFechaFin = () => resultado.fechaFinTexto;
     const getFechaPresentacion = () => resultado.fechaPresentacionTexto;
     
-    // Determinar el género correcto según la parte recurrente
-    const esQuejoso = formData.parteRecurrente === 'quejoso';
-    let generoRecurrente = esQuejoso ? 'la recurrente' : 'el recurrente';
-    let parteTexto = esQuejoso ? 'parte quejosa' : 'parte autoridad responsable';
+    // Determinar términos según tipo de demanda
+    let generoRecurrente = 'la parte recurrente';
+    let parteTexto = '';
     
     // Para amparo adhesivo, usar términos específicos
     if (formData.tipoDemanda === 'adhesivo') {
       generoRecurrente = 'la parte quejosa adhesiva';
-      parteTexto = ''; // No es necesario especificar el carácter
     }
     
     // Obtener el año de las fechas
@@ -3025,7 +3038,7 @@ export default function Page() {
                 // Crear nueva nota
                 superindiceAUsar = numeroNota <= 9 ? superindices[numeroNota - 1] : `(${numeroNota})`;
                 fundamentosYaUsados[fundamento] = superindiceAUsar;
-                notasAlPie.push(`${superindiceAUsar} ${fundamento}`);
+                notasAlPie.push(`${fundamento}`);
                 numeroNota++;
               }
               
@@ -3114,7 +3127,7 @@ export default function Page() {
                 if (!superindiceAUsar) {
                   superindiceAUsar = numeroNota <= 9 ? superindices[numeroNota - 1] : `(${numeroNota})`;
                   fundamentosYaUsados[fundamento] = superindiceAUsar;
-                  notasAlPie.push(`${superindiceAUsar} ${fundamento}`);
+                  notasAlPie.push(`${fundamento}`);
                   numeroNota++;
                 }
                 
@@ -3332,7 +3345,7 @@ export default function Page() {
         }
       })();
       
-      let texto = `\t\tLa presentación de la demanda es ${oportunidadTexto}, pues la parte quejosa fue notificada ${formData.formaNotificacion === 'personal' ? 'personalmente' : formData.formaNotificacion === 'lista' ? 'por lista' : formData.formaNotificacion === 'oficio' ? 'por oficio' : 'en forma electrónica'} del inicio del procedimiento de extradición el ${resultado.fechaNotificacionTexto}, y la notificación surtió efectos ${efectosTexto}, de conformidad con lo previsto en el ${resultado.fundamentoSurte}, por lo que el plazo de ${resultado.plazoTexto} días a que alude el artículo 17, fracción I, de la Ley de Amparo, transcurrió del ${extraerDiaMes(resultado.fechaInicioTexto)} al ${extraerDiaMes(resultado.fechaFinTexto)} del referido año, de acuerdo con lo previsto en el diverso numeral 18 de la referida ley; lo anterior con exclusión de los días ${diasInhabilesTextoResolucion}.
+      let texto = `\t\tLa presentación de la demanda es ${oportunidadTexto}, pues la parte quejosa fue notificada ${obtenerTextoFormaNotificacion(formData.formaNotificacion)} del inicio del procedimiento de extradición el ${resultado.fechaNotificacionTexto}, y la notificación surtió efectos ${efectosTexto}, de conformidad con lo previsto en el ${resultado.fundamentoSurte}, por lo que el plazo de ${resultado.plazoTexto} días a que alude el artículo 17, fracción I, de la Ley de Amparo, transcurrió del ${extraerDiaMes(resultado.fechaInicioTexto)} al ${extraerDiaMes(resultado.fechaFinTexto)} del referido año, de acuerdo con lo previsto en el diverso numeral 18 de la referida ley; lo anterior con exclusión de los días ${diasInhabilesTextoResolucion}.
 \t\tPor ende, si la demanda se presentó el ${extraerDiaMes(resultado.fechaPresentacionTexto)} de ${añoTexto}, es inconcuso que su presentación ${presentadaAntesDeInicio ? 'ocurrió oportunamente, pues en esa fecha aún no iniciaba el plazo' : resultado.esOportuno ? 'es oportuna' : 'es extemporánea'}.`;
       
       // Agregar notas al pie específicas si hay otros días inhábiles
@@ -3431,7 +3444,7 @@ export default function Page() {
       
       // Caso especial para sentencias penales con pena de prisión (8 años)
       if (formData.tipoSupuesto === 'penal' && formData.resolucionImpugnada === 'sentencia_condenatoria_penal') {
-        texto = `\t\tLa presentación de la demanda es ${oportunidadTexto}, pues la parte quejosa fue notificada ${formData.formaNotificacion === 'personal' ? 'personalmente' : formData.formaNotificacion === 'lista' ? 'por lista' : formData.formaNotificacion === 'oficio' ? 'por oficio' : 'en forma electrónica'} el ${getFechaNotificacion()}, y la notificación surtió efectos ${efectosTexto}, de conformidad con lo previsto en el ${resultado.fundamentoSurte}, por lo que el plazo de ${resultado.plazoTexto} a que alude el artículo 17, fracción II, de la Ley de Amparo, transcurrió del ${extraerDiaMes(getFechaInicio())} al ${extraerDiaMes(getFechaFin())}, sin excluir días inhábiles en el cómputo del plazo, conforme a lo previsto en dicha disposición legal.`;
+        texto = `\t\tLa presentación de la demanda es ${oportunidadTexto}, pues la parte quejosa fue notificada ${obtenerTextoFormaNotificacion(formData.formaNotificacion)} el ${getFechaNotificacion()}, y la notificación surtió efectos ${efectosTexto}, de conformidad con lo previsto en el ${resultado.fundamentoSurte}, por lo que el plazo de ${resultado.plazoTexto} a que alude el artículo 17, fracción II, de la Ley de Amparo, transcurrió del ${extraerDiaMes(getFechaInicio())} al ${extraerDiaMes(getFechaFin())}, sin excluir días inhábiles en el cómputo del plazo, conforme a lo previsto en dicha disposición legal.`;
         
         // Agregar información sobre días inhábiles solo entre notificación y surtimiento
         if (resultado.diasInhabilesTexto && resultado.diasInhabilesTexto !== 'No hubo días inhábiles entre la fecha de notificación y aquella en que surtió efectos') {
@@ -3441,15 +3454,18 @@ export default function Page() {
         texto += `\n\t\tPor ende, si la demanda se presentó el ${extraerDiaMes(getFechaPresentacion())} de ${añoTexto}, es inconcuso que su presentación ${presentadaAntesDeInicio ? 'ocurrió oportunamente, pues en esa fecha aún no iniciaba el plazo' : resultado.esOportuno ? 'es oportuna' : 'es extemporánea'}.`;
       } else {
         // Caso general (no penal)
-        texto = `\t\tLa presentación de la demanda es ${oportunidadTexto}, pues la parte quejosa fue notificada ${formData.formaNotificacion === 'personal' ? 'personalmente' : formData.formaNotificacion === 'lista' ? 'por lista' : formData.formaNotificacion === 'oficio' ? 'por oficio' : 'en forma electrónica'} el ${getFechaNotificacion()}, y la notificación surtió efectos ${efectosTexto}, de conformidad con lo previsto en el ${resultado.fundamentoSurte}, por lo que el plazo de ${resultado.plazoTexto} días a que alude el artículo 17, fracción ${obtenerFraccionArticulo17()}, de dicha legislación, transcurrió del ${extraerDiaMes(getFechaInicio())} al ${extraerDiaMes(getFechaFin())} del referido año, de acuerdo con lo previsto en el diverso numeral 18 de la referida ley; lo anterior con exclusión de los días ${diasInhabilesTexto}.
+        texto = `\t\tLa presentación de la demanda es ${oportunidadTexto}, pues la parte quejosa fue notificada ${obtenerTextoFormaNotificacion(formData.formaNotificacion)} el ${getFechaNotificacion()}, y la notificación surtió efectos ${efectosTexto}, de conformidad con lo previsto en el ${resultado.fundamentoSurte}, por lo que el plazo de ${resultado.plazoTexto} días a que alude el artículo 17, fracción ${obtenerFraccionArticulo17()}, de dicha legislación, transcurrió del ${extraerDiaMes(getFechaInicio())} al ${extraerDiaMes(getFechaFin())} del referido año, de acuerdo con lo previsto en el diverso numeral 18 de la referida ley; lo anterior con exclusión de los días ${diasInhabilesTexto}.
 \t\tPor ende, si la demanda se presentó el ${extraerDiaMes(getFechaPresentacion())} de ${añoTexto}, es inconcuso que su presentación ${presentadaAntesDeInicio ? 'ocurrió oportunamente, pues en esa fecha aún no iniciaba el plazo' : resultado.esOportuno ? 'es oportuna' : 'es extemporánea'}.`;
       }
       
-      // Agregar notas al pie si hay más de un fundamento
-      if (diasInhabilesInfo.notas.length > 1 || (diasInhabilesInfo.notas.length === 1 && !diasInhabilesInfo.notas[0].includes('artículo 19'))) {
+      // Agregar notas al pie con los fundamentos de días inhábiles
+      if (diasInhabilesInfo.notas && diasInhabilesInfo.notas.length > 0) {
         texto += '\n\n__________________________________\n';
-        diasInhabilesInfo.notas.forEach((nota: string, index: number) => {
-          texto += `${index + 1} ${nota}\n`;
+        
+        // Ordenar y agrupar las notas únicas
+        const notasUnicas = [...new Set(diasInhabilesInfo.notas)];
+        notasUnicas.forEach((nota: string, index: number) => {
+          texto += `${index + 1}. ${nota}\n`;
         });
       }
       
@@ -3480,23 +3496,26 @@ export default function Page() {
     
     if (formData.tipoDemanda === 'adhesivo') {
       // Texto específico para amparo directo adhesivo
-      texto = `\t\tLa presentación del amparo directo adhesivo es ${resultado.esOportuno ? 'oportuna' : 'extemporánea'}, dado que la notificación del auto de admisión de la demanda de amparo principal se realizó ${formData.formaNotificacion === 'personal' ? 'personalmente' : formData.formaNotificacion === 'oficio' ? 'por oficio' : formData.formaNotificacion === 'lista' ? 'por lista' : 'en forma electrónica'} a ${generoRecurrente}, el ${resultado.fechaNotificacionTexto}, y surtió efectos ${efectosTextoRevision}, de conformidad con el ${resultado.fundamentoSurte}, por lo que el plazo de ${resultado.plazoTexto} días que prevé el diverso artículo 181 de la Ley de Amparo, transcurrió del ${extraerDiaMes(resultado.fechaInicioTexto)} al ${extraerDiaMes(resultado.fechaFinTexto)}, todos del referido año, con exclusión de los días ${resultado.diasInhabilesTexto}.
+      texto = `\t\tLa presentación del amparo directo adhesivo es ${resultado.esOportuno ? 'oportuna' : 'extemporánea'}, dado que la notificación del auto de admisión de la demanda de amparo principal se realizó ${obtenerTextoFormaNotificacion(formData.formaNotificacion)} a ${generoRecurrente} el ${resultado.fechaNotificacionTexto}, y surtió efectos ${efectosTextoRevision}, de conformidad con el ${resultado.fundamentoSurte}, por lo que el plazo de ${resultado.plazoTexto} días que prevé el diverso artículo 181 de la Ley de Amparo, transcurrió del ${extraerDiaMes(resultado.fechaInicioTexto)} al ${extraerDiaMes(resultado.fechaFinTexto)}, todos del referido año, con exclusión de los días ${resultado.diasInhabilesTexto}.
 
 \t\tPor ende, si el referido amparo adhesivo se interpuso el ${resultado.fechaPresentacionTexto}, como se aprecia ${resultado.formaPresentacion}, es inconcuso que su presentación es ${resultado.esOportuno ? 'oportuna' : 'extemporánea'}.`;
     } else {
       // Texto para amparo directo principal
-      texto = `\t\tLa presentación de la demanda de amparo directo es ${resultado.esOportuno ? 'oportuna' : 'extemporánea'}, dado que la notificación ${formData.resolucionImpugnada === 'auto' ? 'del acuerdo impugnado' : formData.resolucionImpugnada === 'sentencia' ? 'de la sentencia impugnada' : 'de la interlocutoria dictada en el incidente de suspensión'} se realizó ${formData.formaNotificacion === 'personal' ? 'personalmente' : formData.formaNotificacion === 'oficio' ? 'por oficio' : formData.formaNotificacion === 'lista' ? 'por lista' : 'en forma electrónica'} a ${generoRecurrente}, ${parteTexto} en el juicio de amparo, el ${resultado.fechaNotificacionTexto}, y surtió efectos ${efectosTextoRevision}, de conformidad con el ${resultado.fundamentoSurte}, por lo que el plazo de ${resultado.plazoTexto} días que prevé el diverso ${resultado.fundamento}, transcurrió del ${extraerDiaMes(resultado.fechaInicioTexto)} al ${extraerDiaMes(resultado.fechaFinTexto)}, todos del referido año, con exclusión de los días ${resultado.diasInhabilesTexto}.
+      texto = `\t\tLa presentación de la demanda de amparo directo es ${resultado.esOportuno ? 'oportuna' : 'extemporánea'}, dado que la notificación ${formData.resolucionImpugnada === 'auto' ? 'del acuerdo impugnado' : formData.resolucionImpugnada === 'sentencia' ? 'de la sentencia impugnada' : formData.resolucionImpugnada === 'interlocutoria' ? 'de la resolución interlocutoria' : 'del acto reclamado'} se realizó ${obtenerTextoFormaNotificacion(formData.formaNotificacion)} a ${generoRecurrente} el ${resultado.fechaNotificacionTexto}, y surtió efectos ${efectosTextoRevision}, de conformidad con el ${resultado.fundamentoSurte}, por lo que el plazo de ${resultado.plazoTexto} días que prevé el diverso ${resultado.fundamento}, transcurrió del ${extraerDiaMes(resultado.fechaInicioTexto)} al ${extraerDiaMes(resultado.fechaFinTexto)}, todos del referido año, con exclusión de los días ${resultado.diasInhabilesTexto}.
 
 \t\tPor ende, si la referida demanda de amparo se interpuso el ${resultado.fechaPresentacionTexto}, como se aprecia ${resultado.formaPresentacion}, es inconcuso que su presentación es ${resultado.esOportuno ? 'oportuna' : 'extemporánea'}.`;
     }
     
-    // Agregar notas al pie si existen
+    // Agregar notas al pie con los fundamentos
     if (resultado.notasAlPieTexto && resultado.notasAlPieTexto.length > 0) {
-      texto += '\n\n\n';
-      texto += '\n__________________________________\n';
-      texto += '\n';
-      resultado.notasAlPieTexto.forEach((nota: string) => {
-        texto += `${nota}\n`;
+      texto += '\n\n\n\n__________________________________\n';
+      
+      // Ordenar y agrupar las notas únicas con superíndices
+      const notasUnicas = [...new Set(resultado.notasAlPieTexto)];
+      const superindices = ['¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
+      notasUnicas.forEach((nota: string, index: number) => {
+        const superindice = index < 9 ? superindices[index] : `(${index + 1})`;
+        texto += `${superindice} ${nota}\n`;
       });
     }
     
@@ -3507,32 +3526,7 @@ export default function Page() {
     const textoBase = generarTexto();
     if (!textoBase) return '';
     
-    // Dividir el texto en partes: contenido principal y notas al pie
-    const partes = textoBase.split('__________________________________');
-    
-    if (partes.length === 1) {
-      // No hay notas al pie
-      return `<p style="text-indent: 2em; margin-bottom: 1em;">${partes[0].trim()}</p>`;
-    }
-    
-    // Hay notas al pie
-    const contenidoPrincipal = partes[0].trim();
-    const notasAlPie = partes[1].trim();
-    
-    let html = `<p style="text-indent: 2em; margin-bottom: 1em;">${contenidoPrincipal}</p>`;
-    html += '<div style="margin-top: 2em; padding-top: 1em; border-top: 1px solid #000;">';
-    html += '<div style="margin-bottom: 0.5em;">__________________________________</div>';
-    
-    if (notasAlPie) {
-      const lineasNotas = notasAlPie.split('\n').filter(linea => linea.trim());
-      lineasNotas.forEach(nota => {
-        html += `<div style="margin-bottom: 0.3em;">${nota}</div>`;
-      });
-    }
-    
-    html += '</div>';
-    
-    return html;
+    return `<p style="text-indent: 2em; margin-bottom: 1em;">${textoBase.trim()}</p>`;
   };
 
   return (

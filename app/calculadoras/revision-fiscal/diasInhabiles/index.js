@@ -236,7 +236,7 @@ export const diasInhabilesTFJA = [
   { año: 2025, mes: 4, dia: 17, fundamento: 'Acuerdo SS/3/2025', descripcion: 'Jueves 17' },
   { año: 2025, mes: 4, dia: 18, fundamento: 'Acuerdo SS/3/2025', descripcion: 'Viernes 18' },
   { año: 2025, mes: 5, dia: 1, fundamento: 'Acuerdo SS/3/2025', descripcion: 'Jueves 1°' },
-  { año: 2025, mes: 5, dia: 2, fundamento: 'Acuerdo SS/3/2025', descripcion: 'Viernes 2' },
+  { año: 2025, mes: 5, dia: 2, fundamento: 'Acuerdo SS/3/2025 y Circular 2/2025 del Pleno del CJF', descripcion: 'Viernes 2' },
   { año: 2025, mes: 5, dia: 5, fundamento: 'Acuerdo SS/3/2025', descripcion: 'Lunes 5' },
   // Julio 2025 - periodo vacacional
   { año: 2025, mes: 7, dia: 14, fundamento: 'Acuerdo SS/3/2025', descripcion: 'Del Lunes 14 al Jueves 31 (primer periodo vacacional)' },

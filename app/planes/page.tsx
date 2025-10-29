@@ -103,6 +103,11 @@ export default function PlanesPage() {
                   onClick={() => seleccionarPlan('free')}
                   disabled={loading}
                   className="w-full py-4 border-2 border-white text-white font-medium rounded-full text-lg hover:bg-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    position: 'relative',
+                    zIndex: 20,
+                    pointerEvents: 'auto'
+                  }}
                 >
                   Comenzar Gratis
                 </button>
@@ -151,7 +156,12 @@ export default function PlanesPage() {
                   onClick={() => seleccionarPlan('premium')}
                   disabled={loading}
                   className="w-full py-4 text-white font-medium rounded-full text-lg transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ background: '#4a90e2' }}
+                  style={{
+                    background: '#4a90e2',
+                    position: 'relative',
+                    zIndex: 20,
+                    pointerEvents: 'auto'
+                  }}
                 >
                   {loading ? 'Procesando...' : 'Comenzar Prueba'}
                 </button>
