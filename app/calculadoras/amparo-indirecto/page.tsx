@@ -665,10 +665,14 @@ function obtenerDiasInhabilesSimplificado(inicio: Date, fin: Date, diasAdicional
   
   // Construir el texto simplificado
   let partes: string[] = [];
+  let notasAlPie: string[] = [];
   
   // Agregar sábados y domingos si hay - solo los del período de cómputo
   if (hayFinDeSemana) {
     const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    
+    // Agregar nota al pie para sábados y domingos
+    notasAlPie.push('¹ artículo 19 de la Ley de Amparo');
     
     if (inicio.getFullYear() === fin.getFullYear()) {
       if (inicio.getMonth() === fin.getMonth()) {
@@ -761,18 +765,16 @@ function obtenerDiasInhabilesSimplificado(inicio: Date, fin: Date, diasAdicional
   
   // Generar texto agrupado con superíndices para detalles
   const partesOtrosDias: string[] = [];
-  const notasAlPie: string[] = [];
   const fundamentosYaUsados: {[key: string]: string} = {}; // Mapeo de fundamento a superíndice
   let numeroNota = 1;
   const superindices = ['¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
   
-  // Agregar nota para sábados y domingos si hay fin de semana
+  // Si ya hay nota de fin de semana, empezar desde el siguiente número
   if (hayFinDeSemana) {
     const fundamentoWeekend = 'artículo 19 de la Ley de Amparo';
     const superindiceWeekend = superindices[0];
     fundamentosYaUsados[fundamentoWeekend] = superindiceWeekend;
-    notasAlPie.push(`${superindiceWeekend} ${fundamentoWeekend}`);
-    numeroNota++;
+    numeroNota = 2; // Empezar desde 2 ya que 1 se usó para fines de semana
   }
   
   Object.keys(diasPorMesAño).forEach(mesAño => {
@@ -892,16 +894,23 @@ function obtenerDiasInhabilesSimplificado(inicio: Date, fin: Date, diasAdicional
     // (obtenerDiasInhabilesSimplificado as any).notasAlPie = notasAlPie;
   }
   
+  let textoFinal = '';
   if (partes.length === 0) {
-    return '';
+    textoFinal = '';
   } else if (partes.length === 1) {
-    return partes[0];
+    textoFinal = partes[0];
   } else if (partes.length === 2) {
-    return partes.join('; ');
+    textoFinal = partes.join('; ');
   } else {
     const ultimaParte = partes.pop();
-    return partes.join(', ') + '; ' + ultimaParte;
+    textoFinal = partes.join(', ') + '; ' + ultimaParte;
   }
+  
+  // Retornar objeto con texto y notas
+  return {
+    texto: textoFinal,
+    notas: notasAlPie
+  };
 }
 
 // Función para obtener días inhábiles con notas al pie (formato numérico para detalles)
@@ -2778,9 +2787,9 @@ export default function Page() {
         fechaInicioNumerico: fechaParaLitigante(fechaInicio.toISOString().split('T')[0]),
         fechaFinNumerico: fechaParaLitigante(fechaFin.toISOString().split('T')[0]),
         fechaPresentacionNumerico: formData.fechaPresentacion ? fechaParaLitigante(formData.fechaPresentacion) : '',
-        diasInhabiles: diasInhabilesSimplificadoInfo || diasInhabilesInfo.texto,
+        diasInhabiles: diasInhabilesSimplificadoInfo.texto || diasInhabilesInfo.texto,
         diasInhabilesTexto: diasInhabilesTextoInfo.texto,
-        notasAlPie: diasInhabilesInfo.notas,
+        notasAlPie: diasInhabilesSimplificadoInfo.notas || diasInhabilesInfo.notas,
         formaPresentacion: formasPresentacion[formData.formaPresentacion] || formData.formaPresentacion,
         resolucionImpugnada: resoluciones[formData.resolucionImpugnada] || formData.resolucionImpugnada,
         diasRestantes: diasRestantes > 0 ? diasRestantes : 0,
@@ -4907,14 +4916,6 @@ export default function Page() {
                   {formData.resolucionImpugnada !== 'actos_22_constitucional' && (
                     <p><strong>Días inhábiles excluidos:</strong> {resultado.diasInhabiles}</p>
                   )}
-                  {/* Mostrar notas al pie de los días inhábiles si existen */}
-                  {/* (obtenerDiasInhabilesSimplificado as any).notasAlPie && (obtenerDiasInhabilesSimplificado as any).notasAlPie.length > 0 && (
-                    <div className="mt-2 text-xs text-gray-600">
-                      {(obtenerDiasInhabilesSimplificado as any).notasAlPie.map((nota: string, index: number) => (
-                        <div key={index}>{nota}</div>
-                      ))}
-                    </div>
-                  ) */}
                 </div>
               </div>
               
@@ -4949,6 +4950,21 @@ export default function Page() {
                 }}>
                   <h3 style={{ fontWeight: '600', marginBottom: '0.5rem', color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}>Texto para Resolución:</h3>
                   <div className="text-sm font-['Arial'] leading-relaxed text-justify" dangerouslySetInnerHTML={{ __html: generarTextoFormateado() }}></div>
+                </div>
+              )}
+              
+              {/* Mostrar notas al pie de los días inhábiles si existen */}
+              {resultado.notasAlPie && resultado.notasAlPie.length > 0 && (
+                <div className="mt-6" style={{
+                  backgroundColor: 'rgba(197, 167, 112, 0.05)',
+                  border: '1.5px solid #C5A770',
+                  padding: '1rem',
+                  borderRadius: '10px'
+                }}>
+                  <p style={{ fontSize: '0.875rem', color: '#1C1C1C', marginBottom: '0.75rem', fontWeight: '600' }}>Referencias:</p>
+                  {resultado.notasAlPie.map((nota: string, index: number) => (
+                    <div key={index} style={{ fontSize: '0.8125rem', color: '#4A4A4A', lineHeight: '1.5', marginBottom: '0.25rem' }}>{nota}</div>
+                  ))}
                 </div>
               )}
               

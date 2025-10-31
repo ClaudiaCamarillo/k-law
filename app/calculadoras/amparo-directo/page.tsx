@@ -893,12 +893,21 @@ function obtenerDiasInhabilesConNotas(inicio: Date, fin: Date, diasAdicionales: 
     fecha.setDate(fecha.getDate() + 1);
   }
   
-  // Construir el texto
+  // Construir el texto con notas al pie
   let diasTexto: string[] = [];
+  let notasAlPie: string[] = [];
+  let numeroNota = 1;
+  const superindices = ['¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
+  const fundamentosYaUsados: {[key: string]: string} = {}; // Mapeo de fundamento a superíndice
   
   // Agregar sábados y domingos si hay
   if (hayFinDeSemana) {
-    diasTexto.push('sábados y domingos');
+    const fundamentoWeekend = 'artículo 19 de la Ley de Amparo';
+    const superindiceWeekend = superindices[0];
+    fundamentosYaUsados[fundamentoWeekend] = superindiceWeekend;
+    notasAlPie.push(`${superindiceWeekend} ${fundamentoWeekend}`);
+    diasTexto.push('sábados y domingos¹');
+    numeroNota++;
   }
   
   // Agregar días por orden de fundamento
@@ -907,8 +916,18 @@ function obtenerDiasInhabilesConNotas(inicio: Date, fin: Date, diasAdicionales: 
       if (fundamento.includes(fundamentoBuscado) || (fundamentoBuscado === 'usuario' && fundamento === fundamentoAdicional)) {
         const dias = diasPorFundamento[fundamento];
         if (dias && dias.length > 0) {
-          // No agregar superíndices
-          diasTexto = diasTexto.concat(dias);
+          // Obtener o crear superíndice para este fundamento
+          let superindiceAUsar = fundamentosYaUsados[fundamento];
+          
+          if (!superindiceAUsar) {
+            superindiceAUsar = numeroNota <= 9 ? superindices[numeroNota - 1] : `(${numeroNota})`;
+            fundamentosYaUsados[fundamento] = superindiceAUsar;
+            notasAlPie.push(`${superindiceAUsar} ${fundamento}`);
+            numeroNota++;
+          }
+          
+          // Agregar superíndice a cada día
+          diasTexto = diasTexto.concat(dias.map(dia => dia + superindiceAUsar));
         }
       }
     });
@@ -950,7 +969,7 @@ function obtenerDiasInhabilesConNotas(inicio: Date, fin: Date, diasAdicionales: 
   
   return {
     texto: textoFinal,
-    notas: []
+    notas: notasAlPie
   };
 }
 
@@ -2662,8 +2681,10 @@ export default function Page() {
         diasInhabilesSimplificadoInfo = diasInhabilesSimplificadoNotifSurte;
       } else {
         diasInhabilesInfo = obtenerDiasInhabilesConNotas(fechaNotif, fechaFin, diasAdicionales, fundamentoAdicional, tipoUsuario);
-        diasInhabilesTextoInfo = obtenerDiasInhabilesParaTexto(fechaNotif, fechaFin, diasAdicionales, fundamentoAdicional, tipoUsuario);
+        diasInhabilesTextoInfo = obtenerDiasInhabilesConNotas(fechaNotif, fechaFin, diasAdicionales, fundamentoAdicional, tipoUsuario);
         diasInhabilesSimplificadoInfo = obtenerDiasInhabilesSimplificado(fechaNotif, fechaFin, diasAdicionales, fundamentoAdicional, tipoUsuario);
+        
+        console.log('Debug - diasInhabilesTextoInfo:', diasInhabilesTextoInfo);
       }
       
       // Mapeos para el texto generado
@@ -2724,7 +2745,7 @@ export default function Page() {
         fechaFinNumerico: fechaParaLitigante(fechaFin.toISOString().split('T')[0]),
         fechaPresentacionNumerico: formData.fechaPresentacion ? fechaParaLitigante(formData.fechaPresentacion) : '',
         diasInhabiles: diasInhabilesSimplificadoInfo.diasInhabiles || diasInhabilesInfo.diasInhabiles,
-        diasInhabilesTexto: diasInhabilesTextoInfo.diasInhabilesTexto || diasInhabilesTextoInfo.texto,
+        diasInhabilesTexto: diasInhabilesTextoInfo.texto || diasInhabilesTextoInfo.diasInhabilesTexto,
         notasAlPie: diasInhabilesSimplificadoInfo.notasAlPie || diasInhabilesInfo.notasAlPie || [],
         notasAlPieTexto: (() => {
           let notas = diasInhabilesTextoInfo.notasAlPie || diasInhabilesTextoInfo.notas || [];
@@ -3556,18 +3577,8 @@ export default function Page() {
 \t\tPor ende, si la demanda se presentó el ${resultado.fechaPresentacionTexto}, es inconcuso que su presentación es ${resultado.esOportuno ? 'oportuna' : 'extemporánea'}.`;
     }
     
-    // Agregar notas al pie con los fundamentos
-    if (resultado.notasAlPieTexto && resultado.notasAlPieTexto.length > 0) {
-      texto += '\n\n\n\n__________________________________\n';
-      
-      // Ordenar y agrupar las notas únicas con superíndices
-      const notasUnicas = [...new Set(resultado.notasAlPieTexto)];
-      const superindices = ['¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
-      notasUnicas.forEach((nota: string, index: number) => {
-        const superindice = index < 9 ? superindices[index] : `(${index + 1})`;
-        texto += `${superindice} ${nota}\n`;
-      });
-    }
+    // Las notas al pie ahora se muestran en una sección separada de la interfaz
+    // No se agregan al texto de la resolución
     
     return texto;
   };
@@ -4659,19 +4670,21 @@ export default function Page() {
               )}
               
               {/* Mostrar notas al pie de los días inhábiles si existen */}
-              {(() => {
-                console.log('Debug - resultado.notasAlPie en render:', resultado.notasAlPie);
-                return resultado.notasAlPie && resultado.notasAlPie.length > 0 && (
-                  <div className="mt-6 pt-3">
-                    <hr className="border-t border-gray-300 mb-3" />
-                    <div className="text-xs text-gray-600">
-                      {resultado.notasAlPie.map((nota: string, index: number) => (
-                        <div key={index} className="mb-1">{nota}</div>
-                      ))}
+              {resultado.notasAlPie && resultado.notasAlPie.length > 0 && (
+                <div className="mt-6" style={{
+                  backgroundColor: 'rgba(197, 167, 112, 0.05)',
+                  border: '1.5px solid #C5A770',
+                  padding: '1rem',
+                  borderRadius: '10px'
+                }}>
+                  <p style={{ fontSize: '0.875rem', color: '#1C1C1C', marginBottom: '0.75rem', fontWeight: '600' }}>Referencias:</p>
+                  {resultado.notasAlPie.map((nota: string, index: number) => (
+                    <div key={index} style={{ fontSize: '0.8125rem', color: '#4A4A4A', lineHeight: '1.5', marginBottom: '0.25rem' }}>
+                      {nota}
                     </div>
-                  </div>
-                );
-              })()}
+                  ))}
+                </div>
+              )}
               
               <div className="mt-6 flex gap-4">
                 {tipoUsuario === 'servidor' && (
