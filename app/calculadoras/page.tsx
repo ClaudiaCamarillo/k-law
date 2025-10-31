@@ -135,6 +135,26 @@ export default function CalculadorasPage() {
         </div>
       </div>
 
+      {/* Mensaje temporal de validación */}
+      <div className="px-6 pb-4" style={{ position: 'relative', zIndex: 5 }}>
+        <div className="max-w-4xl mx-auto">
+          <div className="p-4 rounded-xl" style={{
+            backgroundColor: '#FFF9F0',
+            border: '1.5px solid #C5A770'
+          }}>
+            <p style={{
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '0.9rem',
+              color: '#3D3D3D',
+              lineHeight: '1.6',
+              textAlign: 'center'
+            }}>
+              Esta app fue creada por Claudia Camarillo y estamos en fase de validación, gracias por ayudarnos a probar las calculadoras de cómputos de juicios y recursos previstos en la Ley de Amparo, te invitamos a darnos retroalimentación al correo electrónico: <a href="mailto:claudia.camarillo@k-law.tech" style={{ color: '#C5A770', fontWeight: '600', textDecoration: 'none' }}>claudia.camarillo@k-law.tech</a>
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Navigation and Status */}
       <div className="px-6 pb-6 text-center" style={{ position: 'relative', zIndex: 5 }}>
         {/* Navigation Tabs */}

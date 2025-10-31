@@ -103,231 +103,74 @@ export default function JurisprudenciaPage() {
         </button>
       </div>
       
+      {/* Mensaje de En Desarrollo */}
       <div style={{ 
         backgroundColor: 'white', 
         padding: '2rem', 
         borderRadius: '30px',
         border: '2px solid #C5A770',
         maxWidth: '800px',
-        margin: '0 auto'
+        margin: '0 auto',
+        minHeight: '300px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}>
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Buscar cualquier tema jurídico (amparo, civil, penal, etc.)"
-          style={{ 
-            width: '100%', 
-            padding: '1rem', 
-            marginBottom: '1rem',
-            border: '2px solid #E5E5E5',
-            borderRadius: '10px',
-            fontFamily: 'Inter, sans-serif',
-            fontSize: '1rem'
-          }}
-        />
-        
-        <button
-          onClick={handleSearch}
-          disabled={loading || !searchTerm.trim()}
-          style={{
-            backgroundColor: loading ? '#999' : '#1C1C1C',
-            color: '#F4EFE8',
-            padding: '1rem 2rem',
-            border: 'none',
-            borderRadius: '25px',
-            cursor: loading ? 'wait' : 'pointer',
-            fontFamily: 'Inter, sans-serif',
-            fontSize: '1rem',
-            fontWeight: '600',
-            width: '100%'
-          }}
-        >
-          {loading ? '🔄 Buscando...' : '🔍 Buscar Jurisprudencia'}
-        </button>
-      </div>
-
-      {/* Resultados de búsqueda */}
-      {searched && (
-        <div style={{ 
-          marginTop: '3rem',
-          maxWidth: '800px',
-          margin: '3rem auto 0'
-        }}>
-          {loading ? (
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ marginBottom: '1.5rem' }}>
             <div style={{ 
-              textAlign: 'center',
-              padding: '2rem',
-              backgroundColor: 'white',
-              borderRadius: '30px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '80px',
+              height: '80px',
+              borderRadius: '50%',
+              backgroundColor: '#F4EFE8',
               border: '2px solid #C5A770'
             }}>
-              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔄</div>
-              <p style={{ fontFamily: 'Inter, sans-serif', color: '#3D3D3D' }}>
-                Buscando en APIs reales de la SCJN...
-              </p>
+              <span style={{ fontSize: '2.5rem' }}>⚖️</span>
             </div>
-          ) : results.length > 0 ? (
-            <div>
-              <div style={{ 
-                textAlign: 'center',
-                marginBottom: '2rem',
-                padding: '1rem',
-                backgroundColor: '#E8F5E8',
-                borderRadius: '15px',
-                border: '1px solid #4CAF50'
-              }}>
-                <p style={{ 
-                  fontFamily: 'Inter, sans-serif', 
-                  color: '#2E7D32',
-                  margin: 0,
-                  fontWeight: '600'
-                }}>
-                  ✅ Encontradas {results.length} tesis para "{searchTerm}"
-                </p>
-              </div>
-
-              {results.map((tesis, index) => (
-                <div key={tesis.id || index} style={{ 
-                  backgroundColor: 'white', 
-                  padding: '2rem', 
-                  marginBottom: '1.5rem',
-                  borderRadius: '20px',
-                  border: '1px solid #E5E5E5',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                }}>
-                  <h3 style={{ 
-                    fontFamily: 'Playfair Display, serif',
-                    color: '#1C1C1C',
-                    marginBottom: '1rem',
-                    fontSize: '1.2rem',
-                    lineHeight: '1.4'
-                  }}>
-                    {tesis.rubro}
-                  </h3>
-                  
-                  <div style={{ marginBottom: '1rem' }}>
-                    <span style={{ 
-                      backgroundColor: tesis.tipo === 'jurisprudencia' ? '#C5A770' : '#FFB74D',
-                      color: 'white',
-                      padding: '0.3rem 0.8rem',
-                      borderRadius: '15px',
-                      fontSize: '0.8rem',
-                      fontFamily: 'Inter, sans-serif',
-                      fontWeight: '600',
-                      marginRight: '0.5rem'
-                    }}>
-                      {tesis.tipo?.toUpperCase()}
-                    </span>
-                    <span style={{ 
-                      backgroundColor: '#E5E5E5',
-                      color: '#666',
-                      padding: '0.3rem 0.8rem',
-                      borderRadius: '15px',
-                      fontSize: '0.8rem',
-                      fontFamily: 'Inter, sans-serif'
-                    }}>
-                      {tesis.materia}
-                    </span>
-                  </div>
-                  
-                  <p style={{ 
-                    fontFamily: 'Inter, sans-serif',
-                    color: '#3D3D3D',
-                    lineHeight: '1.6',
-                    marginBottom: '1rem'
-                  }}>
-                    {tesis.texto?.substring(0, 300)}...
-                  </p>
-                  
-                  <div style={{ 
-                    fontSize: '0.9rem',
-                    color: '#666',
-                    fontFamily: 'Inter, sans-serif'
-                  }}>
-                    <p style={{ margin: '0.5rem 0' }}>
-                      <strong>Fuente:</strong> {tesis.fuente || 'Semanario Judicial de la Federación'}
-                    </p>
-                    {tesis.numero_tesis && (
-                      <p style={{ margin: '0.5rem 0' }}>
-                        <strong>Tesis:</strong> {tesis.numero_tesis}
-                      </p>
-                    )}
-                    <p style={{ margin: '0.5rem 0' }}>
-                      <strong>ID:</strong> {tesis.registro_digital || tesis.id}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div style={{ 
-              textAlign: 'center',
-              padding: '2rem',
-              backgroundColor: 'white',
-              borderRadius: '30px',
-              border: '2px solid #FFB74D'
-            }}>
-              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>❌</div>
-              <p style={{ fontFamily: 'Inter, sans-serif', color: '#F57C00' }}>
-                No se encontraron resultados para "{searchTerm}"
-              </p>
-            </div>
-          )}
-        </div>
-      )}
-      
-      {/* Información del sistema */}
-      {!searched && (
-        <div style={{ 
-          textAlign: 'center', 
-          marginTop: '3rem',
-          padding: '2rem',
-          backgroundColor: 'white',
-          borderRadius: '30px',
-          border: '2px solid #C5A770',
-          maxWidth: '800px',
-          margin: '3rem auto 0'
-        }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
-          <h3 style={{ 
-            fontFamily: 'Playfair Display, serif', 
+          </div>
+          <h2 style={{ 
+            fontFamily: 'Playfair Display, serif',
+            fontSize: '2rem',
             color: '#1C1C1C',
             marginBottom: '1rem'
           }}>
-            Búsqueda Universal de Jurisprudencia
-          </h3>
+            Sistema en Implementación
+          </h2>
           <p style={{ 
-            fontFamily: 'Inter, sans-serif', 
+            fontFamily: 'Inter, sans-serif',
             color: '#3D3D3D',
-            lineHeight: '1.6'
+            fontSize: '1rem',
+            lineHeight: '1.6',
+            maxWidth: '400px',
+            margin: '0 auto 1.5rem'
           }}>
-            Este buscador te permitirá encontrar cualquier tema jurídico:<br/>
-            • Tesis de amparo y constitucionales<br/>
-            • Jurisprudencia civil, penal, laboral<br/>
-            • Criterios administrativos y fiscales<br/>
-            • Precedentes mercantiles y familiares
+            Estamos integrando el sistema de búsqueda con el Semanario Judicial de la Federación 
+            para ofrecerte acceso completo a la jurisprudencia nacional.
           </p>
-          
           <div style={{ 
-            marginTop: '2rem',
-            padding: '1rem',
-            backgroundColor: '#E8F5E8',
-            borderRadius: '15px',
-            border: '1px solid #4CAF50'
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            padding: '0.75rem 1.5rem',
+            backgroundColor: '#F4EFE8',
+            border: '1.5px solid #C5A770',
+            borderRadius: '25px'
           }}>
-            <p style={{ 
-              fontFamily: 'Inter, sans-serif', 
-              color: '#2E7D32',
-              fontSize: '0.9rem',
-              margin: 0
+            <span style={{ fontSize: '0.875rem' }}>🔧</span>
+            <span style={{ 
+              fontFamily: 'Inter, sans-serif',
+              fontWeight: '600',
+              color: '#8B6914',
+              fontSize: '0.875rem'
             }}>
-              ✅ Conectado a APIs reales de la SCJN con sistema de fallbacks
-            </p>
+              Disponible próximamente
+            </span>
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }

@@ -327,319 +327,40 @@ export default function TiendaPage() {
         </p>
       </div>
 
-      {/* Filters and Search */}
-      <div className="px-4 md:px-6 py-6" style={{ backgroundColor: '#FFFFFF', borderBottom: '1px solid #F5F5F5' }}>
-        <div className="max-w-7xl mx-auto space-y-4">
-          {/* Search Bar */}
-          <div className="flex gap-4 items-center">
-            <div className="flex-1 relative">
-              <input
-                type="text"
-                placeholder="Buscar productos..."
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-                className="w-full px-4 py-3 pl-10 rounded-lg"
-                style={{ 
-                  border: '2px solid #F5F5F5',
-                  backgroundColor: '#FFFFFF',
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '1rem',
-                  transition: 'all 0.3s ease'
-                }}
-                onFocus={(e) => { e.target.style.borderColor = '#C9A961'; }}
-                onBlur={(e) => { e.target.style.borderColor = '#F5F5F5'; }}
-              />
-              <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '1.25rem' }}>🔍</span>
+      {/* Mensaje de En Desarrollo */}
+      <div className="flex-1 px-4 md:px-6 py-8 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <div className="mb-6">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full" style={{ backgroundColor: '#0A1628' }}>
+              <span className="text-3xl">🛍️</span>
             </div>
-            <select
-              value={ordenar}
-              onChange={(e) => setOrdenar(e.target.value as any)}
-              className="px-4 py-3 rounded-lg"
-              style={{ 
-                border: '2px solid #F5F5F5',
-                backgroundColor: '#FFFFFF',
-                fontFamily: 'Inter, sans-serif',
-                fontSize: '0.875rem',
-                cursor: 'pointer'
-              }}
-            >
-              <option value="popular">Más populares</option>
-              <option value="precio-asc">Menor precio</option>
-              <option value="precio-desc">Mayor precio</option>
-              <option value="nuevo">Más recientes</option>
-            </select>
           </div>
-
-          {/* Filter Buttons */}
-          <div className="flex flex-wrap gap-2">
-            {/* Tipo de producto */}
-            <div className="flex gap-2">
-              <button
-                onClick={() => setFiltroTipo('todos')}
-                className="px-4 py-2 rounded-full text-sm transition-all"
-                style={{
-                  backgroundColor: filtroTipo === 'todos' ? '#0A1628' : '#F5F5F5',
-                  color: filtroTipo === 'todos' ? '#C9A961' : '#6b7280',
-                  fontWeight: '600',
-                  fontFamily: 'Inter, sans-serif',
-                  border: 'none',
-                  cursor: 'pointer'
-                }}
-              >
-                Todos
-              </button>
-              <button
-                onClick={() => setFiltroTipo('digital')}
-                className="px-4 py-2 rounded-full text-sm transition-all"
-                style={{
-                  backgroundColor: filtroTipo === 'digital' ? '#0A1628' : '#F5F5F5',
-                  color: filtroTipo === 'digital' ? '#C9A961' : '#6b7280',
-                  fontWeight: '600',
-                  fontFamily: 'Inter, sans-serif',
-                  border: 'none',
-                  cursor: 'pointer'
-                }}
-              >
-                💾 Digitales
-              </button>
-              <button
-                onClick={() => setFiltroTipo('fisico')}
-                className="px-4 py-2 rounded-full text-sm transition-all"
-                style={{
-                  backgroundColor: filtroTipo === 'fisico' ? '#0A1628' : '#F5F5F5',
-                  color: filtroTipo === 'fisico' ? '#C9A961' : '#6b7280',
-                  fontWeight: '600',
-                  fontFamily: 'Inter, sans-serif',
-                  border: 'none',
-                  cursor: 'pointer'
-                }}
-              >
-                📦 Físicos
-              </button>
-            </div>
-
-            {/* Separator */}
-            <div style={{ width: '1px', backgroundColor: '#e5e7eb', margin: '0 0.5rem' }}></div>
-
-            {/* Categories */}
-            <select
-              value={filtroCategoria}
-              onChange={(e) => setFiltroCategoria(e.target.value)}
-              className="px-4 py-2 rounded-full text-sm"
-              style={{ 
-                border: '2px solid #F5F5F5',
-                backgroundColor: '#FFFFFF',
-                fontFamily: 'Inter, sans-serif',
-                cursor: 'pointer'
-              }}
-            >
-              {categorias.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.nombre}</option>
-              ))}
-            </select>
+          <h2 className="text-2xl font-bold mb-4" style={{ 
+            fontFamily: 'Playfair Display, serif',
+            color: '#0A1628'
+          }}>
+            Tienda en Desarrollo
+          </h2>
+          <p className="text-gray-600 mb-8" style={{ 
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '1rem',
+            lineHeight: '1.6'
+          }}>
+            Estamos preparando nuestra tienda jurídica con productos exclusivos y materiales educativos de alta calidad. 
+            Muy pronto podrás adquirir recursos especializados para tu desarrollo profesional.
+          </p>
+          <div className="inline-flex items-center gap-2 px-6 py-3 rounded-lg" style={{
+            backgroundColor: '#F5F5F5',
+            border: '1.5px solid #C9A961'
+          }}>
+            <span className="text-sm" style={{ color: '#0A1628' }}>🚀</span>
+            <span className="font-medium" style={{ 
+              fontFamily: 'Inter, sans-serif',
+              color: '#0A1628'
+            }}>
+              Lanzamiento próximamente
+            </span>
           </div>
-        </div>
-      </div>
-
-      {/* Products Grid */}
-      <div className="flex-1 px-4 md:px-6 py-8 overflow-y-auto">
-        <div className="max-w-7xl mx-auto">
-          {productosOrdenados.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="text-6xl mb-4">🔍</div>
-              <h3 className="text-xl mb-2" style={{ fontWeight: '600', color: '#0A1628', fontFamily: 'Montserrat, sans-serif' }}>
-                No se encontraron productos
-              </h3>
-              <p style={{ color: '#6b7280', fontFamily: 'Inter, sans-serif' }}>
-                Intenta con otros filtros o términos de búsqueda
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {productosOrdenados.map((producto, index) => (
-                <div
-                  key={producto.id}
-                  className="product-card relative group cursor-pointer"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                  onClick={() => router.push(`/tienda/producto/${producto.id}`)}
-                >
-                  {/* Badges */}
-                  <div className="absolute top-3 left-3 z-10 flex flex-wrap gap-2">
-                    {producto.nuevo && (
-                      <span style={{ 
-                        backgroundColor: '#ef4444', 
-                        color: '#FFFFFF', 
-                        padding: '0.25rem 0.75rem', 
-                        borderRadius: '12px', 
-                        fontSize: '0.65rem', 
-                        fontWeight: '700', 
-                        fontFamily: 'Inter, sans-serif',
-                        boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)'
-                      }}>
-                        NUEVO
-                      </span>
-                    )}
-                    {producto.oferta && (
-                      <span style={{ 
-                        backgroundColor: '#16a34a', 
-                        color: '#FFFFFF', 
-                        padding: '0.25rem 0.75rem', 
-                        borderRadius: '12px', 
-                        fontSize: '0.65rem', 
-                        fontWeight: '700', 
-                        fontFamily: 'Inter, sans-serif',
-                        boxShadow: '0 2px 8px rgba(22, 163, 74, 0.3)'
-                      }}>
-                        -{producto.oferta}%
-                      </span>
-                    )}
-                    {producto.popular && (
-                      <span style={{ 
-                        backgroundColor: '#C9A961', 
-                        color: '#0A1628', 
-                        padding: '0.25rem 0.75rem', 
-                        borderRadius: '12px', 
-                        fontSize: '0.65rem', 
-                        fontWeight: '700', 
-                        fontFamily: 'Inter, sans-serif',
-                        boxShadow: '0 2px 8px rgba(201, 169, 97, 0.3)'
-                      }}>
-                        POPULAR
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Product Card */}
-                  <div 
-                    className="h-full rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105"
-                    style={{ 
-                      backgroundColor: '#FFFFFF',
-                      border: '2px solid #F5F5F5',
-                      boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 12px 40px rgba(10,22,40,0.12)';
-                      e.currentTarget.style.borderColor = '#C9A961';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.04)';
-                      e.currentTarget.style.borderColor = '#F5F5F5';
-                    }}
-                  >
-                    {/* Product Image/Icon */}
-                    <div className="h-48 flex items-center justify-center" style={{ backgroundColor: '#F5F5F5' }}>
-                      <span className="text-6xl">{producto.imagen}</span>
-                    </div>
-
-                    {/* Product Info */}
-                    <div className="p-5">
-                      <h3 className="text-base mb-2" style={{ fontWeight: '700', color: '#0A1628', fontFamily: 'Montserrat, sans-serif', lineHeight: '1.3' }}>
-                        {producto.nombre}
-                      </h3>
-                      <p className="text-xs mb-3" style={{ color: '#6b7280', fontFamily: 'Inter, sans-serif', lineHeight: '1.5' }}>
-                        {producto.descripcion}
-                      </p>
-
-                      {/* Rating */}
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <span key={i} style={{ color: i < Math.floor(producto.rating) ? '#fbbf24' : '#e5e7eb', fontSize: '0.875rem' }}>★</span>
-                          ))}
-                        </div>
-                        <span style={{ color: '#6b7280', fontSize: '0.75rem', fontFamily: 'Inter, sans-serif' }}>
-                          {producto.rating} ({producto.reviews})
-                        </span>
-                      </div>
-
-                      {/* Price and Type */}
-                      <div className="flex items-center justify-between">
-                        <div>
-                          {producto.oferta ? (
-                            <div className="flex items-baseline gap-2">
-                              <span style={{ color: '#0A1628', fontSize: '1.25rem', fontWeight: '700', fontFamily: 'Montserrat, sans-serif' }}>
-                                ${calcularPrecioConDescuento(producto.precio, producto.oferta).toFixed(0)}
-                              </span>
-                              <span style={{ color: '#9ca3af', fontSize: '0.875rem', textDecoration: 'line-through', fontFamily: 'Inter, sans-serif' }}>
-                                ${producto.precio}
-                              </span>
-                            </div>
-                          ) : (
-                            <span style={{ color: '#0A1628', fontSize: '1.25rem', fontWeight: '700', fontFamily: 'Montserrat, sans-serif' }}>
-                              ${producto.precio}
-                            </span>
-                          )}
-                        </div>
-                        <span style={{ 
-                          backgroundColor: producto.tipo === 'digital' ? '#dbeafe' : '#fef3c7', 
-                          color: producto.tipo === 'digital' ? '#1e40af' : '#92400e',
-                          padding: '0.25rem 0.75rem',
-                          borderRadius: '8px',
-                          fontSize: '0.65rem',
-                          fontWeight: '600',
-                          fontFamily: 'Inter, sans-serif'
-                        }}>
-                          {producto.tipo === 'digital' ? '💾 Digital' : '📦 Físico'}
-                        </span>
-                      </div>
-
-                      {/* Quick Actions */}
-                      <div className="mt-4 flex gap-2">
-                        {producto.tipo === 'digital' && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setShowPreview(producto.id)
-                            }}
-                            style={{ 
-                              flex: 1,
-                              padding: '0.5rem', 
-                              backgroundColor: '#F5F5F5', 
-                              color: '#374151', 
-                              borderRadius: '8px', 
-                              fontSize: '0.75rem', 
-                              fontWeight: '600', 
-                              fontFamily: 'Inter, sans-serif',
-                              border: 'none',
-                              cursor: 'pointer',
-                              transition: 'all 0.3s ease'
-                            }}
-                            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#e5e7eb'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#F5F5F5'; }}
-                          >
-                            👁️ Preview
-                          </button>
-                        )}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            agregarAlCarrito(producto.id)
-                          }}
-                          style={{ 
-                            flex: 1,
-                            padding: '0.5rem', 
-                            backgroundColor: '#C9A961', 
-                            color: '#0A1628', 
-                            borderRadius: '8px', 
-                            fontSize: '0.75rem', 
-                            fontWeight: '700', 
-                            fontFamily: 'Inter, sans-serif',
-                            border: 'none',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s ease'
-                          }}
-                          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#b8975a'; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#C9A961'; }}
-                        >
-                          🛒 Agregar
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </div>
 

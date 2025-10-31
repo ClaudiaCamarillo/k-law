@@ -572,7 +572,7 @@ export default function DocumentosPage() {
       </div>
 
       <main className="max-w-7xl mx-auto px-4 py-8" style={{ position: 'relative', zIndex: 10 }}>
-        <div className="text-center mb-8">
+        <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl lg:text-5xl mb-2" style={{ 
             fontFamily: 'Playfair Display, serif', 
             fontWeight: '800', 
@@ -586,96 +586,41 @@ export default function DocumentosPage() {
           </p>
         </div>
 
-        {/* Filtros de categoría */}
-        <div className="flex flex-wrap justify-center gap-3 mb-8">
-          {categorias.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategoria(cat.id)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-full transition-all duration-300 ${
-                selectedCategoria === cat.id 
-                  ? 'shadow-md transform scale-105' 
-                  : 'hover:shadow-sm'
-              }`}
-              style={{ 
-                backgroundColor: selectedCategoria === cat.id ? '#C5A770' : 'white',
-                color: selectedCategoria === cat.id ? '#1C1C1C' : '#4B5563',
-                border: selectedCategoria === cat.id ? '2px solid #C5A770' : '2px solid #E5E7EB',
-                fontFamily: 'Inter, sans-serif',
-                fontWeight: '500',
-                fontSize: '0.875rem'
-              }}
-            >
-              <span style={{ fontSize: '1.25rem' }}>{cat.icono}</span>
-              <span>{cat.nombre}</span>
-              {cat.id === 'guardados' && (
-                <span className="bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full text-xs">0</span>
-              )}
-            </button>
-          ))}
-        </div>
-
-        {/* Grid de documentos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {documentosFiltrados.map((doc) => (
-            <div
-              key={doc.id}
-              onClick={() => handleSelectDocumento(doc)}
-              className="document-card bg-white rounded-xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl relative overflow-hidden"
-              style={{ 
-                border: '2px solid transparent',
-                borderColor: doc.premium && plan === 'free' ? '#E5E7EB' : 'transparent'
-              }}
-            >
-              {doc.premium && plan === 'free' && (
-                <div className="absolute top-4 right-4">
-                  <span className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md">
-                    PREMIUM
-                  </span>
-                </div>
-              )}
-              
-              {doc.nuevo && (
-                <div className="absolute top-4 left-4">
-                  <span className="bg-gradient-to-r from-green-400 to-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md animate-pulse">
-                    NUEVO
-                  </span>
-                </div>
-              )}
-              
-              <div className="text-5xl mb-4 text-center">{doc.icono}</div>
-              
-              <h3 className="text-lg font-bold mb-2" style={{ 
-                fontFamily: 'Playfair Display, serif',
-                color: '#1C1C1C'
-              }}>
-                {doc.nombre}
-              </h3>
-              
-              <p className="text-gray-600 text-sm mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>
-                {doc.descripcion}
-              </p>
-              
-              <div className="flex items-center justify-between">
-                <button
-                  className="flex items-center gap-2 text-sm font-medium transition-colors"
-                  style={{ 
-                    color: doc.premium && plan === 'free' ? '#9CA3AF' : '#C5A770',
-                    fontFamily: 'Inter, sans-serif'
-                  }}
-                >
-                  <span>Crear documento</span>
-                  <span>→</span>
-                </button>
-                
-                {doc.premium && plan === 'free' && (
-                  <span className="text-xs text-gray-500">
-                    🔒 Premium
-                  </span>
-                )}
+        {/* Mensaje de En Desarrollo */}
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center max-w-md">
+            <div className="mb-6">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 shadow-lg">
+                <span className="text-3xl">🚧</span>
               </div>
             </div>
-          ))}
+            <h2 className="text-2xl font-bold mb-4" style={{ 
+              fontFamily: 'Playfair Display, serif',
+              color: '#1C1C1C'
+            }}>
+              Módulo en Desarrollo
+            </h2>
+            <p className="text-gray-600 mb-8" style={{ 
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '1rem',
+              lineHeight: '1.6'
+            }}>
+              Estamos trabajando en el generador de documentos legales con tecnología IA para brindarte la mejor experiencia. 
+              Esta funcionalidad estará disponible próximamente.
+            </p>
+            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-lg" style={{
+              backgroundColor: '#F8F4E8',
+              border: '1.5px solid #C5A770'
+            }}>
+              <span className="text-sm" style={{ color: '#8B6914' }}>⏱️</span>
+              <span className="font-medium" style={{ 
+                fontFamily: 'Inter, sans-serif',
+                color: '#8B6914'
+              }}>
+                Disponible próximamente
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Modal de formulario */}

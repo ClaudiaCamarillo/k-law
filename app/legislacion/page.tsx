@@ -78,129 +78,44 @@ export default function LegislacionPage() {
         </div>
       </div>
 
-      {/* Filtros y Búsqueda */}
-      <div className="px-4 pb-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <div className="flex flex-col md:flex-row gap-4">
-              {/* Buscador */}
-              <div className="flex-1">
-                <input
-                  type="text"
-                  placeholder="Buscar ley..."
-                  value={busqueda}
-                  onChange={(e) => setBusqueda(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg"
-                  style={{
-                    backgroundColor: '#F4EFE8',
-                    border: '1px solid #E5E5E5',
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '14px'
-                  }}
-                />
-              </div>
-
-              {/* Filtro por categoría */}
-              <select
-                value={categoriaSeleccionada}
-                onChange={(e) => setCategoriaSeleccionada(e.target.value as Categoria | 'todas')}
-                className="px-4 py-2 rounded-lg cursor-pointer"
-                style={{
-                  backgroundColor: '#F4EFE8',
-                  border: '1px solid #E5E5E5',
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '14px'
-                }}
-              >
-                {categorias.map(cat => (
-                  <option key={cat.value} value={cat.value}>
-                    {cat.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Lista de Leyes */}
+      {/* Mensaje de En Desarrollo */}
       <div className="px-4 pb-8">
         <div className="max-w-7xl mx-auto">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {leyesFiltradas.map(ley => (
-              <div
-                key={ley.id}
-                className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-300"
-              >
-                <div className="mb-4">
-                  <h3 className="text-lg mb-2" style={{
-                    fontFamily: 'Playfair Display, serif',
-                    fontWeight: '600',
-                    color: '#1C1C1C'
-                  }}>
-                    {ley.nombre}
-                  </h3>
-                  <span
-                    className="inline-block px-3 py-1 rounded-full text-xs"
-                    style={{
-                      backgroundColor: '#F4EFE8',
-                      color: '#3D3D3D',
-                      fontFamily: 'Inter, sans-serif',
-                      fontWeight: '500',
-                      textTransform: 'capitalize'
-                    }}
-                  >
-                    {ley.categoria}
-                  </span>
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center max-w-md">
+              <div className="mb-6">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 shadow-lg">
+                  <span className="text-3xl">📚</span>
                 </div>
-
-                <p className="text-sm mb-4" style={{
-                  fontFamily: 'Inter, sans-serif',
-                  color: '#3D3D3D',
-                  fontWeight: '300',
-                  fontStyle: 'italic'
-                }}>
-                  Contenido próximamente
-                </p>
-
-                <Link
-                  href={`/legislacion/${ley.id}`}
-                  className="block w-full py-2 rounded-lg transition-all duration-300 text-center"
-                  style={{
-                    backgroundColor: 'transparent',
-                    border: '1px solid #C5A770',
-                    color: '#C5A770',
-                    fontFamily: 'Inter, sans-serif',
-                    fontWeight: '500',
-                    fontSize: '14px',
-                    textDecoration: 'none'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#C5A770'
-                    e.currentTarget.style.color = '#FFFFFF'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent'
-                    e.currentTarget.style.color = '#C5A770'
-                  }}
-                >
-                  Ver
-                </Link>
               </div>
-            ))}
-          </div>
-
-          {leyesFiltradas.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-lg" style={{
-                fontFamily: 'Inter, sans-serif',
-                color: '#3D3D3D',
-                fontWeight: '300'
+              <h2 className="text-2xl font-bold mb-4" style={{ 
+                fontFamily: 'Playfair Display, serif',
+                color: '#1C1C1C'
               }}>
-                No se encontraron leyes con los filtros seleccionados
+                Base de Datos en Construcción
+              </h2>
+              <p className="text-gray-600 mb-8" style={{ 
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '1rem',
+                lineHeight: '1.6'
+              }}>
+                Estamos recopilando y organizando la legislación federal mexicana más actualizada. 
+                Pronto tendrás acceso a una biblioteca legal completa con herramientas de búsqueda avanzada.
               </p>
+              <div className="inline-flex items-center gap-2 px-6 py-3 rounded-lg" style={{
+                backgroundColor: '#F8F4E8',
+                border: '1.5px solid #C5A770'
+              }}>
+                <span className="text-sm" style={{ color: '#8B6914' }}>📊</span>
+                <span className="font-medium" style={{ 
+                  fontFamily: 'Inter, sans-serif',
+                  color: '#8B6914'
+                }}>
+                  En proceso de actualización
+                </span>
+              </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
