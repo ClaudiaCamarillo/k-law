@@ -738,8 +738,8 @@ function obtenerDiasInhabilesSimplificado(inicio: Date, fin: Date, diasAdicional
     return diaA - diaB;
   });
   
-  // Agrupar días por mes/año + fundamento para simplificar redacción con superíndices
-  const diasPorMesAñoFundamento: {[key: string]: {fechas: string[], fundamento: string, mesAño: string}} = {};
+  // Agrupar días por mes/año para simplificar redacción con superíndices
+  const diasPorMesAño: {[key: string]: {dias: {dia: string, fundamento: string}[], mesAño: string}} = {};
   
   console.log('Debug - todosLosDiasNoWeekend:', todosLosDiasNoWeekend);
   todosLosDiasNoWeekend.forEach(item => {
@@ -749,16 +749,15 @@ function obtenerDiasInhabilesSimplificado(inicio: Date, fin: Date, diasAdicional
       const mes = partes[1];
       const año = partes[2];
       const mesAño = `${mes} de ${año}`;
-      const claveGrupo = `${mesAño} - ${item.fundamento}`;
       
-      if (!diasPorMesAñoFundamento[claveGrupo]) {
-        diasPorMesAñoFundamento[claveGrupo] = {fechas: [], fundamento: item.fundamento, mesAño: mesAño};
+      if (!diasPorMesAño[mesAño]) {
+        diasPorMesAño[mesAño] = {dias: [], mesAño: mesAño};
       }
-      diasPorMesAñoFundamento[claveGrupo].fechas.push(dia);
+      diasPorMesAño[mesAño].dias.push({dia: dia, fundamento: item.fundamento});
     }
   });
   
-  console.log('Debug - diasPorMesAñoFundamento:', diasPorMesAñoFundamento);
+  console.log('Debug - diasPorMesAño:', diasPorMesAño);
   
   // Generar texto agrupado con superíndices para detalles
   const partesOtrosDias: string[] = [];
@@ -776,165 +775,56 @@ function obtenerDiasInhabilesSimplificado(inicio: Date, fin: Date, diasAdicional
     numeroNota++;
   }
   
-  Object.keys(diasPorMesAñoFundamento).forEach(claveGrupo => {
-    const grupo = diasPorMesAñoFundamento[claveGrupo];
-    console.log('Debug - procesando grupo:', claveGrupo, grupo);
+  Object.keys(diasPorMesAño).forEach(mesAño => {
+    const grupo = diasPorMesAño[mesAño];
+    console.log('Debug - procesando grupo:', mesAño, grupo);
     
-    // Debug: mostrar información del grupo
-    console.log(`Debug - mesAño: ${grupo.mesAño}, fundamento: ${grupo.fundamento}, fechas: ${grupo.fechas.join(', ')}`);
+    // Ordenar días del mes cronológicamente
+    const textoANumero: {[key: string]: number} = {
+      'uno': 1, 'dos': 2, 'tres': 3, 'cuatro': 4, 'cinco': 5, 'seis': 6, 'siete': 7, 'ocho': 8, 'nueve': 9, 'diez': 10,
+      'once': 11, 'doce': 12, 'trece': 13, 'catorce': 14, 'quince': 15, 'dieciséis': 16, 'diecisiete': 17, 'dieciocho': 18, 'diecinueve': 19, 'veinte': 20,
+      'veintiuno': 21, 'veintidós': 22, 'veintitrés': 23, 'veinticuatro': 24, 'veinticinco': 25, 'veintiséis': 26, 'veintisiete': 27, 'veintiocho': 28, 'veintinueve': 29, 'treinta': 30, 'treinta y uno': 31,
+      '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
+      '11': 11, '12': 12, '13': 13, '14': 14, '15': 15, '16': 16, '17': 17, '18': 18, '19': 19, '20': 20,
+      '21': 21, '22': 22, '23': 23, '24': 24, '25': 25, '26': 26, '27': 27, '28': 28, '29': 29, '30': 30, '31': 31
+    };
     
-    // Con el nuevo agrupamiento por fundamento, todos los días ya tienen el mismo fundamento
-    const fundamento = grupo.fundamento;
-    let superindiceAUsar = fundamentosYaUsados[fundamento];
+    grupo.dias.sort((a, b) => {
+      const numA = textoANumero[a.dia] || parseInt(a.dia) || 0;
+      const numB = textoANumero[b.dia] || parseInt(b.dia) || 0;
+      return numA - numB;
+    });
     
-    if (!superindiceAUsar) {
-      // Crear nueva nota
-      superindiceAUsar = numeroNota <= 9 ? superindices[numeroNota - 1] : `(${numeroNota})`;
-      fundamentosYaUsados[fundamento] = superindiceAUsar;
-      notasAlPie.push(`${superindiceAUsar} ${fundamento}`);
-      numeroNota++;
-    }
+    // Procesar días con sus superíndices
+    const diasConSuperindices: string[] = [];
     
-    // Verificar si son días consecutivos para crear rangos
-    console.log('Debug - grupo.fechas:', grupo.fechas, 'fundamento:', grupo.fundamento);
-    const diasNumericos = grupo.fechas.map(dia => {
-        // dia ya es solo el número como "27", no necesita split
-        const textoANumero: {[key: string]: number} = {
-          'uno': 1, 'dos': 2, 'tres': 3, 'cuatro': 4, 'cinco': 5, 'seis': 6, 'siete': 7, 'ocho': 8, 'nueve': 9, 'diez': 10,
-          'once': 11, 'doce': 12, 'trece': 13, 'catorce': 14, 'quince': 15, 'dieciséis': 16, 'diecisiete': 17, 'dieciocho': 18, 'diecinueve': 19, 'veinte': 20,
-          'veintiuno': 21, 'veintidós': 22, 'veintitrés': 23, 'veinticuatro': 24, 'veinticinco': 25, 'veintiséis': 26, 'veintisiete': 27, 'veintiocho': 28, 'veintinueve': 29, 'treinta': 30, 'treinta y uno': 31,
-          '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
-          '11': 11, '12': 12, '13': 13, '14': 14, '15': 15, '16': 16, '17': 17, '18': 18, '19': 19, '20': 20,
-          '21': 21, '22': 22, '23': 23, '24': 24, '25': 25, '26': 26, '27': 27, '28': 28, '29': 29, '30': 30, '31': 31
-        };
-        const numero = textoANumero[dia] || 0;
-        console.log('Debug - dia:', dia, 'numero:', numero);
-        return numero;
-      }).sort((a, b) => a - b);
-      console.log('Debug - diasNumericos ordenados:', diasNumericos);
+    grupo.dias.forEach(item => {
+      const fundamento = item.fundamento;
+      let superindiceAUsar = fundamentosYaUsados[fundamento];
       
-      let textoFormateado = '';
-      if (diasNumericos.length >= 3) {
-        // Verificar si son consecutivos (para 3 o más días)
-        let sonConsecutivos = true;
-        for (let i = 1; i < diasNumericos.length; i++) {
-          if (diasNumericos[i] !== diasNumericos[i-1] + 1) {
-            sonConsecutivos = false;
-            break;
-          }
-        }
-        
-        if (sonConsecutivos) {
-          // Mostrar como rango: "16 a 31"
-          const primerDia = grupo.fechas.find(dia => {
-            const textoANumero: {[key: string]: number} = {
-              'uno': 1, 'dos': 2, 'tres': 3, 'cuatro': 4, 'cinco': 5, 'seis': 6, 'siete': 7, 'ocho': 8, 'nueve': 9, 'diez': 10,
-              'once': 11, 'doce': 12, 'trece': 13, 'catorce': 14, 'quince': 15, 'dieciséis': 16, 'diecisiete': 17, 'dieciocho': 18, 'diecinueve': 19, 'veinte': 20,
-              'veintiuno': 21, 'veintidós': 22, 'veintitrés': 23, 'veinticuatro': 24, 'veinticinco': 25, 'veintiséis': 26, 'veintisiete': 27, 'veintiocho': 28, 'veintinueve': 29, 'treinta': 30, 'treinta y uno': 31,
-              '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
-              '11': 11, '12': 12, '13': 13, '14': 14, '15': 15, '16': 16, '17': 17, '18': 18, '19': 19, '20': 20,
-              '21': 21, '22': 22, '23': 23, '24': 24, '25': 25, '26': 26, '27': 27, '28': 28, '29': 29, '30': 30, '31': 31
-            };
-            return textoANumero[dia] === diasNumericos[0];
-          });
-          const ultimoDia = grupo.fechas.find(dia => {
-            const textoANumero: {[key: string]: number} = {
-              'uno': 1, 'dos': 2, 'tres': 3, 'cuatro': 4, 'cinco': 5, 'seis': 6, 'siete': 7, 'ocho': 8, 'nueve': 9, 'diez': 10,
-              'once': 11, 'doce': 12, 'trece': 13, 'catorce': 14, 'quince': 15, 'dieciséis': 16, 'diecisiete': 17, 'dieciocho': 18, 'diecinueve': 19, 'veinte': 20,
-              'veintiuno': 21, 'veintidós': 22, 'veintitrés': 23, 'veinticuatro': 24, 'veinticinco': 25, 'veintiséis': 26, 'veintisiete': 27, 'veintiocho': 28, 'veintinueve': 29, 'treinta': 30, 'treinta y uno': 31,
-              '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
-              '11': 11, '12': 12, '13': 13, '14': 14, '15': 15, '16': 16, '17': 17, '18': 18, '19': 19, '20': 20,
-              '21': 21, '22': 22, '23': 23, '24': 24, '25': 25, '26': 26, '27': 27, '28': 28, '29': 29, '30': 30, '31': 31
-            };
-            return textoANumero[dia] === diasNumericos[diasNumericos.length - 1];
-          });
-          textoFormateado = `${primerDia} a ${ultimoDia}${superindiceAUsar}`;
-        } else {
-          // No son consecutivos, buscar sub-rangos
-          const textoANumero: {[key: string]: number} = {
-            'uno': 1, 'dos': 2, 'tres': 3, 'cuatro': 4, 'cinco': 5, 'seis': 6, 'siete': 7, 'ocho': 8, 'nueve': 9, 'diez': 10,
-            'once': 11, 'doce': 12, 'trece': 13, 'catorce': 14, 'quince': 15, 'dieciséis': 16, 'diecisiete': 17, 'dieciocho': 18, 'diecinueve': 19, 'veinte': 20,
-            'veintiuno': 21, 'veintidós': 22, 'veintitrés': 23, 'veinticuatro': 24, 'veinticinco': 25, 'veintiséis': 26, 'veintisiete': 27, 'veintiocho': 28, 'veintinueve': 29, 'treinta': 30, 'treinta y uno': 31,
-            '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
-            '11': 11, '12': 12, '13': 13, '14': 14, '15': 15, '16': 16, '17': 17, '18': 18, '19': 19, '20': 20,
-            '21': 21, '22': 22, '23': 23, '24': 24, '25': 25, '26': 26, '27': 27, '28': 28, '29': 29, '30': 30, '31': 31
-          };
-          
-          // Agrupar en sub-rangos
-          const diasOrdenados = [...grupo.fechas].sort((a, b) => (textoANumero[a] || 0) - (textoANumero[b] || 0));
-          const grupos: string[] = [];
-          let inicio = 0;
-          
-          while (inicio < diasOrdenados.length) {
-            let fin = inicio;
-            
-            // Encontrar el final del rango consecutivo
-            while (fin + 1 < diasOrdenados.length && 
-                   textoANumero[diasOrdenados[fin + 1]] === textoANumero[diasOrdenados[fin]] + 1) {
-              fin++;
-            }
-            
-            if (fin === inicio) {
-              // Día individual
-              grupos.push(diasOrdenados[inicio]);
-            } else if (fin === inicio + 1) {
-              // Dos días consecutivos, mostrar separados
-              grupos.push(diasOrdenados[inicio]);
-              grupos.push(diasOrdenados[fin]);
-            } else {
-              // Tres o más días consecutivos, mostrar como rango
-              grupos.push(`${diasOrdenados[inicio]} a ${diasOrdenados[fin]}`);
-            }
-            
-            inicio = fin + 1;
-          }
-          
-          if (grupos.length === 1) {
-            textoFormateado = `${grupos[0]}${superindiceAUsar}`;
-          } else {
-            const ultimoGrupo = grupos.pop();
-            textoFormateado = `${grupos.join(', ')} y ${ultimoGrupo}${superindiceAUsar}`;
-          }
-        }
-      } else if (diasNumericos.length === 2) {
-        // Para dos días, verificar si son consecutivos
-        if (diasNumericos[1] === diasNumericos[0] + 1) {
-          // Son consecutivos, mostrar como rango
-          const primerDia = grupo.fechas.find(dia => {
-            const textoANumero: {[key: string]: number} = {
-              'uno': 1, 'dos': 2, 'tres': 3, 'cuatro': 4, 'cinco': 5, 'seis': 6, 'siete': 7, 'ocho': 8, 'nueve': 9, 'diez': 10,
-              'once': 11, 'doce': 12, 'trece': 13, 'catorce': 14, 'quince': 15, 'dieciséis': 16, 'diecisiete': 17, 'dieciocho': 18, 'diecinueve': 19, 'veinte': 20,
-              'veintiuno': 21, 'veintidós': 22, 'veintitrés': 23, 'veinticuatro': 24, 'veinticinco': 25, 'veintiséis': 26, 'veintisiete': 27, 'veintiocho': 28, 'veintinueve': 29, 'treinta': 30, 'treinta y uno': 31,
-              '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
-              '11': 11, '12': 12, '13': 13, '14': 14, '15': 15, '16': 16, '17': 17, '18': 18, '19': 19, '20': 20,
-              '21': 21, '22': 22, '23': 23, '24': 24, '25': 25, '26': 26, '27': 27, '28': 28, '29': 29, '30': 30, '31': 31
-            };
-            return textoANumero[dia] === diasNumericos[0];
-          });
-          const ultimoDia = grupo.fechas.find(dia => {
-            const textoANumero: {[key: string]: number} = {
-              'uno': 1, 'dos': 2, 'tres': 3, 'cuatro': 4, 'cinco': 5, 'seis': 6, 'siete': 7, 'ocho': 8, 'nueve': 9, 'diez': 10,
-              'once': 11, 'doce': 12, 'trece': 13, 'catorce': 14, 'quince': 15, 'dieciséis': 16, 'diecisiete': 17, 'dieciocho': 18, 'diecinueve': 19, 'veinte': 20,
-              'veintiuno': 21, 'veintidós': 22, 'veintitrés': 23, 'veinticuatro': 24, 'veinticinco': 25, 'veintiséis': 26, 'veintisiete': 27, 'veintiocho': 28, 'veintinueve': 29, 'treinta': 30, 'treinta y uno': 31,
-              '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
-              '11': 11, '12': 12, '13': 13, '14': 14, '15': 15, '16': 16, '17': 17, '18': 18, '19': 19, '20': 20,
-              '21': 21, '22': 22, '23': 23, '24': 24, '25': 25, '26': 26, '27': 27, '28': 28, '29': 29, '30': 30, '31': 31
-            };
-            return textoANumero[dia] === diasNumericos[1];
-          });
-          textoFormateado = `${primerDia} a ${ultimoDia}${superindiceAUsar}`;
-        } else {
-          // No son consecutivos, mostrar con "y"
-          textoFormateado = `${grupo.fechas[0]} y ${grupo.fechas[1]}${superindiceAUsar}`;
-        }
-      } else {
-        textoFormateado = `${grupo.fechas[0]}${superindiceAUsar}`;
+      if (!superindiceAUsar) {
+        // Crear nueva nota
+        superindiceAUsar = numeroNota <= 9 ? superindices[numeroNota - 1] : `(${numeroNota})`;
+        fundamentosYaUsados[fundamento] = superindiceAUsar;
+        notasAlPie.push(`${superindiceAUsar} ${fundamento}`);
+        numeroNota++;
       }
       
-      // Determinar si usar "del mismo año" o el año completo
-      const añoCompleto = grupo.mesAño.includes('de dos mil') ? grupo.mesAño : grupo.mesAño;
-      const añoSimplificado = grupo.mesAño.replace(/de dos mil \w+/, 'del mismo año');
-      partesOtrosDias.push(`${textoFormateado} de ${añoSimplificado}`);
+      diasConSuperindices.push(`${item.dia}${superindiceAUsar}`);
+    });
+    
+    // Formatear texto del mes
+    let textoFormateado = '';
+    if (diasConSuperindices.length === 1) {
+      textoFormateado = diasConSuperindices[0];
+    } else if (diasConSuperindices.length === 2) {
+      textoFormateado = `${diasConSuperindices[0]} y ${diasConSuperindices[1]}`;
+    } else {
+      const ultimo = diasConSuperindices.pop();
+      textoFormateado = `${diasConSuperindices.join(', ')} y ${ultimo}`;
+    }
+    
+    partesOtrosDias.push(`${textoFormateado} de ${grupo.mesAño}`);
   });
   
   if (partesOtrosDias.length > 0) {
@@ -1007,10 +897,10 @@ function obtenerDiasInhabilesSimplificado(inicio: Date, fin: Date, diasAdicional
   } else if (partes.length === 1) {
     return partes[0];
   } else if (partes.length === 2) {
-    return partes.join(' y ');
+    return partes.join('; ');
   } else {
     const ultimaParte = partes.pop();
-    return partes.join(', ') + ' y ' + ultimaParte;
+    return partes.join(', ') + '; ' + ultimaParte;
   }
 }
 
@@ -1262,58 +1152,193 @@ function obtenerDiasInhabilesParaTexto(inicio: Date, fin: Date, diasAdicionales:
     fecha.setDate(fecha.getDate() + 1);
   }
   
+  // Recopilar todos los días (excepto sábados y domingos)
+  const todosLosDias: {fecha: Date, diaTexto: string, fundamento: string}[] = [];
+  
+  Object.keys(diasPorFundamento).forEach(fundamento => {
+    const dias = diasPorFundamento[fundamento];
+    if (dias && dias.length > 0) {
+      dias.forEach(diaTexto => {
+        // Para litigante el formato es "17 de marzo de 2025"
+        // Para servidor el formato es "diecisiete de marzo de dos mil veinticinco"
+        const partes = diaTexto.split(' de ');
+        if (partes.length === 3) {
+          const diaStr = partes[0];
+          const mes = partes[1];
+          const añoStr = partes[2];
+          const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+          const mesIndex = meses.indexOf(mes);
+          
+          let diaNum = 0;
+          let añoNum = 0;
+          
+          // Convertir día
+          if (tipoUsuario === 'litigante') {
+            diaNum = parseInt(diaStr);
+          } else {
+            const dias: {[key: string]: number} = {
+              'uno': 1, 'dos': 2, 'tres': 3, 'cuatro': 4, 'cinco': 5,
+              'seis': 6, 'siete': 7, 'ocho': 8, 'nueve': 9, 'diez': 10,
+              'once': 11, 'doce': 12, 'trece': 13, 'catorce': 14, 'quince': 15,
+              'dieciséis': 16, 'diecisiete': 17, 'dieciocho': 18, 'diecinueve': 19, 'veinte': 20,
+              'veintiuno': 21, 'veintidós': 22, 'veintitrés': 23, 'veinticuatro': 24, 'veinticinco': 25,
+              'veintiséis': 26, 'veintisiete': 27, 'veintiocho': 28, 'veintinueve': 29, 'treinta': 30,
+              'treinta y uno': 31
+            };
+            diaNum = dias[diaStr] || parseInt(diaStr) || 0;
+          }
+          
+          // Convertir año
+          if (tipoUsuario === 'litigante') {
+            añoNum = parseInt(añoStr);
+          } else {
+            const años: {[key: string]: number} = {
+              'dos mil veinticuatro': 2024,
+              'dos mil veinticinco': 2025,
+              'dos mil veintiséis': 2026,
+              'dos mil veintisiete': 2027,
+              'dos mil veintiocho': 2028,
+              'dos mil veintinueve': 2029,
+              'dos mil treinta': 2030
+            };
+            añoNum = años[añoStr] || parseInt(añoStr) || 0;
+          }
+          
+          if (mesIndex !== -1 && diaNum > 0 && añoNum > 0) {
+            const fecha = new Date(añoNum, mesIndex, diaNum, 12, 0, 0);
+            todosLosDias.push({ fecha, diaTexto, fundamento });
+          }
+        }
+      });
+    }
+  });
+  
+  // Ordenar cronológicamente
+  todosLosDias.sort((a, b) => a.fecha.getTime() - b.fecha.getTime());
+  
+  // Agrupar por mes y año
+  const diasPorMesAño: {[key: string]: {dias: {diaTexto: string, fundamento: string}[], mesAño: string}} = {};
+  
+  todosLosDias.forEach(item => {
+    const año = item.fecha.getFullYear();
+    const mes = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'][item.fecha.getMonth()];
+    const mesAño = tipoUsuario === 'litigante' ? `${mes} de ${año}` : `${mes} de ${año === 2024 ? 'dos mil veinticuatro' : año === 2025 ? 'dos mil veinticinco' : año.toString()}`;
+    
+    if (!diasPorMesAño[mesAño]) {
+      diasPorMesAño[mesAño] = { dias: [], mesAño };
+    }
+    
+    diasPorMesAño[mesAño].dias.push({
+      diaTexto: item.diaTexto.split(' de ')[0], // Solo el día
+      fundamento: item.fundamento
+    });
+  });
+  
   // Construir el texto con notas al pie
-  let diasTexto: string[] = [];
+  let partes: string[] = [];
   let notasAlPie: string[] = [];
   let numeroNota = 1;
   const superindices = ['¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
-  const fundamentosYaUsados: {[key: string]: string} = {}; // Mapeo de fundamento a superíndice
+  const fundamentosYaUsados: {[key: string]: string} = {};
   
   // Agregar sábados y domingos si hay
   if (hayFinDeSemana) {
     if (tipoUsuario === 'litigante') {
-      diasTexto.push('sábados y domingos');
+      partes.push('sábados y domingos');
     } else {
       const superindice = numeroNota <= 9 ? superindices[numeroNota - 1] : `(${numeroNota})`;
-      diasTexto.push(`sábados y domingos${superindice}`);
+      partes.push(`sábados y domingos${superindice}`);
       notasAlPie.push(`${superindice} artículo 19 de la Ley de Amparo`);
+      fundamentosYaUsados['artículo 19 de la Ley de Amparo'] = superindice;
       numeroNota++;
     }
   }
   
-  // Agregar días por orden de fundamento
-  ordenFundamentos.forEach(fundamentoBuscado => {
-    Object.keys(diasPorFundamento).forEach(fundamento => {
-      if (fundamento.includes(fundamentoBuscado) || (fundamentoBuscado === 'usuario' && fundamento === fundamentoAdicional)) {
-        const dias = diasPorFundamento[fundamento];
-        if (dias && dias.length > 0) {
-          // Para litigantes no mostramos superíndices
-          if (tipoUsuario === 'litigante') {
-            diasTexto = diasTexto.concat(dias);
-          } else {
-            let superindiceAUsar = fundamentosYaUsados[fundamento];
-            
-            if (!superindiceAUsar) {
-              superindiceAUsar = numeroNota <= 9 ? superindices[numeroNota - 1] : `(${numeroNota})`;
-              fundamentosYaUsados[fundamento] = superindiceAUsar;
-              notasAlPie.push(`${fundamento}`);
-              numeroNota++;
-            }
-            
-            // Agregar superíndice a cada día
-            diasTexto = diasTexto.concat(dias.map(dia => dia + superindiceAUsar));
-          }
+  // Procesar días agrupados por mes/año
+  const partesOtrosDias: string[] = [];
+  
+  Object.keys(diasPorMesAño).forEach(mesAño => {
+    const grupo = diasPorMesAño[mesAño];
+    const diasConSuperindice: string[] = [];
+    
+    grupo.dias.forEach(item => {
+      let diaConSuperindice = item.diaTexto;
+      
+      if (tipoUsuario !== 'litigante') {
+        let superindiceAUsar = fundamentosYaUsados[item.fundamento];
+        
+        if (!superindiceAUsar) {
+          superindiceAUsar = numeroNota <= 9 ? superindices[numeroNota - 1] : `(${numeroNota})`;
+          fundamentosYaUsados[item.fundamento] = superindiceAUsar;
+          notasAlPie.push(`${superindiceAUsar} ${item.fundamento}`);
+          numeroNota++;
         }
+        
+        diaConSuperindice += superindiceAUsar;
       }
+      
+      diasConSuperindice.push(diaConSuperindice);
     });
+    
+    // Formatear días del mes
+    let textoMes = '';
+    if (diasConSuperindice.length === 1) {
+      textoMes = diasConSuperindice[0];
+    } else if (diasConSuperindice.length === 2) {
+      textoMes = `${diasConSuperindice[0]} y ${diasConSuperindice[1]}`;
+    } else {
+      const ultimo = diasConSuperindice.pop();
+      textoMes = `${diasConSuperindice.join(', ')} y ${ultimo}`;
+    }
+    
+    partesOtrosDias.push(`${textoMes} de ${grupo.mesAño}`);
   });
   
-  // Mejorar formato de texto para evitar repetición de año
-  let textoFinal = diasTexto.join(', ');
+  // Si hay otros días además de sábados y domingos, agregar "así como del"
+  if (partesOtrosDias.length > 0) {
+    // Verificar si todos los días son del mismo año
+    const años = new Set<string>();
+    partesOtrosDias.forEach(parte => {
+      const matchAño = parte.match(/de ([\w\s]+)$/);
+      if (matchAño) {
+        años.add(matchAño[1]);
+      }
+    });
+    
+    if (años.size === 1 && partesOtrosDias.length > 1) {
+      // Todos los días son del mismo año, simplificar
+      const año = Array.from(años)[0];
+      const partesSimplificadas = partesOtrosDias.map(parte => {
+        // Quitar el año de cada parte excepto la última
+        return parte.replace(` de ${año}`, '');
+      });
+      
+      if (partesSimplificadas.length === 2) {
+        partes.push(`así como del ${partesSimplificadas[0]} y ${partesSimplificadas[1]}, ambos de ${año}`);
+      } else {
+        const ultimo = partesSimplificadas.pop();
+        partes.push(`así como del ${partesSimplificadas.join(', ')}, y ${ultimo}, todos de ${año}`);
+      }
+    } else {
+      // Diferentes años o solo un mes
+      if (partesOtrosDias.length === 1) {
+        partes.push(`así como del ${partesOtrosDias[0]}`);
+      } else {
+        const ultimo = partesOtrosDias.pop();
+        partes.push(`así como del ${partesOtrosDias.join(', ')} y ${ultimo}`);
+      }
+    }
+  }
   
-  // Si el texto contiene múltiples fechas del mismo año, simplificar
-  const año2025 = 'dos mil veinticinco';
-  const año2024 = 'dos mil veinticuatro';
+  // Unir todas las partes
+  let textoFinal = '';
+  if (partes.length === 1) {
+    textoFinal = partes[0];
+  } else if (partes.length === 2) {
+    textoFinal = `${partes[0]}, ${partes[1]}`;
+  } else {
+    textoFinal = partes.join(', ');
+  }
   
   // Contar cuántas veces aparece cada año
   const veces2025 = (textoFinal.match(/de dos mil veinticinco/g) || []).length;
@@ -1780,7 +1805,6 @@ export default function Page() {
           plazoTexto: 'No hay plazo específico',
           esOportuno: true,
           fundamentoSurte: 'No aplica',
-          notasAlPieTexto: [],
           formaPresentacion: 'No aplica'
         };
         
@@ -1846,7 +1870,6 @@ export default function Page() {
           plazoTexto: 'En cualquier tiempo',
           esOportuno: true,
           fundamentoSurte: 'No aplica',
-          notasAlPieTexto: [],
           formaPresentacion: 'No aplica'
         };
         
@@ -1910,7 +1933,7 @@ export default function Page() {
             case 'correo_certificado':
               fechaSurte = new Date(fechaNotif);
               textoSurte = 'el mismo día en que se recibe';
-              fundamentoSurte = 'artículo 87, segundo párrafo del Código Nacional de Procedimientos Penales';
+              fundamentoSurte = 'artículo 87, segundo párrafo, del Código Nacional de Procedimientos Penales';
               break;
             case 'boletin_jurisdiccional':
             case 'estrados':
@@ -1922,7 +1945,7 @@ export default function Page() {
             case 'personal_detencion':
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día siguiente en que hubieren sido practicadas';
-              fundamentoSurte = 'artículo 85, tercer párrafo, y artículo 82, último párrafo del Código Nacional de Procedimientos Penales';
+              fundamentoSurte = 'artículo 85, tercer párrafo, y artículo 82, último párrafo, del Código Nacional de Procedimientos Penales';
               break;
             case 'electronica':
               fechaSurte = new Date(fechaNotif);
@@ -2085,49 +2108,49 @@ export default function Page() {
               // Notificaciones personales - Arts. 1068 Bis y 1075, párrafo 2°
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día siguiente del que se hayan practicado';
-              fundamentoSurte = 'Arts. 1068 Bis y 1075, párrafo 2° del Código de Comercio';
+              fundamentoSurte = 'Arts. 1068 Bis y 1075, párrafo 2°, del Código de Comercio';
               break;
             case 'boletin_judicial':
               // Por Boletín Judicial - Arts. 1068, fracc. II y 1075, párrafo 2°
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día siguiente de aquel en que se hubieren hecho';
-              fundamentoSurte = 'Arts. 1068, fracc. II y 1075, párrafo 2° del Código de Comercio';
+              fundamentoSurte = 'Arts. 1068, fracc. II y 1075, párrafo 2°, del Código de Comercio';
               break;
             case 'gaceta_judicial':
               // Por Gaceta Judicial - Arts. 1068, fracc. II y 1075, párrafo 2°
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día siguiente de aquel en que se hubieren hecho';
-              fundamentoSurte = 'Arts. 1068, fracc. II y 1075, párrafo 2° del Código de Comercio';
+              fundamentoSurte = 'Arts. 1068, fracc. II y 1075, párrafo 2°, del Código de Comercio';
               break;
             case 'periodico_judicial':
               // Por Periódico Judicial - Arts. 1068, fracc. II y 1075, párrafo 2°
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día siguiente de aquel en que se hubieren hecho';
-              fundamentoSurte = 'Arts. 1068, fracc. II y 1075, párrafo 2° del Código de Comercio';
+              fundamentoSurte = 'Arts. 1068, fracc. II y 1075, párrafo 2°, del Código de Comercio';
               break;
             case 'estrados':
               // Por estrados - Arts. 1068, fracc. III y 1075, párrafo 2°
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día siguiente de aquel en que se hubieren fijado';
-              fundamentoSurte = 'Arts. 1068, fracc. III y 1075, párrafo 2° del Código de Comercio';
+              fundamentoSurte = 'Arts. 1068, fracc. III y 1075, párrafo 2°, del Código de Comercio';
               break;
             case 'correo':
               // Por correo - Arts. 1068, fracc. V y 1075, párrafo 2°
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día siguiente de que exista constancia de haberse entregado';
-              fundamentoSurte = 'Arts. 1068, fracc. V y 1075, párrafo 2° del Código de Comercio';
+              fundamentoSurte = 'Arts. 1068, fracc. V y 1075, párrafo 2°, del Código de Comercio';
               break;
             case 'telegrafo':
               // Por telégrafo - Arts. 1068, fracc. VI y 1075, párrafo 2°
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día siguiente de que exista constancia de haberse entregado';
-              fundamentoSurte = 'Arts. 1068, fracc. VI y 1075, párrafo 2° del Código de Comercio';
+              fundamentoSurte = 'Arts. 1068, fracc. VI y 1075, párrafo 2°, del Código de Comercio';
               break;
             case 'edictos':
               // Por edictos - Arts. 1070 y 1075, párrafo 2°
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día siguiente de haberse hecho la última publicación';
-              fundamentoSurte = 'Arts. 1070 y 1075, párrafo 2° del Código de Comercio';
+              fundamentoSurte = 'Arts. 1070 y 1075, párrafo 2°, del Código de Comercio';
               break;
             case 'audiencia':
               // En audiencia - Arts. 1390 Bis 22 y 1075
@@ -2139,7 +2162,7 @@ export default function Page() {
               // Regla general - al día siguiente
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día siguiente de que se hubieren hecho';
-              fundamentoSurte = 'artículo 1075, párrafo 2° del Código de Comercio';
+              fundamentoSurte = 'artículo 1075, párrafo 2°, del Código de Comercio';
           }
         } else if (formData.leyNotificacion === 'Código Fiscal de la Federación') {
           // Reglas específicas del Código Fiscal de la Federación
@@ -2150,49 +2173,49 @@ export default function Page() {
               // Personal - artículo 134, fracción I
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día hábil siguiente en que fueron hechas';
-              fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
+              fundamentoSurte = 'artículo 135, primer párrafo, del Código Fiscal de la Federación';
               break;
             case 'correo_certificado':
               // Por correo certificado - artículo 134, fracción I
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día hábil siguiente al de la fecha del acuse de recibo';
-              fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
+              fundamentoSurte = 'artículo 135, primer párrafo, del Código Fiscal de la Federación';
               break;
             case 'estrados':
               // Por estrados - artículo 134, fracción III
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día hábil siguiente en que fueron hechas, en la inteligencia de que se tienen por hechas el decimoprimer día contado a partir del día siguiente a aquél en el que se hubiera publicado el documento';
-              fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
+              fundamentoSurte = 'artículo 135, primer párrafo, del Código Fiscal de la Federación';
               break;
             case 'edictos':
               // Por edictos - artículo 134, fracción IV
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día hábil siguiente al de la última publicación';
-              fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
+              fundamentoSurte = 'artículo 135, primer párrafo, del Código Fiscal de la Federación';
               break;
             case 'buzon_tributario':
               // Por buzón tributario - artículo 134, fracción I
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día hábil siguiente al de la fecha del acuse de recibo';
-              fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
+              fundamentoSurte = 'artículo 135, primer párrafo, del Código Fiscal de la Federación';
               break;
             case 'correo_ordinario':
               // Por correo ordinario - artículo 134, fracción II
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día hábil siguiente al de la fecha del acuse de recibo';
-              fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
+              fundamentoSurte = 'artículo 135, primer párrafo, del Código Fiscal de la Federación';
               break;
             case 'telegrama':
               // Por telegrama - artículo 134, fracción II
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día hábil siguiente al de la fecha del acuse de recibo';
-              fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
+              fundamentoSurte = 'artículo 135, primer párrafo, del Código Fiscal de la Federación';
               break;
             default:
               // Regla general - al día hábil siguiente
               fechaSurte = siguienteDiaHabil(fechaNotif, diasAdicionales, tipoUsuario);
               textoSurte = 'al día hábil siguiente en que fueron hechas';
-              fundamentoSurte = 'artículo 135, primer párrafo del Código Fiscal de la Federación';
+              fundamentoSurte = 'artículo 135, primer párrafo, del Código Fiscal de la Federación';
           }
         } else if (formData.leyNotificacion === 'Ley Federal del Trabajo') {
           // Reglas específicas de la Ley Federal del Trabajo
@@ -2758,17 +2781,6 @@ export default function Page() {
         diasInhabiles: diasInhabilesSimplificadoInfo || diasInhabilesInfo.texto,
         diasInhabilesTexto: diasInhabilesTextoInfo.texto,
         notasAlPie: diasInhabilesInfo.notas,
-        notasAlPieTexto: (() => {
-          let notas = diasInhabilesTextoInfo.notas || [];
-          
-          // Agregar nota especial para LFTSE + estrados
-          if (formData.leyNotificacion === 'Ley Federal de los Trabajadores al Servicio del Estado, Reglamentaria del Apartado B) del Artículo 123 Constitucional' && formData.formaNotificacion === 'estrados') {
-            const notaEstrados = 'Nota para litigantes: Existe la posibilidad de que se considere inaplicable supletoriamente el citado precepto, conforme la tesis I.8o.T.1 L (11a.), con registro 2024351, y rubro: "NOTIFICACIONES POR ESTRADOS EN EL JUICIO LABORAL BUROCRÁTICO. CONFORME AL PÁRRAFO SEGUNDO DEL ARTÍCULO 142 DE LA LEY FEDERAL DE LOS TRABAJADORES AL SERVICIO DEL ESTADO, SURTEN EFECTOS EN EL MOMENTO EN QUE SE PRACTICAN (INAPLICABILIDAD SUPLETORIA DEL ARTÍCULO 747, FRACCIÓN II, DE LA LEY FEDERAL DEL TRABAJO)."';
-            notas = [...notas, notaEstrados];
-          }
-          
-          return notas;
-        })(),
         formaPresentacion: formasPresentacion[formData.formaPresentacion] || formData.formaPresentacion,
         resolucionImpugnada: resoluciones[formData.resolucionImpugnada] || formData.resolucionImpugnada,
         diasRestantes: diasRestantes > 0 ? diasRestantes : 0,
@@ -3021,7 +3033,7 @@ export default function Page() {
     if (!resultado) return '';
     
     // Determinar términos neutros
-    const generoRecurrente = 'la parte recurrente';
+    const generoRecurrente = 'la parte promovente';
     const parteTexto = '';
     
     // Obtener el año de las fechas
@@ -3716,20 +3728,8 @@ export default function Page() {
     // Texto estándar para casos con plazo específico
     let texto = `\t\tLa presentación de la demanda es ${resultado.esOportuno ? 'oportuna' : 'extemporánea'}, dado que la notificación del acto reclamado se realizó ${obtenerTextoFormaNotificacion(formData.formaNotificacion)}${formData.formaNotificacion === 'personal_audiencia' ? ',' : ''} a ${generoRecurrente} el ${resultado.fechaNotificacionTexto}, y surtió efectos ${efectosTextoRevision}, de conformidad con el ${resultado.fundamentoSurte}, por lo que el plazo de ${resultado.plazoTexto} días que prevé el diverso numeral 17 de la Ley de Amparo, transcurrió del ${extraerDiaMes(resultado.fechaInicioTexto)} al ${extraerDiaMes(resultado.fechaFinTexto)}, todos del referido año, con exclusión de los días ${resultado.diasInhabilesTexto}.
 
-\t\tPor ende, si el referido medio de impugnación se interpuso el ${resultado.fechaPresentacionTexto}, como se aprecia ${resultado.formaPresentacion}, es inconcuso que su presentación es ${resultado.esOportuno ? 'oportuna' : 'extemporánea'}.`;
+\t\tPor ende, si la demanda se presentó el ${resultado.fechaPresentacionTexto}, es inconcuso que su presentación es ${resultado.esOportuno ? 'oportuna' : 'extemporánea'}.`;
     
-    // Agregar notas al pie con los fundamentos
-    if (resultado.notasAlPieTexto && resultado.notasAlPieTexto.length > 0) {
-      texto += '\n\n\n\n__________________________________\n';
-      
-      // Ordenar y agrupar las notas únicas con superíndices
-      const notasUnicas = [...new Set(resultado.notasAlPieTexto)];
-      const superindices = ['¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
-      notasUnicas.forEach((nota: string, index: number) => {
-        const superindice = index < 9 ? superindices[index] : `(${index + 1})`;
-        texto += `${superindice} ${nota}\n`;
-      });
-    }
     
     return texto;
   };
@@ -3738,18 +3738,7 @@ export default function Page() {
     const textoBase = generarTexto();
     if (!textoBase) return '';
     
-    let textoHTML = `<p style="text-indent: 2em; margin-bottom: 1em;">${textoBase.trim()}</p>`;
-    
-    // Agregar notas al pie si existen
-    if (resultado && resultado.notasAlPieTexto && resultado.notasAlPieTexto.length > 0) {
-      textoHTML += '<div style="border-top: 1px solid #ccc; margin-top: 1.5em; padding-top: 0.5em;">';
-      resultado.notasAlPieTexto.forEach((nota: string) => {
-        textoHTML += `<p style="font-size: 0.9em; margin-bottom: 0.5em;">${nota}</p>`;
-      });
-      textoHTML += '</div>';
-    }
-    
-    return textoHTML;
+    return `<p style="text-indent: 2em; margin-bottom: 1em;">${textoBase.trim()}</p>`;
   };
 
   return (
@@ -4881,7 +4870,7 @@ export default function Page() {
                 <h3 style={{ fontWeight: '700', marginBottom: '1rem', color: '#1C1C1C', fontFamily: 'Playfair Display, serif', fontSize: '1.125rem' }}>Detalles del Cómputo</h3>
                 <div className="space-y-1 text-sm" style={{ color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}>
                   <p><strong>Plazo legal:</strong> {typeof resultado.plazo === 'number' ? `${resultado.plazo} días` : resultado.plazo}</p>
-                  <p><strong>Fundamento:</strong> {formData.tipoFecha === 'desconoce' ? 'Artículos 17 de la Ley de Amparo, en relación con el 18, pues este último prevé que los plazos a que alude el primero de ellos se computarán a partir del día siguiente a aquél en que surta efectos, conforme a la ley del acto, la notificación a la persona quejosa del acto o resolución que reclame o a aquella en que haya tenido conocimiento o se ostente sabedora del acto reclamado o de su ejecución, salvo el caso de la fracción I del artículo anterior en el que se computará a partir del día de su entrada en vigor; y en el caso se eligió la opción relativa a que se desconoce el acto reclamado, por lo cual se entiende que éste no fue notificado ni se hizo del conocimiento de quien pretende reclamarlo.' : resultado.fundamento}</p>
+                  <p><strong>Fundamento:</strong> {formData.tipoFecha === 'desconoce' ? 'Artículos 17 de la Ley de Amparo, en relación con el 18, pues este último prevé que los plazos a que alude el primero de ellos se computarán a partir del día siguiente a aquél en que surta efectos, conforme a la ley del acto, la notificación a la persona quejosa del acto o resolución que reclame o a aquella en que haya tenido conocimiento o se ostente sabedora del acto reclamado o de su ejecución, salvo el caso de la fracción I, del artículo anterior en el que se computará a partir del día de su entrada en vigor; y en el caso se eligió la opción relativa a que se desconoce el acto reclamado, por lo cual se entiende que éste no fue notificado ni se hizo del conocimiento de quien pretende reclamarlo.' : resultado.fundamento}</p>
                   {formData.resolucionImpugnada !== 'actos_22_constitucional' && (
                     <p><strong>{formData.resolucionImpugnada === 'ley_entrada_vigor' ? 'Fecha en que la norma reclamada entró en vigor:' : formData.tipoFecha === 'conocimiento' ? 'Fecha en que se tuvo conocimiento completo:' : 'Fecha de notificación:'}</strong> {formData.tipoFecha === 'desconoce' ? 'Se desconoce el acto reclamado' : fechaParaLitigante(formData.fechaNotificacion)}</p>
                   )}
