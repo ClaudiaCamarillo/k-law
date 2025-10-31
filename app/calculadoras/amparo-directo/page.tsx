@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { diasInhabilesData } from '../../diasInhabiles.js'
 import { getCuandoSurteEfectos, calcularFechaSurteEfectos, getFundamentoSurtimientoEfectos } from '../../../lib/articulo31LeyAmparo.js'
 import { SelectorLeyNotificacion } from '@/components/SelectorLeyNotificacion'
+import { computosStorage } from '@/lib/computos-storage'
 
 // Función para obtener el texto de la forma de notificación
 function obtenerTextoFormaNotificacion(formaNotificacion: string): string {
@@ -1680,7 +1681,7 @@ export default function Page() {
   // Para litigantes
   const [numeroExpediente, setNumeroExpediente] = useState('');
   const [telefonoWhatsApp, setTelefonoWhatsApp] = useState('');
-  const [calculos, setCalculos] = useState<any[]>([]);
+  // const [calculos, setCalculos] = useState<any[]>([]); // Ya no necesario, usamos computosStorage
   const [mounted, setMounted] = useState(false);
 
   // Función para verificar si los campos deben estar deshabilitados
@@ -1709,13 +1710,13 @@ export default function Page() {
     
     setTipoUsuario(tipo);
     
-    // Cargar cálculos guardados (solo para litigantes)
-    if (tipo === 'litigante') {
-      const calculosGuardados = localStorage.getItem('calculosGuardados');
-      if (calculosGuardados) {
-        setCalculos(JSON.parse(calculosGuardados));
-      }
-    }
+    // Cargar cálculos guardados (solo para litigantes) - Ya no necesario
+    // if (tipo === 'litigante') {
+    //   const calculosGuardados = localStorage.getItem('calculosGuardados');
+    //   if (calculosGuardados) {
+    //     setCalculos(JSON.parse(calculosGuardados));
+    //   }
+    // }
   }, [router]);
 
   // Evitar hidratación hasta que el componente esté montado
@@ -2808,27 +2809,34 @@ export default function Page() {
   const guardarCalculo = () => {
     if (!numeroExpediente || !resultado) return;
     
-    const nuevoCalculo = {
-      id: Date.now(),
-      expediente: numeroExpediente,
-      fechaGuardado: new Date().toISOString(),
+    const exito = computosStorage.guardar({
+      tipo: 'amparo-directo',
+      nombre: `Amparo Directo - ${numeroExpediente}`,
+      fechaNotificacion: formData.fechaNotificacion,
       fechaVencimiento: resultado.fechaFin.toISOString(),
-      tipoRecurso: formData.tipoRecurso,
-      telefono: telefonoWhatsApp,
-      notificaciones: {
-        tresDias: false,
-        dosDias: false,
-        unDia: false,
-        vencimiento: false
+      diasHabiles: typeof resultado.plazo === 'number' ? resultado.plazo : 0,
+      datos: {
+        ...formData,
+        numeroExpediente,
+        telefonoWhatsApp,
+        resultado: {
+          esOportuno: resultado.esOportuno,
+          plazo: resultado.plazo,
+          fundamento: resultado.fundamento,
+          fechaSurte: resultado.fechaSurte.toISOString(),
+          fechaInicio: resultado.fechaInicio.toISOString(),
+          fechaFin: resultado.fechaFin.toISOString(),
+          diasRestantes: resultado.diasRestantes,
+          diasInhabiles: resultado.diasInhabiles
+        }
       }
-    };
+    });
     
-    const nuevosCalculos = [...calculos, nuevoCalculo];
-    setCalculos(nuevosCalculos);
-    localStorage.setItem('calculosGuardados', JSON.stringify(nuevosCalculos));
-    
-    alert(`Cálculo guardado para expediente ${numeroExpediente}`);
-    setNumeroExpediente('');
+    if (exito) {
+      alert(`Cálculo guardado exitosamente para el expediente ${numeroExpediente}`);
+      setNumeroExpediente('');
+      setTelefonoWhatsApp('');
+    }
   };
 
   // Función para copiar solo el calendario como imagen
@@ -4710,6 +4718,29 @@ export default function Page() {
               <div className="mt-6 k-law-card">
                 <h3 className="k-law-subtitle">Guardar Cálculo y Notificaciones</h3>
                 
+                {/* Mostrar información de almacenamiento */}
+                <div className="mb-4 p-3 rounded-lg" style={{
+                  backgroundColor: 'rgba(197, 167, 112, 0.1)',
+                  border: '1px solid #C5A770'
+                }}>
+                  <p className="text-sm" style={{ color: '#1C1C1C' }}>
+                    <span style={{ fontWeight: '600' }}>
+                      {computosStorage.obtenerCantidad()} de {computosStorage.obtenerLimite()}
+                    </span> cómputos guardados
+                  </p>
+                  <Link 
+                    href="/computos-guardados" 
+                    className="text-sm"
+                    style={{ 
+                      color: '#C5A770',
+                      textDecoration: 'underline',
+                      fontWeight: '500'
+                    }}
+                  >
+                    Ver todos los cómputos guardados →
+                  </Link>
+                </div>
+                
                 <div className="grid md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="k-law-label block">Número de Expediente</label>
@@ -4736,10 +4767,10 @@ export default function Page() {
                 
                 <button 
                   onClick={guardarCalculo}
-                  disabled={!numeroExpediente}
+                  disabled={!numeroExpediente || !computosStorage.puedeGuardarMas()}
                   className="k-law-button-small disabled:opacity-50"
                 >
-                  Guardar Cálculo
+                  {computosStorage.puedeGuardarMas() ? 'Guardar Cálculo' : 'Límite de cómputos alcanzado'}
                 </button>
                 
                 {telefonoWhatsApp && (
@@ -4752,35 +4783,6 @@ export default function Page() {
           </>
         )}
         
-        {/* Lista de cálculos guardados para litigantes */}
-        {tipoUsuario === 'litigante' && calculos.length > 0 && (
-          <div className="mt-6 k-law-card">
-            <h3 className="k-law-subtitle">Cálculos Guardados</h3>
-            <div className="space-y-2">
-              {calculos.map((calc) => (
-                <div key={calc.id} className="flex justify-between items-center p-3 k-law-result-box">
-                  <div>
-                    <p className="k-law-text font-semibold">Expediente: {calc.expediente}</p>
-                    <p className="k-law-text text-sm">
-                      Vence: {new Date(calc.fechaVencimiento).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <button 
-                    onClick={() => {
-                      setCalculos(calculos.filter(c => c.id !== calc.id));
-                      localStorage.setItem('calculosGuardados', 
-                        JSON.stringify(calculos.filter(c => c.id !== calc.id))
-                      );
-                    }}
-                    className="k-law-button-small text-sm"
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </main>
     </div>
   );

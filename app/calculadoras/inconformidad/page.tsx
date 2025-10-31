@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { diasInhabilesData } from '../../diasInhabiles.js'
 import { getCuandoSurteEfectos, calcularFechaSurteEfectos, getFundamentoSurtimientoEfectos } from '../../../lib/articulo31LeyAmparo.js'
+import { computosStorage } from '../../../lib/computos-storage'
 
 // Función para convertir fecha a texto en español
 function fechaATexto(fecha: string): string {
@@ -1034,7 +1035,7 @@ export default function Calculadora() {
   // Para litigantes
   const [numeroExpediente, setNumeroExpediente] = useState('');
   const [telefonoWhatsApp, setTelefonoWhatsApp] = useState('');
-  const [calculos, setCalculos] = useState<any[]>([]);
+  // const [calculos, setCalculos] = useState<any[]>([]);
 
   useEffect(() => {
     // Obtener tipo de usuario de localStorage
@@ -1042,12 +1043,12 @@ export default function Calculadora() {
     setTipoUsuario(tipo);
     
     // Cargar cálculos guardados (solo para litigantes)
-    if (tipo === 'litigante') {
-      const calculosGuardados = localStorage.getItem('calculosGuardados');
-      if (calculosGuardados) {
-        setCalculos(JSON.parse(calculosGuardados));
-      }
-    }
+    // if (tipo === 'litigante') {
+    //   const calculosGuardados = localStorage.getItem('calculosGuardados');
+    //   if (calculosGuardados) {
+    //     setCalculos(JSON.parse(calculosGuardados));
+    //   }
+    // }
   }, []);
 
   // Limpiar valores cuando se selecciona auto-cumplida
@@ -1262,7 +1263,7 @@ export default function Calculadora() {
     }
   };
 
-  const guardarCalculo = () => {
+  const guardarCalculo = async () => {
     if (!numeroExpediente || !resultado) return;
     
     const nuevoCalculo = {
@@ -1277,15 +1278,27 @@ export default function Calculadora() {
         dosDias: false,
         unDia: false,
         vencimiento: false
-      }
+      },
+      // Datos adicionales para el nuevo sistema
+      tipo: 'inconformidad',
+      fechaInicio: resultado.fechaInicio.toISOString(),
+      diasHabiles: resultado.diasHabiles,
+      tipoFecha: formData.tipoFecha,
+      fechaNotificacion: formData.fechaNotificacion,
+      fechaConocimiento: formData.fechaConocimiento,
+      resolucionImpugnada: formData.resolucionImpugnada,
+      parteRecurrente: formData.parteRecurrente,
+      formaNotificacion: formData.formaNotificacion
     };
     
-    const nuevosCalculos = [...calculos, nuevoCalculo];
-    setCalculos(nuevosCalculos);
-    localStorage.setItem('calculosGuardados', JSON.stringify(nuevosCalculos));
+    const exito = await computosStorage.guardar(nuevoCalculo, 'inconformidad');
     
-    alert(`Cálculo guardado para expediente ${numeroExpediente}`);
-    setNumeroExpediente('');
+    if (exito) {
+      alert(`Cálculo guardado exitosamente para expediente ${numeroExpediente}`);
+      setNumeroExpediente('');
+    } else {
+      alert('Has alcanzado el límite de cálculos guardados (30). Por favor, elimina algunos cálculos antiguos desde la página de Cómputos Guardados.');
+    }
   };
 
   // Función para copiar solo el calendario como imagen
@@ -2535,6 +2548,18 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                   Guardar Cálculo y Notificaciones
                 </h3>
                 
+                <p style={{
+                  fontSize: '0.875rem',
+                  color: '#666',
+                  marginBottom: '1rem',
+                  fontFamily: 'Inter, sans-serif'
+                }}>
+                  Puedes guardar hasta 30 cálculos. Ver todos tus cálculos guardados en{' '}
+                  <Link href="/computos-guardados" style={{ color: '#C5A770', textDecoration: 'underline' }}>
+                    Cómputos Guardados
+                  </Link>
+                </p>
+                
                 <div className="grid md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block" style={{ 
@@ -2611,7 +2636,7 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
                     if (numeroExpediente) e.currentTarget.style.backgroundColor = '#1C1C1C'; 
                   }}
                 >
-                  Guardar Cálculo
+                  Guardar Cálculo (límite: 30)
                 </button>
                 
                 {telefonoWhatsApp && (
@@ -2629,8 +2654,8 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
           </>
         )}
         
-        {/* Lista de cálculos guardados para litigantes */}
-        {tipoUsuario === 'litigante' && calculos.length > 0 && (
+        {/* Lista de cálculos guardados para litigantes - COMENTADO: Ahora se muestran en /computos-guardados */}
+        {/* {tipoUsuario === 'litigante' && calculos.length > 0 && (
           <div style={{ 
             marginTop: '1.5rem', 
             backgroundColor: '#FFFFFF', 
@@ -2699,7 +2724,7 @@ Por ende, si el referido medio de impugnación se interpuso el ${resultado.fecha
               ))}
             </div>
           </div>
-        )}
+        )} */}
       </main>
     </div>
   );

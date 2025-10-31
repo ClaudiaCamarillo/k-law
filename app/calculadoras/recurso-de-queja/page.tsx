@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { diasInhabilesData } from '../../diasInhabiles.js'
 import { getCuandoSurteEfectos, calcularFechaSurteEfectos, getFundamentoSurtimientoEfectos } from '../../../lib/articulo31LeyAmparo.js'
+import { computosStorage } from '../../../lib/computosStorage'
 
 // Función para convertir fecha a texto en español
 function fechaATexto(fecha: string): string {
@@ -857,20 +858,20 @@ export default function Calculadora() {
   // Para litigantes
   const [numeroExpediente, setNumeroExpediente] = useState('');
   const [telefonoWhatsApp, setTelefonoWhatsApp] = useState('');
-  const [calculos, setCalculos] = useState<any[]>([]);
+  // const [calculos, setCalculos] = useState<any[]>([]);
 
   useEffect(() => {
     // Obtener tipo de usuario de localStorage
     const tipo = localStorage.getItem('tipoUsuario') || 'litigante';
     setTipoUsuario(tipo);
     
-    // Cargar cálculos guardados (solo para litigantes)
-    if (tipo === 'litigante') {
-      const calculosGuardados = localStorage.getItem('calculosGuardados');
-      if (calculosGuardados) {
-        setCalculos(JSON.parse(calculosGuardados));
-      }
-    }
+    // Cargar cálculos guardados (solo para litigantes) - MOVIDO A COMPUTOS-GUARDADOS
+    // if (tipo === 'litigante') {
+    //   const calculosGuardados = localStorage.getItem('calculosGuardados');
+    //   if (calculosGuardados) {
+    //     setCalculos(JSON.parse(calculosGuardados));
+    //   }
+    // }
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -1146,9 +1147,12 @@ export default function Calculadora() {
       }
     };
     
-    const nuevosCalculos = [...calculos, nuevoCalculo];
-    setCalculos(nuevosCalculos);
-    localStorage.setItem('calculosGuardados', JSON.stringify(nuevosCalculos));
+    const guardado = computosStorage.guardar(nuevoCalculo, 'queja');
+    
+    if (!guardado) {
+      alert('Has alcanzado el límite de cómputos guardados. Por favor, elimina algunos cómputos antiguos.');
+      return;
+    }
     
     alert(`Cálculo guardado para expediente ${numeroExpediente}`);
     setNumeroExpediente('');
@@ -2241,6 +2245,12 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
               <div className="mt-6 rounded-lg p-6" style={{ backgroundColor: '#FFFFFF', border: '1.5px solid #C5A770', boxShadow: '0 4px 20px rgba(28, 28, 28, 0.08)' }}>
                 <h3 className="text-xl font-bold mb-4" style={{ color: '#1C1C1C', fontFamily: 'Playfair Display, serif' }}>Guardar Cálculo y Notificaciones</h3>
                 
+                <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: '#F5F5F5', border: '1px solid #E0E0E0' }}>
+                  <p className="text-sm" style={{ color: '#666', fontFamily: 'Inter, sans-serif' }}>
+                    Puedes guardar hasta 5 cómputos. Ver todos tus <Link href="/computos-guardados" className="underline" style={{ color: '#C5A770' }}>cómputos guardados</Link>.
+                  </p>
+                </div>
+                
                 <div className="grid md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}>Número de Expediente</label>
@@ -2275,7 +2285,7 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
                   onMouseEnter={(e) => { if (numeroExpediente) e.currentTarget.style.backgroundColor = '#C5A770'; }} 
                   onMouseLeave={(e) => { if (numeroExpediente) e.currentTarget.style.backgroundColor = '#1C1C1C'; }}
                 >
-                  Guardar Cálculo
+                  Guardar Cálculo ({computosStorage.obtenerTodos().filter(c => c.tipo === 'queja').length}/5)
                 </button>
                 
                 {telefonoWhatsApp && (
@@ -2288,8 +2298,8 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
           </>
         )}
         
-        {/* Lista de cálculos guardados para litigantes */}
-        {tipoUsuario === 'litigante' && calculos.length > 0 && (
+        {/* Lista de cálculos guardados para litigantes - MOVIDO A COMPUTOS-GUARDADOS */}
+        {/* {tipoUsuario === 'litigante' && calculos.length > 0 && (
           <div className="mt-6 rounded-lg p-6" style={{ backgroundColor: '#FFFFFF', border: '1.5px solid #C5A770', boxShadow: '0 4px 20px rgba(28, 28, 28, 0.08)' }}>
             <h3 className="text-xl font-bold mb-4" style={{ color: '#1C1C1C', fontFamily: 'Playfair Display, serif' }}>Cálculos Guardados</h3>
             <div className="space-y-2">
@@ -2316,7 +2326,7 @@ Al respecto, resulta aplicable la jurisprudencia VII.2o.T. J/13 (10a.), sustenta
               ))}
             </div>
           </div>
-        )}
+        )} */}
       </main>
     </div>
   );

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { diasInhabilesData } from '../../diasInhabiles.js'
 import { getCuandoSurteEfectos, calcularFechaSurteEfectos, getFundamentoSurtimientoEfectos } from '../../../lib/articulo31LeyAmparo.js'
+import { computosStorage } from '../../../lib/computosStorage'
 
 // Función para convertir fecha a texto en español
 function fechaATexto(fecha: string): string {
@@ -909,7 +910,7 @@ export default function Calculadora() {
   // Para litigantes
   const [numeroExpediente, setNumeroExpediente] = useState('');
   const [telefonoWhatsApp, setTelefonoWhatsApp] = useState('');
-  const [calculos, setCalculos] = useState<any[]>([]);
+  // const [calculos, setCalculos] = useState<any[]>([]);
 
   useEffect(() => {
     // Obtener tipo de usuario de localStorage
@@ -917,12 +918,12 @@ export default function Calculadora() {
     setTipoUsuario(tipo);
     
     // Cargar cálculos guardados (solo para litigantes)
-    if (tipo === 'litigante') {
-      const calculosGuardados = localStorage.getItem('calculosGuardados');
-      if (calculosGuardados) {
-        setCalculos(JSON.parse(calculosGuardados));
-      }
-    }
+    // if (tipo === 'litigante') {
+    //   const calculosGuardados = localStorage.getItem('calculosGuardados');
+    //   if (calculosGuardados) {
+    //     setCalculos(JSON.parse(calculosGuardados));
+    //   }
+    // }
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -1094,26 +1095,31 @@ export default function Calculadora() {
     if (!numeroExpediente || !resultado) return;
     
     const nuevoCalculo = {
-      id: Date.now(),
       expediente: numeroExpediente,
-      fechaGuardado: new Date().toISOString(),
-      fechaVencimiento: resultado.fechaFin.toISOString(),
+      tipo: 'revision' as const,
+      fechaInicio: resultado.fechaInicio.toISOString(),
+      fechaFin: resultado.fechaFin.toISOString(),
+      diasHabiles: resultado.diasHabiles,
+      diasNaturales: resultado.diasNaturales,
       tipoRecurso: formData.tipoRecurso,
       telefono: telefonoWhatsApp,
-      notificaciones: {
-        tresDias: false,
-        dosDias: false,
-        unDia: false,
-        vencimiento: false
+      detalles: {
+        tipoNotificacion: formData.tipoNotificacion,
+        fechaNotificacion: formData.fechaNotificacion,
+        fechaAudiencia: formData.fechaAudiencia || '',
+        fechaListaSurtimientoEfectos: formData.fechaListaSurtimientoEfectos || '',
+        surtimientoEnDomingo: formData.surtimientoEnDomingo || false
       }
     };
     
-    const nuevosCalculos = [...calculos, nuevoCalculo];
-    setCalculos(nuevosCalculos);
-    localStorage.setItem('calculosGuardados', JSON.stringify(nuevosCalculos));
+    const guardado = computosStorage.guardar(nuevoCalculo);
     
-    alert(`Cálculo guardado para expediente ${numeroExpediente}`);
-    setNumeroExpediente('');
+    if (guardado.exito) {
+      alert(`Cálculo guardado exitosamente para expediente ${numeroExpediente}`);
+      setNumeroExpediente('');
+    } else {
+      alert(guardado.mensaje);
+    }
   };
 
   const copiarCalendario = async () => {
@@ -1848,7 +1854,16 @@ export default function Calculadora() {
             {/* Sección para litigantes */}
             {tipoUsuario === 'litigante' && (
               <div className="mt-6 rounded-lg p-6" style={{ backgroundColor: '#FFFFFF', border: '1.5px solid #C5A770', boxShadow: '0 4px 20px rgba(28, 28, 28, 0.08)' }}>
-                <h3 className="text-xl font-bold mb-4" style={{ color: '#1C1C1C', fontFamily: 'Playfair Display, serif' }}>Guardar Cálculo y Notificaciones</h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-bold" style={{ color: '#1C1C1C', fontFamily: 'Playfair Display, serif' }}>Guardar Cálculo y Notificaciones</h3>
+                  <Link href="/computos-guardados" className="text-blue-600 hover:underline text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    Ver todos los cómputos guardados →
+                  </Link>
+                </div>
+                
+                <p className="text-sm text-gray-600 mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  Puedes guardar hasta 5 cálculos. Actualmente tienes {computosStorage.obtenerTodos().length} de 5 guardados.
+                </p>
                 
                 <div className="grid md:grid-cols-2 gap-4 mb-4">
                   <div>
@@ -1878,13 +1893,13 @@ export default function Calculadora() {
                 
                 <button 
                   onClick={guardarCalculo}
-                  disabled={!numeroExpediente}
+                  disabled={!numeroExpediente || computosStorage.obtenerTodos().length >= 5}
                   className="text-white px-6 py-2 rounded-lg disabled:bg-gray-400" 
-                  style={{ backgroundColor: !numeroExpediente ? '#B0B0B0' : '#1C1C1C', fontFamily: 'Inter, sans-serif', transition: 'all 0.3s ease' }} 
-                  onMouseEnter={(e) => { if (numeroExpediente) e.currentTarget.style.backgroundColor = '#C5A770'; }} 
-                  onMouseLeave={(e) => { if (numeroExpediente) e.currentTarget.style.backgroundColor = '#1C1C1C'; }}
+                  style={{ backgroundColor: (!numeroExpediente || computosStorage.obtenerTodos().length >= 5) ? '#B0B0B0' : '#1C1C1C', fontFamily: 'Inter, sans-serif', transition: 'all 0.3s ease' }} 
+                  onMouseEnter={(e) => { if (numeroExpediente && computosStorage.obtenerTodos().length < 5) e.currentTarget.style.backgroundColor = '#C5A770'; }} 
+                  onMouseLeave={(e) => { if (numeroExpediente && computosStorage.obtenerTodos().length < 5) e.currentTarget.style.backgroundColor = '#1C1C1C'; }}
                 >
-                  Guardar Cálculo
+                  {computosStorage.obtenerTodos().length >= 5 ? 'Límite alcanzado (5/5)' : `Guardar Cálculo (${computosStorage.obtenerTodos().length}/5)`}
                 </button>
                 
                 {telefonoWhatsApp && (
@@ -1897,8 +1912,8 @@ export default function Calculadora() {
           </>
         )}
         
-        {/* Lista de cálculos guardados para litigantes */}
-        {tipoUsuario === 'litigante' && calculos.length > 0 && (
+        {/* Lista de cálculos guardados para litigantes - COMENTADO */}
+        {/* {tipoUsuario === 'litigante' && calculos.length > 0 && (
           <div className="mt-6 rounded-lg p-6" style={{ backgroundColor: '#FFFFFF', border: '1.5px solid #C5A770', boxShadow: '0 4px 20px rgba(28, 28, 28, 0.08)' }}>
             <h3 className="text-xl font-bold mb-4" style={{ color: '#1C1C1C', fontFamily: 'Playfair Display, serif' }}>Cálculos Guardados</h3>
             <div className="space-y-2">
@@ -1925,7 +1940,7 @@ export default function Calculadora() {
               ))}
             </div>
           </div>
-        )}
+        )} */}
       </main>
     </div>
   );

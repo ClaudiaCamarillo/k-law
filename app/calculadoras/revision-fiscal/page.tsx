@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { diasInhabilesTFJA } from './diasInhabiles/index.js';
+import { computosStorage } from '@/lib/computosStorage';
 
 // Función para calcular días móviles
 function calcularDiasMoviles(año) {
@@ -352,10 +353,24 @@ export default function CalculadoraRevisionFiscal() {
   const [resultado, setResultado] = useState(null);
   const [calculando, setCalculando] = useState(false);
   const [diasAdicionales, setDiasAdicionales] = useState([]);
+  const [mostrarGuardar, setMostrarGuardar] = useState(false);
+  const [nombreCalculo, setNombreCalculo] = useState('');
+  const [descripcionCalculo, setDescripcionCalculo] = useState('');
+  const [guardando, setGuardando] = useState(false);
+  const [mensajeGuardado, setMensajeGuardado] = useState('');
+  const [limiteCalculos, setLimiteCalculos] = useState(5);
+  const [calculosGuardados, setCalculosGuardados] = useState(0);
+  // const [calculos, setCalculos] = useState([]); // Comentado según solicitud
 
   useEffect(() => {
     const tipo = localStorage.getItem('tipoUsuario') || 'litigante';
     setTipoUsuario(tipo);
+    
+    // Obtener información de cómputos guardados
+    const computos = computosStorage.obtenerTodos();
+    const computosRevision = computos.filter(c => c.tipo === 'revision-fiscal');
+    setCalculosGuardados(computosRevision.length);
+    setLimiteCalculos(computosStorage.obtenerLimite());
   }, []);
 
   const handleSubmit = (e) => {
@@ -595,6 +610,57 @@ export default function CalculadoraRevisionFiscal() {
 \tPor tanto, si el oficio mediante el cual se interpuso el recurso de revisión fiscal ${presentacionInfo.accion} el ${fechaPresentacionTexto}, como se advierte ${presentacionInfo.evidencia}, resulta evidente que se interpuso ${conclusionOportunidad}.`;
 
     return texto;
+  };
+  
+  const guardarCalculo = () => {
+    if (!nombreCalculo || !resultado) return;
+    
+    setGuardando(true);
+    
+    const calculo = {
+      nombre: nombreCalculo,
+      descripcion: descripcionCalculo,
+      fecha: new Date().toISOString(),
+      tipo: 'revision-fiscal',
+      datos: {
+        formData,
+        resultado: {
+          plazo: resultado.plazo,
+          fundamento: resultado.fundamento,
+          textoSurte: resultado.textoSurte,
+          fundamentoSurte: resultado.fundamentoSurte,
+          fechaNotificacion: resultado.fechaNotificacion?.toISOString(),
+          fechaSurte: resultado.fechaSurte?.toISOString(),
+          fechaInicio: resultado.fechaInicio?.toISOString(),
+          fechaFin: resultado.fechaFin?.toISOString(),
+          esOportuno: resultado.esOportuno,
+          diasInhabiles: resultado.diasInhabiles
+        },
+        tipoUsuario
+      }
+    };
+    
+    const guardado = computosStorage.guardar(calculo);
+    
+    if (guardado.exito) {
+      setMensajeGuardado('Cálculo guardado exitosamente');
+      setMostrarGuardar(false);
+      setNombreCalculo('');
+      setDescripcionCalculo('');
+      
+      // Actualizar contador
+      const computos = computosStorage.obtenerTodos();
+      const computosRevision = computos.filter(c => c.tipo === 'revision-fiscal');
+      setCalculosGuardados(computosRevision.length);
+      
+      setTimeout(() => {
+        setMensajeGuardado('');
+      }, 3000);
+    } else {
+      setMensajeGuardado(guardado.mensaje || 'Error al guardar el cálculo');
+    }
+    
+    setGuardando(false);
   };
 
   const copiarTexto = () => {
@@ -996,6 +1062,90 @@ export default function CalculadoraRevisionFiscal() {
                   </>
                 )}
               </div>
+              
+              {/* Sección para guardar cálculo */}
+              {resultado && !mostrarGuardar && (
+                <div className="mt-6 p-4 rounded-lg" style={{ backgroundColor: '#F9F7F5', border: '1.5px solid #C5A770' }}>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-sm" style={{ color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}>
+                        <strong>{calculosGuardados}</strong> de <strong>{limiteCalculos}</strong> cómputos guardados
+                      </p>
+                      <p className="text-xs mt-1" style={{ color: '#6B6B6B', fontFamily: 'Inter, sans-serif' }}>
+                        Puedes ver todos tus cálculos en{' '}
+                        <Link href="/computos-guardados" className="underline hover:text-blue-600" style={{ color: '#C5A770' }}>
+                          Mis Cómputos
+                        </Link>
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setMostrarGuardar(true)}
+                      disabled={calculosGuardados >= limiteCalculos}
+                      className={`px-4 py-2 rounded-lg transition-all duration-300 ${
+                        calculosGuardados >= limiteCalculos
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          : 'bg-green-600 text-white hover:bg-green-700'
+                      }`}
+                      style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.875rem' }}
+                    >
+                      {calculosGuardados >= limiteCalculos ? 'Límite alcanzado' : 'Guardar cálculo'}
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              {/* Formulario para guardar */}
+              {mostrarGuardar && (
+                <div className="mt-6 p-4 rounded-lg" style={{ backgroundColor: '#F9F7F5', border: '1.5px solid #C5A770' }}>
+                  <h3 className="font-semibold mb-3" style={{ fontFamily: 'Playfair Display, serif', color: '#1C1C1C' }}>
+                    Guardar Cálculo
+                  </h3>
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      placeholder="Nombre del cálculo"
+                      value={nombreCalculo}
+                      onChange={(e) => setNombreCalculo(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg"
+                      style={{ border: '1.5px solid #C5A770', fontFamily: 'Inter, sans-serif' }}
+                    />
+                    <textarea
+                      placeholder="Descripción (opcional)"
+                      value={descripcionCalculo}
+                      onChange={(e) => setDescripcionCalculo(e.target.value)}
+                      rows={2}
+                      className="w-full px-3 py-2 rounded-lg"
+                      style={{ border: '1.5px solid #C5A770', fontFamily: 'Inter, sans-serif' }}
+                    />
+                    <div className="flex gap-3">
+                      <button
+                        onClick={guardarCalculo}
+                        disabled={!nombreCalculo || guardando}
+                        className="flex-1 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                        style={{ fontFamily: 'Inter, sans-serif' }}
+                      >
+                        {guardando ? 'Guardando...' : 'Guardar'}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setMostrarGuardar(false);
+                          setNombreCalculo('');
+                          setDescripcionCalculo('');
+                        }}
+                        className="px-4 py-2 rounded-lg hover:bg-gray-100"
+                        style={{ border: '1.5px solid #C5A770', fontFamily: 'Inter, sans-serif', color: '#1C1C1C' }}
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+                  {mensajeGuardado && (
+                    <p className="mt-3 text-sm" style={{ color: mensajeGuardado.includes('Error') ? '#DC2626' : '#059669', fontFamily: 'Inter, sans-serif' }}>
+                      {mensajeGuardado}
+                    </p>
+                  )}
+                </div>
+              )}
               
               <div className="mt-8 text-center">
                 <button 

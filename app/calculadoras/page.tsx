@@ -327,6 +327,38 @@ export default function CalculadorasPage() {
             </span>
           )}
         </div>
+        
+        {/* Botón de cómputos guardados para litigantes */}
+        {tipoUsuario === 'litigante' && (
+          <div className="mt-4 text-center">
+            <button
+              onClick={() => router.push('/computos-guardados')}
+              className="inline-flex items-center gap-2 px-5 py-2 transition-all duration-300"
+              style={{
+                backgroundColor: '#1C1C1C',
+                color: '#F4EFE8',
+                fontWeight: '500',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '0.875rem',
+                border: '1.5px solid #1C1C1C',
+                letterSpacing: '0.02em',
+                borderRadius: '30px'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#C5A770';
+                e.currentTarget.style.borderColor = '#C5A770';
+                e.currentTarget.style.color = '#1C1C1C';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#1C1C1C';
+                e.currentTarget.style.borderColor = '#1C1C1C';
+                e.currentTarget.style.color = '#F4EFE8';
+              }}
+            >
+              💾 Ver Cómputos Guardados
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Calculators Grid */}

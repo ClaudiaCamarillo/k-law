@@ -7,6 +7,7 @@ import { diasInhabilesData } from '../../diasInhabiles.js'
 import { SelectorLeyNotificacion } from '@/components/SelectorLeyNotificacion'
 import { BuscadorLeyNotificacion } from '@/components/BuscadorLeyNotificacion'
 import { PreguntasActoConcreto } from '@/components/PreguntasActoConcreto'
+import { computosStorage } from '@/lib/computos-storage'
 
 // Interfaz para las reglas de notificación
 interface ReglaNotificacion {
@@ -1754,7 +1755,7 @@ export default function Page() {
   // Para litigantes
   const [numeroExpediente, setNumeroExpediente] = useState('');
   const [telefonoWhatsApp, setTelefonoWhatsApp] = useState('');
-  const [calculos, setCalculos] = useState<any[]>([]);
+  // const [calculos, setCalculos] = useState<any[]>([]); // Ya no necesario, usamos computosStorage
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -2978,27 +2979,34 @@ export default function Page() {
   const guardarCalculo = () => {
     if (!numeroExpediente || !resultado) return;
     
-    const nuevoCalculo = {
-      id: Date.now(),
-      expediente: numeroExpediente,
-      fechaGuardado: new Date().toISOString(),
+    const exito = computosStorage.guardar({
+      tipo: 'amparo-indirecto',
+      nombre: `Amparo Indirecto - ${numeroExpediente}`,
+      fechaNotificacion: formData.fechaNotificacion,
       fechaVencimiento: resultado.fechaFin.toISOString(),
-      tipoRecurso: formData.tipoRecurso,
-      telefono: telefonoWhatsApp,
-      notificaciones: {
-        tresDias: false,
-        dosDias: false,
-        unDia: false,
-        vencimiento: false
+      diasHabiles: typeof resultado.plazo === 'number' ? resultado.plazo : 0,
+      datos: {
+        ...formData,
+        numeroExpediente,
+        telefonoWhatsApp,
+        resultado: {
+          esOportuno: resultado.esOportuno,
+          plazo: resultado.plazo,
+          fundamento: resultado.fundamento,
+          fechaSurte: resultado.fechaSurte.toISOString(),
+          fechaInicio: resultado.fechaInicio.toISOString(),
+          fechaFin: resultado.fechaFin.toISOString(),
+          diasRestantes: resultado.diasRestantes,
+          diasInhabiles: resultado.diasInhabiles
+        }
       }
-    };
+    });
     
-    const nuevosCalculos = [...calculos, nuevoCalculo];
-    setCalculos(nuevosCalculos);
-    localStorage.setItem('calculosGuardados', JSON.stringify(nuevosCalculos));
-    
-    alert(`Cálculo guardado para expediente ${numeroExpediente}`);
-    setNumeroExpediente('');
+    if (exito) {
+      alert(`Cálculo guardado exitosamente para el expediente ${numeroExpediente}`);
+      setNumeroExpediente('');
+      setTelefonoWhatsApp('');
+    }
   };
 
   // Función para copiar solo el calendario como imagen
@@ -5037,6 +5045,29 @@ export default function Page() {
                   fontWeight: '400'
                 }}>Guardar Cálculo y Notificaciones</h3>
                 
+                {/* Mostrar información de almacenamiento */}
+                <div className="mb-4 p-3 rounded-lg" style={{
+                  backgroundColor: 'rgba(197, 167, 112, 0.1)',
+                  border: '1px solid #C5A770'
+                }}>
+                  <p className="text-sm" style={{ color: '#1C1C1C' }}>
+                    <span style={{ fontWeight: '600' }}>
+                      {computosStorage.obtenerCantidad()} de {computosStorage.obtenerLimite()}
+                    </span> cómputos guardados
+                  </p>
+                  <Link 
+                    href="/computos-guardados" 
+                    className="text-sm"
+                    style={{ 
+                      color: '#C5A770',
+                      textDecoration: 'underline',
+                      fontWeight: '500'
+                    }}
+                  >
+                    Ver todos los cómputos guardados →
+                  </Link>
+                </div>
+                
                 <div className="grid md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block" style={{ color: '#1C1C1C', fontWeight: '500', marginBottom: '0.5rem', fontSize: '0.875rem', fontFamily: 'Inter, sans-serif' }}>Número de Expediente</label>
@@ -5067,22 +5098,22 @@ export default function Page() {
                 
                 <button 
                   onClick={guardarCalculo}
-                  disabled={!numeroExpediente}
+                  disabled={!numeroExpediente || !computosStorage.puedeGuardarMas()}
                   style={{
-                    backgroundColor: numeroExpediente ? '#1C1C1C' : '#999999',
+                    backgroundColor: (numeroExpediente && computosStorage.puedeGuardarMas()) ? '#1C1C1C' : '#999999',
                     color: 'white',
                     padding: '0.5rem 1rem',
                     border: 'none',
                     fontSize: '0.875rem',
                     fontFamily: 'Inter, sans-serif',
-                    cursor: numeroExpediente ? 'pointer' : 'not-allowed',
-                    opacity: numeroExpediente ? 1 : 0.5,
+                    cursor: (numeroExpediente && computosStorage.puedeGuardarMas()) ? 'pointer' : 'not-allowed',
+                    opacity: (numeroExpediente && computosStorage.puedeGuardarMas()) ? 1 : 0.5,
                     transition: 'all 0.3s ease'
                   }}
-                  onMouseEnter={(e) => { if (numeroExpediente) e.currentTarget.style.backgroundColor = '#C5A770' }}
-                  onMouseLeave={(e) => { if (numeroExpediente) e.currentTarget.style.backgroundColor = '#1C1C1C' }}
+                  onMouseEnter={(e) => { if (numeroExpediente && computosStorage.puedeGuardarMas()) e.currentTarget.style.backgroundColor = '#C5A770' }}
+                  onMouseLeave={(e) => { if (numeroExpediente && computosStorage.puedeGuardarMas()) e.currentTarget.style.backgroundColor = '#1C1C1C' }}
                 >
-                  Guardar Cálculo
+                  {computosStorage.puedeGuardarMas() ? 'Guardar Cálculo' : 'Límite de cómputos alcanzado'}
                 </button>
                 
                 {telefonoWhatsApp && (
@@ -5095,30 +5126,6 @@ export default function Page() {
           </>
         )}
         
-        {/* Lista de cálculos guardados para litigantes */}
-        {tipoUsuario === 'litigante' && calculos.length > 0 && (
-          <div className="mt-8" style={{ 
-            backgroundColor: '#FFFFFF', 
-            borderRadius: '12px', 
-            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.08)', 
-            padding: '2.5rem', 
-            border: '1.5px solid #C5A770' 
-          }}>
-            <h3 className="text-xl md:text-2xl mb-4" style={{ 
-              fontFamily: 'Playfair Display, serif', 
-              fontWeight: '700',
-              color: '#1C1C1C'
-            }}>
-              Cálculos Guardados
-            </h3>
-            <div className="space-y-2">
-              {calculos.map((calc) => (
-                <div key={calc.id} className="flex justify-between items-center p-4" style={{
-                  backgroundColor: 'rgba(197, 167, 112, 0.05)',
-                  border: '1.5px solid #C5A770',
-                  borderRadius: '8px',
-                  marginBottom: '0.5rem'
-                }}>
                   <div>
                     <p className="font-semibold" style={{ color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}>Expediente: {calc.expediente}</p>
                     <p className="text-sm" style={{ color: '#3D3D3D', fontFamily: 'Inter, sans-serif', opacity: '0.7' }}>
