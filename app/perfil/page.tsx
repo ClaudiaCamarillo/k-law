@@ -27,6 +27,26 @@ export default function PerfilPage() {
   }, [])
 
   const handleUpgradeToPremium = async () => {
+    // TEMPORALMENTE DESHABILITADO - Activar premium sin pago para fase de validación
+    try {
+      // Simular procesamiento
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Guardar plan premium en localStorage
+      localStorage.setItem('userPlan', 'premium')
+      
+      // Actualizar estado local
+      setCurrentPlan('premium')
+      
+      // Mostrar mensaje de éxito
+      alert('¡Premium activado exitosamente! (Modo demo)')
+      
+    } catch (error) {
+      console.error('Error:', error)
+      alert('Error al procesar la actualización. Por favor intenta de nuevo.')
+    }
+    
+    /* CÓDIGO STRIPE TEMPORALMENTE DESHABILITADO
     try {
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
@@ -50,6 +70,7 @@ export default function PerfilPage() {
       console.error('Error:', error)
       alert('Error al procesar la actualización. Por favor intenta de nuevo.')
     }
+    */
   }
 
   const handleLogout = () => {
@@ -123,7 +144,7 @@ export default function PerfilPage() {
                   className="w-1/4 py-48 text-4xl font-semibold rounded-full hover:opacity-90 transition-opacity"
                   style={{ backgroundColor: '#D3D3D3', color: '#000000' }}
                 >
-                  Actualizar a Premium - $299 MXN/mes
+                  Activar Premium (Demo)
                 </button>
               </div>
             </div>

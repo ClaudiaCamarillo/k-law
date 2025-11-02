@@ -13,6 +13,28 @@ export default function PlanesPage() {
       // Ir directo a selección de tipo de usuario
       router.push('/')
     } else {
+      // TEMPORALMENTE DESHABILITADO - Activar premium sin pago para fase de validación
+      setLoading(true)
+      setError(null)
+      
+      try {
+        // Simular procesamiento y activar premium directamente
+        await new Promise(resolve => setTimeout(resolve, 1000)) // Simular delay
+        
+        // Guardar plan premium en localStorage
+        localStorage.setItem('userPlan', 'premium')
+        
+        // Redirigir a selección de usuario con parámetro de éxito
+        router.push('/seleccionar-usuario?payment=success')
+        
+      } catch (err: any) {
+        setError(err.message || 'Error al procesar')
+        console.error('Error:', err)
+      } finally {
+        setLoading(false)
+      }
+      
+      /* CÓDIGO STRIPE TEMPORALMENTE DESHABILITADO PARA FASE DE VALIDACIÓN
       // Procesar pago con Stripe
       setLoading(true)
       setError(null)
@@ -56,6 +78,7 @@ export default function PlanesPage() {
       } finally {
         setLoading(false)
       }
+      */
     }
   }
 
@@ -163,7 +186,7 @@ export default function PlanesPage() {
                     pointerEvents: 'auto'
                   }}
                 >
-                  {loading ? 'Procesando...' : 'Comenzar Prueba'}
+                  {loading ? 'Activando...' : 'Activar Premium (Demo)'}
                 </button>
               </div>
             </div>
