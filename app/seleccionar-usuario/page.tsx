@@ -19,6 +19,17 @@ function SeleccionarUsuarioContent() {
     if (plan) {
       localStorage.setItem('userPlan', plan)
       
+      // TEMPORALMENTE DESHABILITADO - Activar premium sin pago para fase de validación
+      if (plan === 'premium') {
+        // Activar premium directamente sin pago
+        localStorage.setItem('userPlan', 'premium')
+        setShowSuccess(true)
+        // Ocultar el mensaje después de 5 segundos
+        setTimeout(() => setShowSuccess(false), 5000)
+        return
+      }
+      
+      /* CÓDIGO STRIPE TEMPORALMENTE DESHABILITADO
       // Si es premium, redirigir a Stripe checkout
       if (plan === 'premium') {
         // Crear sesión de checkout
@@ -47,6 +58,7 @@ function SeleccionarUsuarioContent() {
         })
         return
       }
+      */
     }
     
     // Verificar si viene de un pago exitoso
