@@ -3749,7 +3749,7 @@ export default function Page() {
     
     
     return texto;
-  };
+  };  // Cierre de la función generarTexto
 
   const generarTextoFormateado = () => {
     const textoBase = generarTexto();
@@ -5124,39 +5124,6 @@ export default function Page() {
               </div>
             )}
           </>
-        )}
-        
-                  <div>
-                    <p className="font-semibold" style={{ color: '#1C1C1C', fontFamily: 'Inter, sans-serif' }}>Expediente: {calc.expediente}</p>
-                    <p className="text-sm" style={{ color: '#3D3D3D', fontFamily: 'Inter, sans-serif', opacity: '0.7' }}>
-                      Vence: {new Date(calc.fechaVencimiento).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <button 
-                    onClick={() => {
-                      setCalculos(calculos.filter(c => c.id !== calc.id));
-                      localStorage.setItem('calculosGuardados', 
-                        JSON.stringify(calculos.filter(c => c.id !== calc.id))
-                      );
-                    }}
-                    style={{
-                      color: '#dc2626',
-                      fontSize: '0.875rem',
-                      fontFamily: 'Inter, sans-serif',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      transition: 'color 0.3s ease'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.color = '#ef4444'}
-                    onMouseLeave={(e) => e.currentTarget.style.color = '#dc2626'}
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
         )}
       </main>
     </div>

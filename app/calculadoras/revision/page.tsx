@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { diasInhabilesData } from '../../diasInhabiles.js'
 import { getCuandoSurteEfectos, calcularFechaSurteEfectos, getFundamentoSurtimientoEfectos } from '../../../lib/articulo31LeyAmparo.js'
-import { computosStorage } from '../../../lib/computosStorage'
+import { computosStorage } from '../../../lib/computos-storage'
 
 // Función para convertir fecha a texto en español
 function fechaATexto(fecha: string): string {

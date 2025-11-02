@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { diasInhabilesTFJA } from './diasInhabiles/index.js';
-import { computosStorage } from '@/lib/computosStorage';
+import { computosStorage } from '@/lib/computos-storage';
 
 // Función para calcular días móviles
 function calcularDiasMoviles(año) {
